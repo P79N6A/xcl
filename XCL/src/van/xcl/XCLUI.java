@@ -460,39 +460,39 @@ public class XCLUI extends EventHandler {
 	@Override
 	public String handle(String type, String message) {
 		System.out.println("XCLUI --> handle [type: " + type + ", message: " + message + "]");
-		if ("prepare".equals(type)) {
+		if (XCLEvent.prepare.name().equals(type)) {
 			getTextCmd().requestFocus();
 			getTextCmd().setCaretPosition(getTextCmd().getDocument().getLength());
-		} else if ("input".equals(type)) {
+		} else if (XCLEvent.input.name().equals(type)) {
 			console(Constants.IN_PROMPT + message + "\n", foregroundColor);
-		} else if ("output".equals(type)) {
+		} else if (XCLEvent.output.name().equals(type)) {
 			console(Constants.OUT_PROMPT + message + "\n", foregroundColor);
-		} else if ("info".equals(type)) {
+		} else if (XCLEvent.info.name().equals(type)) {
 			console(Constants.INFO_PROMPT + message + "\n", promptColor);
-		} else if ("error".equals(type)) {
+		} else if (XCLEvent.error.name().equals(type)) {
 			console(Constants.ERROR_PROMPT + message + "\n", errorColor);
-		} else if ("prompt".equals(type)) {
-			this.textPrompt.setText(message + "  ");
-		} else if ("title".equals(type)) {
+		} else if (XCLEvent.prompt.name().equals(type)) {
+			getTextPrompt().setText(message + "  ");
+		} else if (XCLEvent.title.name().equals(type)) {
 			getFrame().setTitle(message);
-		} else if ("clear".equals(type)) {
+		} else if (XCLEvent.clear.name().equals(type)) {
 			getTextConsole().setText("");
 			getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
 			initLogger();
-		} else if ("editable".equals(type)) {
+		} else if (XCLEvent.editable.name().equals(type)) {
 			boolean editable = Boolean.valueOf(message);
 			getTextCmd().setEditable(editable);
-		} else if ("present".equals(type)) {
+		} else if (XCLEvent.present.name().equals(type)) {
 			getTextCmd().setText(message);
 			getTextCmd().setCaretPosition(getTextCmd().getDocument().getLength());
-		} else if ("textTitle".equals(type)) {
+		} else if (XCLEvent.textTitle.name().equals(type)) {
 			getTextInputBorder().setTitle("[" + message + "]");
-		} else if ("textInput".equals(type)) {
+		} else if (XCLEvent.textInput.name().equals(type)) {
 			cardLayout.show(cardPanel, "input");
 			getTextInput().requestFocus();
 			getTextInput().setText(message);
 			getTextInput().setCaretPosition(textInput.getDocument().getLength());
-		} else if ("getTextInput".equals(type)) {
+		} else if (XCLEvent.getTextInput.name().equals(type)) {
 			try {
 				String inputText = textQueue.take();
 				cardLayout.show(cardPanel, "console");

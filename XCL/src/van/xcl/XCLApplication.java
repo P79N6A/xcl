@@ -204,7 +204,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	
 	@Override
 	public String handle(String type, String message) {
-		if ("run".equals(type)) {
+		if (XCLEvent.run.name().equals(type)) {
 			execute(message, context);
 		}
 		return null;
@@ -251,64 +251,64 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	
 	@Override
 	public void run(String command) {
-		this.CMDEventQueue.addEvent("run", command);
+		this.CMDEventQueue.addEvent(XCLEvent.run.name(), command);
 	}
 
 	@Override
 	public void present(String string) {
-		this.UIEventQueue.addEvent("present", string);
+		this.UIEventQueue.addEvent(XCLEvent.present.name(), string);
 	}
 
 	@Override
 	public void prepare() {
-		this.UIEventQueue.addEvent("prepare", null);
+		this.UIEventQueue.addEvent(XCLEvent.prepare.name(), null);
 	}
 
 	@Override
 	public void input(String input) {
-		this.UIEventQueue.addEvent("input", input);
+		this.UIEventQueue.addEvent(XCLEvent.input.name(), input);
 	}
 
 	@Override
 	public void output(String str) {
-		this.UIEventQueue.addEvent("output", str);
+		this.UIEventQueue.addEvent(XCLEvent.output.name(), str);
 	}
 
 	@Override
 	public void prompt(String prompt) {
 		prompt = "  -  " + CommonUtils.resolveString(prompt, 90);
-		this.UIEventQueue.addEvent("prompt", prompt);
+		this.UIEventQueue.addEvent(XCLEvent.prompt.name(), prompt);
 	}
 	
 	@Override
 	public void info(String info) {
-		this.UIEventQueue.addEvent("info", info);
+		this.UIEventQueue.addEvent(XCLEvent.info.name(), info);
 	}
 	
 	@Override
 	public void error(String error) {
-		this.UIEventQueue.addEvent("error", error);
+		this.UIEventQueue.addEvent(XCLEvent.error.name(), error);
 	}
 
 	@Override
 	public void title(String title) {
-		this.UIEventQueue.addEvent("title", title);
+		this.UIEventQueue.addEvent(XCLEvent.title.name(), title);
 	}
 	
 	@Override
 	public void clear() {
-		this.UIEventQueue.addEvent("clear", null);
+		this.UIEventQueue.addEvent(XCLEvent.clear.name(), null);
 	}
 
 	@Override
 	public void editable(boolean b) {
-		this.UIEventQueue.addEvent("editable", String.valueOf(b));
+		this.UIEventQueue.addEvent(XCLEvent.editable.name(), String.valueOf(b));
 	}
 	
 	@Override
 	public String getTextInput(String text, String title) {
-		this.UIEventQueue.addEvent("textInput", text);
-		this.UIEventQueue.addEvent("textTitle", title);
+		this.UIEventQueue.addEvent(XCLEvent.textInput.name(), text);
+		this.UIEventQueue.addEvent(XCLEvent.textTitle.name(), title);
 		EventCallback callback  = EventCallback.defaultCallback();
 		this.UIEventQueue.addEvent("getTextInput", text, callback);
 		return callback.awaitResult();
