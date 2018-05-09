@@ -1,8 +1,4 @@
 *.class
 *.log
-*.war
-*.ear
-*.tar.gz
-*.rar
 
 bin/
