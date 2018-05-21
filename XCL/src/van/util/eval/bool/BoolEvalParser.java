@@ -156,11 +156,17 @@ public class BoolEvalParser {
 				}
 				if (depth == 0) {
 					index = i;
+					if (index == arr.length - 1) {
+						return true;
+					} else {
+						return false;
+					}
 				}
 			}
+			/*
 			if (index == arr.length - 1) {
 				return true;
-			}
+			}*/
 		}
 		return false;
 	}
