@@ -38,12 +38,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.TransferHandler;
 import javax.swing.WindowConstants;
-import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -129,10 +127,10 @@ public class XCLUI extends EventHandler {
 	private JFrame frame;
 	private XCLConsole console;
 	private JTextPane textConsole;
-	private JTextArea textInput;
+	private JTextPane textInput;
+	private JTextField textInputPrompt;
 	private JTextField textCmd;
 	private JTextField textPrompt;
-	private TitledBorder titledBorder;
 	private JPanel cardPanel = new JPanel();
 	private CardLayout cardLayout = new CardLayout();
 	private BufferedWriter logWriter;
@@ -156,7 +154,7 @@ public class XCLUI extends EventHandler {
 		});
 		this.cardPanel.setLayout(cardLayout);
 		this.cardPanel.add("console", getConsolePanel());
-		this.cardPanel.add("input", getScrollInput());
+		this.cardPanel.add("input", getInputPanel());
 		getFrame().setLayout(new BorderLayout());
 		getFrame().add(getTextPrompt(), BorderLayout.SOUTH);
 		getFrame().add(cardPanel, BorderLayout.CENTER);
@@ -186,6 +184,14 @@ public class XCLUI extends EventHandler {
 		return this.frame;
 	}
 	
+	private JPanel getInputPanel() {
+		JPanel inputPanel = new JPanel();
+		inputPanel.setLayout(new BorderLayout(0, 0));
+		inputPanel.add(getTextInputPrompt(), BorderLayout.NORTH);
+		inputPanel.add(getScrollInput(), BorderLayout.CENTER);
+		return inputPanel;
+	}
+	
 	private JPanel getConsolePanel() {
 		JPanel consolePanel = new JPanel();
 		consolePanel.setLayout(new BorderLayout(0, 0));
@@ -211,8 +217,6 @@ public class XCLUI extends EventHandler {
 		JScrollBar hb = pane.getHorizontalScrollBar();
 		vb.setUI(new XScrollBarUI());
 		hb.setUI(new XScrollBarUI());
-//		vb.setPreferredSize(new Dimension(10, 10));
-//		hb.setPreferredSize(new Dimension(10, 10));
 		return pane;
 	}
 
@@ -222,9 +226,6 @@ public class XCLUI extends EventHandler {
 		JScrollBar hb = pane.getHorizontalScrollBar();
 		vb.setUI(new XScrollBarUI());
 		hb.setUI(new XScrollBarUI());
-//		vb.setPreferredSize(new Dimension(10, 10));
-//		hb.setPreferredSize(new Dimension(10, 10));
-		pane.setBorder(getTextInputBorder());
 		return pane;
 	}
 	
@@ -304,6 +305,20 @@ public class XCLUI extends EventHandler {
 		return textPrompt;
 	}
 	
+	private JTextField getTextInputPrompt() {
+		if (textInputPrompt == null) {
+			textInputPrompt = new JTextField();
+			textInputPrompt.setEditable(false);
+			textInputPrompt.setBorder(null);
+			textInputPrompt.setBackground(backgroundColor);
+			textInputPrompt.setForeground(promptColor);
+			textInputPrompt.setCaretColor(foregroundColor);
+			textInputPrompt.setFont(getDefaultFont());
+			textInputPrompt.setPreferredSize(new Dimension(0, 25));
+		}
+		return textInputPrompt;
+	}
+	
 	private void console(String str, Color color) {
 		SimpleAttributeSet attr = new SimpleAttributeSet();
 		Font font = getDefaultFont();
@@ -327,24 +342,17 @@ public class XCLUI extends EventHandler {
 		}
 	}
 	
-	private TitledBorder getTextInputBorder() {
-		if (titledBorder == null) {
-			titledBorder = new TitledBorder("Input");
-			titledBorder.setBorder(null);
-			titledBorder.setTitleColor(Color.black);
-		}
-		return titledBorder;
-	}
-
-	private JTextArea getTextInput() {
+	private JTextPane getTextInput() {
 		if (textInput == null) {
-			textInput = new JTextArea();
+//			textInput = new JTextPane();
+			String[] cmds = console.commands().keySet().toArray(new String[]{});
+			textInput = new XCLTextPane(foregroundColor, Color.red, Color.red, cmds);
 			textInput.setBackground(backgroundColor);
 			textInput.setForeground(foregroundColor);
 			textInput.setSelectionColor(selectionColor);
 			textInput.setCaretColor(foregroundColor);
 			textInput.setFont(getDefaultFont());
-			textInput.setWrapStyleWord(false);
+			//textInput.setWrapStyleWord(false);
 			textInput.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
@@ -486,7 +494,7 @@ public class XCLUI extends EventHandler {
 			getTextCmd().setText(message);
 			getTextCmd().setCaretPosition(getTextCmd().getDocument().getLength());
 		} else if (XCLEvent.textTitle.name().equals(type)) {
-			getTextInputBorder().setTitle("[" + message + "]");
+			getTextInputPrompt().setText(message);
 		} else if (XCLEvent.textInput.name().equals(type)) {
 			cardLayout.show(cardPanel, "input");
 			getTextInput().requestFocus();

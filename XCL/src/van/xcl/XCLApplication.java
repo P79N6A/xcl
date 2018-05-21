@@ -339,6 +339,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 			}
 		}
 		this.context.setLastStartup(CommonUtils.getCurrentDateString());
+		this.saveContext(this.contextFile);
 	}
 	
 	private void saveContext(String contextFile) {
