@@ -74,15 +74,16 @@ public class XCLTextPane extends JTextPane {
 	 *
 	 */
 	private static final long serialVersionUID = -66377652770879651L;
-	protected StyleContext m_context;
-	protected DefaultStyledDocument m_doc;
-	private MutableAttributeSet keyAttr, normalAttr;
-	private MutableAttributeSet bracketAttr;
+	protected StyleContext context;
+	protected DefaultStyledDocument document;
+	private MutableAttributeSet keyAttr;
+	private MutableAttributeSet normalAttr;
+	private MutableAttributeSet commentAttr;
 	private MutableAttributeSet inputAttributes = new RTFEditorKit().getInputAttributes();
 	/**
 	 * 所有关键字
 	 */
-	private String[] _keys = new String[] {};
+	private String[] keys = new String[] {};
 	/**
 	 * 所与排除字符集
 	 */
@@ -91,42 +92,26 @@ public class XCLTextPane extends JTextPane {
 	/**
 	 * 初始化，包括关键字颜色，和非关键字颜色
 	 */
-	public XCLTextPane(Color normalColor, Color keyColor, Color bracketColor, String[] keys) {
+	public XCLTextPane(Color normalColor, Color keyColor, String[] keys) {
 		super();
-		_keys = keys;
-		m_context = new StyleContext();
-		m_doc = new DefaultStyledDocument(m_context);
-		this.setDocument(m_doc);
+		this.keys = keys;
+		this.context = new StyleContext();
+		this.document = new DefaultStyledDocument(context);
+		this.setDocument(document);
 		this.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent ke) {
 				dealSingleRow();
 			}
 		});
-		// 义关键字显示属性
+		// 关键字显示属性
 		keyAttr = new SimpleAttributeSet();
 		StyleConstants.setForeground(keyAttr, keyColor);
-		// 义一般文本显示属性
+		// 一般文本显示属性
 		normalAttr = new SimpleAttributeSet();
-		StyleConstants.setBold(normalAttr, false);
 		StyleConstants.setForeground(normalAttr, normalColor);
-		bracketAttr = new SimpleAttributeSet();
-		StyleConstants.setForeground(bracketAttr, bracketColor);
-		StyleConstants.setBold(bracketAttr, true);
-	}
-
-	/**
-	 * 设置大括号颜色
-	 * 
-	 * @param _text
-	 */
-	private void setBracketColor(String _text) {
-		int len = _text.length();
-		for (int i = 0; i < len; i++) {
-			char ch = _text.charAt(i);
-			if (ch == '{' || ch == '}') {
-				m_doc.setCharacterAttributes(i, 1, bracketAttr, false);
-			}
-		}
+		// 注释显示属性
+		commentAttr = new SimpleAttributeSet();
+		StyleConstants.setForeground(commentAttr, Color.gray);
 	}
 
 	/**
@@ -145,35 +130,35 @@ public class XCLTextPane extends JTextPane {
 	 * 设置关键字颜色
 	 */
 	private int setKeyColor(String _key, int _start, int _length) {
-		for (int i = 0; i < _keys.length; i++) {
-			if ("/".equals(_keys[i])) {
+		for (int i = 0; i < keys.length; i++) {
+			if ("/".equals(keys[i])) {
 				continue;
 			}
-			int li_index = _key.indexOf(_keys[i]);
+			int li_index = _key.indexOf(keys[i]);
 			if (li_index < 0) {
 				continue;
 			}
-			int li_legnth = li_index + _keys[i].length();
+			int li_legnth = li_index + keys[i].length();
 			if (li_legnth == _key.length()) {
 				if (li_index == 0) {// 处理单独一个关键字的情况，例如：if else 等
-					m_doc.setCharacterAttributes(_start, _keys[i].length(), keyAttr, false);
+					document.setCharacterAttributes(_start, keys[i].length(), keyAttr, false);
 				} else {// 处理关键字前面还有字符的情况，例如：)if ;else 等
 					char ch_temp = _key.charAt(li_index - 1);
 					if (isCharacter(ch_temp)) {
-						m_doc.setCharacterAttributes(_start + li_index, _keys[i].length(), keyAttr, false);
+						document.setCharacterAttributes(_start + li_index, keys[i].length(), keyAttr, false);
 					}
 				}
 			} else {
 				if (li_index == 0) {// 处理关键字后面还有字符的情况，例如：if( end;等
-					char ch_temp = _key.charAt(_keys[i].length());
+					char ch_temp = _key.charAt(keys[i].length());
 					if (isCharacter(ch_temp)) {
-						m_doc.setCharacterAttributes(_start, _keys[i].length(), keyAttr, false);
+						document.setCharacterAttributes(_start, keys[i].length(), keyAttr, false);
 					}
 				} else {// 处理关键字前面和后面都有字符的情况，例如：)if( 等
 					char ch_temp = _key.charAt(li_index - 1);
 					char ch_temp_2 = _key.charAt(li_legnth);
 					if (isCharacter(ch_temp) && isCharacter(ch_temp_2)) {
-						m_doc.setCharacterAttributes(_start + li_index, _keys[i].length(), keyAttr, false);
+						document.setCharacterAttributes(_start + li_index, keys[i].length(), keyAttr, false);
 					}
 				}
 			}
@@ -187,33 +172,36 @@ public class XCLTextPane extends JTextPane {
 	private void dealText(int _start, int _end) {
 		String text = "";
 		try {
-			text = m_doc.getText(_start, _end - _start).toUpperCase();
+			text = document.getText(_start, _end - _start).toUpperCase();
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			// do nothing.
 		}
 		if (text == null || text.equals("")) {
 			return;
 		}
-		int xStart = 0;
-		// 析关键字---
-		m_doc.setCharacterAttributes(_start, text.length(), normalAttr, false);
-		MyStringTokenizer st = new MyStringTokenizer(text);
-		while (st.hasMoreTokens()) {
-			String s = st.nextToken();
-			if (s == null)
-				return;
-			xStart = st.getCurrPosition();
-			setKeyColor(s.toLowerCase(), _start + xStart, s.length());
+		if (text.trim().startsWith(Constants.COMMONT_PREFIX)) {
+			document.setCharacterAttributes(_start, text.length(), commentAttr, false);
+		} else {
+			int xStart = 0;
+			// 析关键字---
+			document.setCharacterAttributes(_start, text.length(), normalAttr, false);
+			MyStringTokenizer st = new MyStringTokenizer(text);
+			while (st.hasMoreTokens()) {
+				String s = st.nextToken();
+				if (s == null)
+					return;
+				xStart = st.getCurrPosition();
+				setKeyColor(s.toLowerCase(), _start + xStart, s.length());
+			}
+			inputAttributes.addAttributes(normalAttr);
 		}
-		setBracketColor(text);
-		inputAttributes.addAttributes(normalAttr);
 	}
 
 	/**
 	 * 在进行文本修改的时候 获得光标所在行，只对该行进行处理
 	 */
 	private void dealSingleRow() {
-		Element root = m_doc.getDefaultRootElement();
+		Element root = document.getDefaultRootElement();
 		// 光标当前行
 		int cursorPos = this.getCaretPosition(); // 前光标的位置
 		int line = root.getElementIndex(cursorPos);// 当前行
@@ -227,7 +215,7 @@ public class XCLTextPane extends JTextPane {
 	 * 在初始化面板的时候调用该方法， 查找整个篇幅的关键字
 	 */
 	public void syntaxParse() {
-		Element root = m_doc.getDefaultRootElement();
+		Element root = document.getDefaultRootElement();
 		int li_count = root.getElementCount();
 		for (int i = 0; i < li_count; i++) {
 			Element para = root.getElement(i);

@@ -311,7 +311,7 @@ public class XCLUI extends EventHandler {
 			textInputPrompt.setEditable(false);
 			textInputPrompt.setBorder(null);
 			textInputPrompt.setBackground(backgroundColor);
-			textInputPrompt.setForeground(promptColor);
+			textInputPrompt.setForeground(foregroundColor);
 			textInputPrompt.setCaretColor(foregroundColor);
 			textInputPrompt.setFont(getDefaultFont());
 			textInputPrompt.setPreferredSize(new Dimension(0, 25));
@@ -346,7 +346,7 @@ public class XCLUI extends EventHandler {
 		if (textInput == null) {
 //			textInput = new JTextPane();
 			String[] cmds = console.commands().keySet().toArray(new String[]{});
-			textInput = new XCLTextPane(foregroundColor, Color.red, Color.red, cmds);
+			textInput = new XCLTextPane(foregroundColor, Color.cyan, cmds);
 			textInput.setBackground(backgroundColor);
 			textInput.setForeground(foregroundColor);
 			textInput.setSelectionColor(selectionColor);
