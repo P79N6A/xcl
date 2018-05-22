@@ -369,6 +369,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 			try {
 				ois = new ObjectInputStream(new FileInputStream(file));
 				this.context = (XCLContext) ois.readObject();
+				this.ui.addKey(Constants.PARAS_DEFAULT);
 				for (String key : this.context.getCrafts().keySet()) {
 					this.ui.addKey(key);
 				}
