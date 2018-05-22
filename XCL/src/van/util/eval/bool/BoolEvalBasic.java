@@ -15,8 +15,10 @@ public abstract class BoolEvalBasic implements BoolEval {
 	}
 	@Override
 	public Boolean eval(Object o) {
-		boolean ret = evalImpl(o);
-		return isNegative ? !ret : ret;
+		boolean evalRet = evalImpl(o);
+		boolean ret = isNegative ? !evalRet : evalRet;
+		System.out.println((isNegative ? "!" : "") + this.evalStr + "=" + ret);
+		return ret;
 	}
 	@Override
 	public void setNegative() {

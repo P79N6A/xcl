@@ -27,7 +27,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.ImageIcon;
@@ -129,11 +131,12 @@ public class XCLUI extends EventHandler {
 	private JTextPane textConsole;
 	private JTextPane textInput;
 	private JTextField textInputPrompt;
-	private JTextField textCmd;
+	private JTextPane textCmd;
 	private JTextField textPrompt;
 	private JPanel cardPanel = new JPanel();
 	private CardLayout cardLayout = new CardLayout();
 	private BufferedWriter logWriter;
+	private Set<String> keys = new HashSet<String>();
 	
 	private LinkedBlockingQueue<String> textQueue = new LinkedBlockingQueue<String>();
 
@@ -161,6 +164,9 @@ public class XCLUI extends EventHandler {
 		getFrame().setVisible(true);
 		console.info(Constants.VERSION_PROMPT);
 		initLogger();
+		for (String cmdKey : console.commands().keySet()) {
+			keys.add(cmdKey);
+		}
 	}
 	
 	private void initLogger() {
@@ -229,9 +235,10 @@ public class XCLUI extends EventHandler {
 		return pane;
 	}
 	
-	private JTextField getTextCmd() {
+	private JTextPane getTextCmd() {
 		if (textCmd == null) {
-			textCmd = new JTextField();
+//			textCmd = new JTextField();
+			textCmd = new XCLTextPane(foregroundColor, Color.cyan, Color.gray, keys);
 			textCmd.setEditable(false);
 			textCmd.setBorder(null);
 			textCmd.setBackground(backgroundColor);
@@ -345,8 +352,7 @@ public class XCLUI extends EventHandler {
 	private JTextPane getTextInput() {
 		if (textInput == null) {
 //			textInput = new JTextPane();
-			String[] cmds = console.commands().keySet().toArray(new String[]{});
-			textInput = new XCLTextPane(foregroundColor, Color.cyan, cmds);
+			textInput = new XCLTextPane(foregroundColor, Color.cyan, Color.gray, keys);
 			textInput.setBackground(backgroundColor);
 			textInput.setForeground(foregroundColor);
 			textInput.setSelectionColor(selectionColor);
@@ -464,6 +470,10 @@ public class XCLUI extends EventHandler {
 	}
 	
 	// ---
+	
+	public void addKey(String key) {
+		this.keys.add(key);
+	}
 	
 	@Override
 	public String handle(String type, String message) {

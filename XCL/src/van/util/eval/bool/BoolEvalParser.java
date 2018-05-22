@@ -55,12 +55,21 @@ public class BoolEvalParser {
 	private BoolEval parse1(String word) {
 		BoolEval rule = null;
 		boolean neg = false;
+		boolean bkt = false;
 		if (word.startsWith("!")) {
 			neg = true;
 			word = word.substring(1);
 		}
-		boolean bkt = brackets(word);
+		bkt = brackets(word);
 		while (brackets(word)) {
+			word = word.substring(1, word.length() - 1);
+		}
+		if (word.startsWith("!")) { // check negative again!
+			neg = true;
+			word = word.substring(1);
+		}
+		bkt = brackets(word);
+		while (brackets(word)) { // handle brackets again!
 			word = word.substring(1, word.length() - 1);
 		}
 		if (isComplex(word)) {

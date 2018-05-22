@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.swing.JTextPane;
@@ -83,7 +84,7 @@ public class XCLTextPane extends JTextPane {
 	/**
 	 * 所有关键字
 	 */
-	private String[] keys = new String[] {};
+	private Set<String> keys = null;
 	/**
 	 * 所与排除字符集
 	 */
@@ -92,7 +93,7 @@ public class XCLTextPane extends JTextPane {
 	/**
 	 * 初始化，包括关键字颜色，和非关键字颜色
 	 */
-	public XCLTextPane(Color normalColor, Color keyColor, String[] keys) {
+	public XCLTextPane(Color normalColor, Color keyColor, Color commentColor, Set<String> keys) {
 		super();
 		this.keys = keys;
 		this.context = new StyleContext();
@@ -111,7 +112,7 @@ public class XCLTextPane extends JTextPane {
 		StyleConstants.setForeground(normalAttr, normalColor);
 		// 注释显示属性
 		commentAttr = new SimpleAttributeSet();
-		StyleConstants.setForeground(commentAttr, Color.gray);
+		StyleConstants.setForeground(commentAttr, commentColor);
 	}
 
 	/**
@@ -130,35 +131,35 @@ public class XCLTextPane extends JTextPane {
 	 * 设置关键字颜色
 	 */
 	private int setKeyColor(String _key, int _start, int _length) {
-		for (int i = 0; i < keys.length; i++) {
-			if ("/".equals(keys[i])) {
+		for (String key : keys) {
+			if ("/".equals(key)) {
 				continue;
 			}
-			int li_index = _key.indexOf(keys[i]);
+			int li_index = _key.indexOf(key);
 			if (li_index < 0) {
 				continue;
 			}
-			int li_legnth = li_index + keys[i].length();
+			int li_legnth = li_index + key.length();
 			if (li_legnth == _key.length()) {
 				if (li_index == 0) {// 处理单独一个关键字的情况，例如：if else 等
-					document.setCharacterAttributes(_start, keys[i].length(), keyAttr, false);
+					document.setCharacterAttributes(_start, key.length(), keyAttr, false);
 				} else {// 处理关键字前面还有字符的情况，例如：)if ;else 等
 					char ch_temp = _key.charAt(li_index - 1);
 					if (isCharacter(ch_temp)) {
-						document.setCharacterAttributes(_start + li_index, keys[i].length(), keyAttr, false);
+						document.setCharacterAttributes(_start + li_index, key.length(), keyAttr, false);
 					}
 				}
 			} else {
 				if (li_index == 0) {// 处理关键字后面还有字符的情况，例如：if( end;等
-					char ch_temp = _key.charAt(keys[i].length());
+					char ch_temp = _key.charAt(key.length());
 					if (isCharacter(ch_temp)) {
-						document.setCharacterAttributes(_start, keys[i].length(), keyAttr, false);
+						document.setCharacterAttributes(_start, key.length(), keyAttr, false);
 					}
 				} else {// 处理关键字前面和后面都有字符的情况，例如：)if( 等
 					char ch_temp = _key.charAt(li_index - 1);
 					char ch_temp_2 = _key.charAt(li_legnth);
 					if (isCharacter(ch_temp) && isCharacter(ch_temp_2)) {
-						document.setCharacterAttributes(_start + li_index, keys[i].length(), keyAttr, false);
+						document.setCharacterAttributes(_start + li_index, key.length(), keyAttr, false);
 					}
 				}
 			}
