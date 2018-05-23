@@ -158,7 +158,7 @@ public class XCLUI extends EventHandler {
 		this.cardPanel.setLayout(cardLayout);
 		this.cardPanel.add("console", getConsolePanel());
 		this.cardPanel.add("input", getInputPanel());
-		getFrame().setLayout(new BorderLayout());
+		getFrame().setLayout(new BorderLayout(0, 0));
 		getFrame().add(getTextPrompt(), BorderLayout.SOUTH);
 		getFrame().add(cardPanel, BorderLayout.CENTER);
 		getFrame().setVisible(true);
@@ -200,7 +200,8 @@ public class XCLUI extends EventHandler {
 	
 	private JPanel getConsolePanel() {
 		JPanel consolePanel = new JPanel();
-		consolePanel.setLayout(new BorderLayout(0, 0));
+		consolePanel.setBackground(backgroundColor);
+		consolePanel.setLayout(new BorderLayout(0, 10));
 		consolePanel.add(getScrollConsole(), BorderLayout.CENTER);
 		JLabel label = new JLabel();
 		label.setOpaque(true);
@@ -211,8 +212,8 @@ public class XCLUI extends EventHandler {
 		label.setText(" > ");
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
-		panel.add(label, BorderLayout.WEST);
 		panel.add(getTextCmd(), BorderLayout.CENTER);
+		panel.add(label, BorderLayout.WEST);
 		consolePanel.add(panel, BorderLayout.SOUTH);
 		return consolePanel;
 	}
@@ -255,6 +256,9 @@ public class XCLUI extends EventHandler {
 							console.input(cmdStr);
 							console.run(cmdStr);
 							console.present(null);
+						} else {
+							// clear
+							textCmd.setText(null);
 						}
 					}
 				}
@@ -307,7 +311,7 @@ public class XCLUI extends EventHandler {
 			textPrompt.setForeground(promptColor);
 			textPrompt.setCaretColor(foregroundColor);
 			textPrompt.setFont(getDefaultFont());
-			textPrompt.setPreferredSize(new Dimension(0, 25));
+			textPrompt.setPreferredSize(new Dimension(0, 35));
 		}
 		return textPrompt;
 	}
