@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import van.util.CommonUtils;
 import van.xcl.Command;
-import van.xcl.Constants;
+import van.xcl.XCLConstants;
 import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
@@ -20,7 +20,7 @@ public class Edit implements Command {
 	
 	@Override
 	public String name() {
-		return Constants.EDIT_COMMAND;
+		return XCLConstants.EDIT_COMMAND;
 	}
 	
 	@Override

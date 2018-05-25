@@ -117,7 +117,7 @@ public class XCLUtils {
 				BufferedReader br = new BufferedReader(new StringReader(cmdString));
 				String cmdLine = null;
 				while (null != (cmdLine = br.readLine())) {
-					if (cmdLine.startsWith(Constants.COMMONT_PREFIX)) {
+					if (cmdLine.startsWith(XCLConstants.COMMONT_PREFIX)) {
 						continue;
 					}
 					cmdTrim.append(cmdLine + " ");

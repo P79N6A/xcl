@@ -5,7 +5,7 @@ import java.util.Map;
 import van.xcl.Command;
 import van.xcl.CommandException;
 import van.xcl.XCLConsole;
-import van.xcl.Constants;
+import van.xcl.XCLConstants;
 import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
@@ -17,7 +17,7 @@ public class Craft implements Command {
 
 	@Override
 	public String name() {
-		return Constants.CRAFT_COMMAND;
+		return XCLConstants.CRAFT_COMMAND;
 	}
 
 	@Override

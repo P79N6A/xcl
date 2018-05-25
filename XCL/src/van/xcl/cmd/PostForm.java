@@ -53,10 +53,12 @@ public class PostForm implements Command {
 				JSONObject object = (JSONObject) JSONObject.parse(httpResult.getBody());
 				return new XCLVar(object);
 			} catch (Throwable e) {
+				console.prompt("error: " + e.getMessage());
 				console.info(httpResult.getBody());
 				return new XCLVar(httpResult.getBody());
 			}
 		} catch (Exception e) {
+			console.prompt("error: " + e.getMessage());
 			console.error(e.getMessage());
 			return new XCLVar();
 		}

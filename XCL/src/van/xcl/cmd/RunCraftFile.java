@@ -10,7 +10,7 @@ import java.util.Map;
 import van.util.CommonUtils;
 import van.xcl.Command;
 import van.xcl.CommandException;
-import van.xcl.Constants;
+import van.xcl.XCLConstants;
 import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
@@ -24,7 +24,7 @@ public class RunCraftFile implements Command {
 
 	@Override
 	public String name() {
-		return Constants.RUNFILE_COMMAND;
+		return XCLConstants.RUNFILE_COMMAND;
 	}
 
 	@Override

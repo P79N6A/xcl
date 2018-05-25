@@ -22,7 +22,7 @@ public class XCLStartup {
 
 	public static void main(String[] args) {
 		try {
-			initGlobalFont(Constants.DEFAULT_FONT);
+			initGlobalFont(XCLConstants.DEFAULT_FONT);
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();

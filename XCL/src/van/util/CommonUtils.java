@@ -203,4 +203,8 @@ public class CommonUtils {
 		return str == null || "".equals(str.trim());
 	}
 	
+	public static String trim(String str) {
+		return str == null ? "" : str.trim();
+	}
+	
 }

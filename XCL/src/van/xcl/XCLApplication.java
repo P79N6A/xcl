@@ -42,8 +42,8 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 		this.CMDEventQueue = new EventQueue(this);
 		this.parser = new XCLCmdParser();
 		this.holder = new XCLCmdHolder();
-		this.contextFile = Constants.CONTEXT_FILE;
-		File settingFile = new File(Constants.SETTING_FILE);
+		this.contextFile = XCLConstants.CONTEXT_FILE;
+		File settingFile = new File(XCLConstants.SETTING_FILE);
 		try {
 			if (settingFile.exists()) {
 				BufferedReader br = new BufferedReader(new FileReader((settingFile)));
@@ -103,7 +103,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	@Override
 	public void shutdown() {
 		saveContext(this.contextFile);
-		File settingFile = new File(Constants.SETTING_FILE);
+		File settingFile = new File(XCLConstants.SETTING_FILE);
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter((settingFile)));
 			bw.write(this.contextFile);
@@ -369,7 +369,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 			try {
 				ois = new ObjectInputStream(new FileInputStream(file));
 				this.context = (XCLContext) ois.readObject();
-				this.ui.addKey(Constants.PARAS_DEFAULT);
+				this.ui.addKey(XCLConstants.PARAS_DEFAULT);
 				for (String key : this.context.getCrafts().keySet()) {
 					this.ui.addKey(key);
 				}

@@ -26,9 +26,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -59,8 +57,7 @@ public class XCLUI extends EventHandler {
 	class XScrollBarUI extends BasicScrollBarUI {
 		@Override
 		protected void configureScrollBarColors() {
-//			trackColor = backgroundColor;
-			trackColor = Color.gray;
+			trackColor = XCLConstants.trackColor;
 		}
 		@Override
 		protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
@@ -70,7 +67,7 @@ public class XCLUI extends EventHandler {
 		@Override
 		protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
 			g.translate(thumbBounds.x, thumbBounds.y);
-			g.setColor(Color.white);
+			g.setColor(XCLConstants.foregroundColor);
 			g.drawRoundRect(5, 0, 6, thumbBounds.height - 1, 5, 5);
 			Graphics2D g2 = (Graphics2D) g;
 			RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -94,38 +91,6 @@ public class XCLUI extends EventHandler {
 		}
 	}
 	
-	class KeyAssist extends KeyAdapter {
-		private Map<Character, Character> map = new HashMap<Character, Character>();
-		private JTextComponent t;
-		public KeyAssist(JTextComponent t) {
-			this.t = t;
-			this.map.put('"', '"');
-			this.map.put('{', '}');
-			this.map.put('[', ']');
-			this.map.put('\'', '\'');
-			this.t.addKeyListener(this);
-		}
-		@Override
-		public void keyReleased(KeyEvent e) {
-			if (map.containsKey(e.getKeyChar())) {
-				char c = map.get(e.getKeyChar());
-				String text = t.getText();
-				int pos = t.getCaretPosition();
-				String str1 = text.substring(0, pos);
-				String str2 = text.substring(pos);
-				t.setText(str1 + c + str2);
-				t.setCaretPosition(pos);
-			}
-		}
-		
-	}
-	
-	private static final Color backgroundColor = new Color(39, 40, 34);
-	private static final Color foregroundColor = new Color(248, 248, 242);
-	private static final Color selectionColor = new Color(73, 72, 62);
-	private static final Color promptColor = new Color(128, 128, 128);
-	private static final Color errorColor = new Color(255, 0, 0);
-
 	private JFrame frame;
 	private XCLConsole console;
 	private JTextPane textConsole;
@@ -145,7 +110,7 @@ public class XCLUI extends EventHandler {
 	}
 
 	protected void init() {
-		ImageIcon icon = new ImageIcon(XCLUI.class.getResource(Constants.ICON_IMAGE_PATH));
+		ImageIcon icon = new ImageIcon(XCLUI.class.getResource(XCLConstants.ICON_IMAGE_PATH));
 		getFrame().setIconImage(icon.getImage());  
 		getFrame().setSize(1000, 600);
 		getFrame().setResizable(true);
@@ -162,7 +127,7 @@ public class XCLUI extends EventHandler {
 		getFrame().add(getTextPrompt(), BorderLayout.SOUTH);
 		getFrame().add(cardPanel, BorderLayout.CENTER);
 		getFrame().setVisible(true);
-		console.info(Constants.VERSION_PROMPT);
+		console.info(XCLConstants.VERSION_PROMPT);
 		initLogger();
 		for (String cmdKey : console.commands().keySet()) {
 			keys.add(cmdKey);
@@ -170,16 +135,16 @@ public class XCLUI extends EventHandler {
 	}
 	
 	private void initLogger() {
-		File logFile = new File(Constants.LOG_FILE);
+		File logFile = new File(XCLConstants.LOG_FILE);
 		try {
 			if (logWriter != null) {
 				logWriter.close();
 				logFile.delete();
 			}
 			logWriter = new BufferedWriter(new FileWriter(logFile));
-			console(Constants.INFO_PROMPT + " - " + logFile.getAbsolutePath() + "\n", promptColor);
+			console(XCLConstants.INFO_PROMPT + " - " + logFile.getAbsolutePath() + "\n", XCLConstants.promptColor);
 		} catch (IOException e) {
-			console("Failed to init the log file: " + e.getMessage(), errorColor);
+			console("Failed to init the log file: " + e.getMessage(), XCLConstants.errorColor);
 		}
 	}
 	
@@ -200,19 +165,20 @@ public class XCLUI extends EventHandler {
 	
 	private JPanel getConsolePanel() {
 		JPanel consolePanel = new JPanel();
-		consolePanel.setBackground(backgroundColor);
-		consolePanel.setLayout(new BorderLayout(0, 10));
+		consolePanel.setBackground(XCLConstants.backgroundColor);
+		consolePanel.setLayout(new BorderLayout(0, 0));
 		consolePanel.add(getScrollConsole(), BorderLayout.CENTER);
 		JLabel label = new JLabel();
 		label.setOpaque(true);
 		label.setBorder(null);
-		label.setBackground(backgroundColor);
-		label.setForeground(foregroundColor);
+		label.setBackground(XCLConstants.backgroundColor);
+		label.setForeground(XCLConstants.foregroundColor);
 		label.setFont(getDefaultFont());
 		label.setText(" > ");
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
-		panel.add(getTextCmd(), BorderLayout.CENTER);
+//		panel.add(getTextCmd(), BorderLayout.CENTER);
+		panel.add(getScrollCmd(), BorderLayout.CENTER);
 		panel.add(label, BorderLayout.WEST);
 		consolePanel.add(panel, BorderLayout.SOUTH);
 		return consolePanel;
@@ -220,6 +186,7 @@ public class XCLUI extends EventHandler {
 	
 	private JScrollPane getScrollConsole() {
 		JScrollPane pane = new JScrollPane(getTextConsole());
+		pane.setBorder(null);
 		JScrollBar vb = pane.getVerticalScrollBar();
 		JScrollBar hb = pane.getHorizontalScrollBar();
 		vb.setUI(new XScrollBarUI());
@@ -229,6 +196,17 @@ public class XCLUI extends EventHandler {
 
 	private JScrollPane getScrollInput() {
 		JScrollPane pane = new JScrollPane(getTextInput());
+		pane.setBorder(null);
+		JScrollBar vb = pane.getVerticalScrollBar();
+		JScrollBar hb = pane.getHorizontalScrollBar();
+		vb.setUI(new XScrollBarUI());
+		hb.setUI(new XScrollBarUI());
+		return pane;
+	}
+	
+	private JScrollPane getScrollCmd() {
+		JScrollPane pane = new JScrollPane(getTextCmd());
+		pane.setBorder(null);
 		JScrollBar vb = pane.getVerticalScrollBar();
 		JScrollBar hb = pane.getHorizontalScrollBar();
 		vb.setUI(new XScrollBarUI());
@@ -239,19 +217,19 @@ public class XCLUI extends EventHandler {
 	private JTextPane getTextCmd() {
 		if (textCmd == null) {
 //			textCmd = new JTextField();
-			textCmd = new XCLTextPane(foregroundColor, Color.cyan, Color.gray, keys);
+			textCmd = new XCLTextPane(keys);
 			textCmd.setEditable(false);
 			textCmd.setBorder(null);
-			textCmd.setBackground(backgroundColor);
-			textCmd.setForeground(foregroundColor);
-			textCmd.setCaretColor(Color.white);
+			textCmd.setBackground(XCLConstants.backgroundColor);
+			textCmd.setForeground(XCLConstants.foregroundColor);
+			textCmd.setCaretColor(XCLConstants.foregroundColor);
 			textCmd.setFont(getDefaultFont());
 			textCmd.setPreferredSize(new Dimension(0, 25));
 			textCmd.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
 					if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-						String cmdStr = textCmd.getText();
+						String cmdStr = CommonUtils.trim(textCmd.getText());
 						if (!CommonUtils.isEmpty(cmdStr)) {
 							console.input(cmdStr);
 							console.run(cmdStr);
@@ -290,14 +268,13 @@ public class XCLUI extends EventHandler {
 							}
 						} else {
 							if (e.getKeyCode() == KeyEvent.VK_UP) {
-								getTextConsole().requestFocus();
-								getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
+								requestFocus(getTextConsole());
 							}
 						}
 					}
 				}
 			});
-			new KeyAssist(textCmd);
+//			new KeyAssist(textCmd);
 		}
 		return textCmd;
 	}
@@ -307,11 +284,11 @@ public class XCLUI extends EventHandler {
 			textPrompt = new JTextField();
 			textPrompt.setEditable(false);
 			textPrompt.setBorder(null);
-			textPrompt.setBackground(backgroundColor);
-			textPrompt.setForeground(promptColor);
-			textPrompt.setCaretColor(foregroundColor);
+			textPrompt.setBackground(XCLConstants.backgroundColor);
+			textPrompt.setForeground(XCLConstants.promptColor);
+			textPrompt.setCaretColor(XCLConstants.foregroundColor);
 			textPrompt.setFont(getDefaultFont());
-			textPrompt.setPreferredSize(new Dimension(0, 35));
+			textPrompt.setPreferredSize(new Dimension(0, 25));
 		}
 		return textPrompt;
 	}
@@ -321,9 +298,9 @@ public class XCLUI extends EventHandler {
 			textInputPrompt = new JTextField();
 			textInputPrompt.setEditable(false);
 			textInputPrompt.setBorder(null);
-			textInputPrompt.setBackground(backgroundColor);
-			textInputPrompt.setForeground(foregroundColor);
-			textInputPrompt.setCaretColor(foregroundColor);
+			textInputPrompt.setBackground(XCLConstants.backgroundColor);
+			textInputPrompt.setForeground(XCLConstants.commentColor);
+			textInputPrompt.setCaretColor(XCLConstants.foregroundColor);
 			textInputPrompt.setFont(getDefaultFont());
 			textInputPrompt.setPreferredSize(new Dimension(0, 25));
 		}
@@ -356,11 +333,11 @@ public class XCLUI extends EventHandler {
 	private JTextPane getTextInput() {
 		if (textInput == null) {
 //			textInput = new JTextPane();
-			textInput = new XCLTextPane(foregroundColor, Color.cyan, Color.gray, keys);
-			textInput.setBackground(backgroundColor);
-			textInput.setForeground(foregroundColor);
-			textInput.setSelectionColor(selectionColor);
-			textInput.setCaretColor(foregroundColor);
+			textInput = new XCLTextPane(keys);
+			textInput.setBackground(XCLConstants.backgroundColor);
+			textInput.setForeground(XCLConstants.foregroundColor);
+			textInput.setSelectionColor(XCLConstants.selectionColor);
+			textInput.setCaretColor(XCLConstants.foregroundColor);
 			textInput.setFont(getDefaultFont());
 			//textInput.setWrapStyleWord(false);
 			textInput.addKeyListener(new KeyAdapter() {
@@ -370,12 +347,12 @@ public class XCLUI extends EventHandler {
 						String text = textInput.getText();
 						textQueue.add(text);
 					} else if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
-						textQueue.add(Constants.ESC);
+						textQueue.add(XCLConstants.ESC);
 					}
 				}
 			});
 			textInput.setEditable(true);
-			new KeyAssist(textInput);
+//			new KeyAssist(textInput);
 		}
 		return textInput;
 	}
@@ -385,10 +362,10 @@ public class XCLUI extends EventHandler {
 			textConsole = new JTextPane();
 			textConsole.setEditable(false);
 			textConsole.setBorder(null);
-			textConsole.setBackground(backgroundColor);
-			textConsole.setForeground(foregroundColor);
-			textConsole.setSelectionColor(selectionColor);
-			textConsole.setCaretColor(foregroundColor);
+			textConsole.setBackground(XCLConstants.backgroundColor);
+			textConsole.setForeground(XCLConstants.foregroundColor);
+			textConsole.setSelectionColor(XCLConstants.selectionColor);
+			textConsole.setCaretColor(XCLConstants.foregroundColor);
 			textConsole.setFont(getDefaultFont());
 			textConsole.addFocusListener(new FocusListener() {
 				@Override
@@ -444,7 +421,7 @@ public class XCLUI extends EventHandler {
 						if (filepath.endsWith("]")) {
 							filepath = filepath.substring(0, filepath.length() - 1);
 						}
-						String runfile = Constants.RUNFILE_COMMAND + " " + filepath;
+						String runfile = XCLConstants.RUNFILE_COMMAND + " " + filepath;
 						console.input(runfile);
 						console.run(runfile);
 						console.present(null);
@@ -470,7 +447,13 @@ public class XCLUI extends EventHandler {
 	}
 	
 	private Font getDefaultFont() {
-		return Constants.DEFAULT_FONT;
+		return XCLConstants.DEFAULT_FONT;
+	}
+	
+	private void requestFocus(JTextComponent text) {
+		text.requestFocus();
+		text.setCaretPosition(text.getDocument().getLength());
+		text.setCaretColor(XCLConstants.foregroundColor);
 	}
 	
 	// ---
@@ -483,16 +466,15 @@ public class XCLUI extends EventHandler {
 	public String handle(String type, String message) {
 		System.out.println("XCLUI --> handle [type: " + type + ", message: " + message + "]");
 		if (XCLEvent.prepare.name().equals(type)) {
-			getTextCmd().requestFocus();
-			getTextCmd().setCaretPosition(getTextCmd().getDocument().getLength());
+			requestFocus(getTextCmd());
 		} else if (XCLEvent.input.name().equals(type)) {
-			console(Constants.IN_PROMPT + message + "\n", foregroundColor);
+			console(XCLConstants.IN_PROMPT + message + "\n", XCLConstants.foregroundColor);
 		} else if (XCLEvent.output.name().equals(type)) {
-			console(Constants.OUT_PROMPT + message + "\n", foregroundColor);
+			console(XCLConstants.OUT_PROMPT + message + "\n", XCLConstants.foregroundColor);
 		} else if (XCLEvent.info.name().equals(type)) {
-			console(Constants.INFO_PROMPT + message + "\n", promptColor);
+			console(XCLConstants.INFO_PROMPT + message + "\n", XCLConstants.promptColor);
 		} else if (XCLEvent.error.name().equals(type)) {
-			console(Constants.ERROR_PROMPT + message + "\n", errorColor);
+			console(XCLConstants.ERROR_PROMPT + message + "\n", XCLConstants.errorColor);
 		} else if (XCLEvent.prompt.name().equals(type)) {
 			getTextPrompt().setText(message + "  ");
 		} else if (XCLEvent.title.name().equals(type)) {
@@ -504,21 +486,21 @@ public class XCLUI extends EventHandler {
 		} else if (XCLEvent.editable.name().equals(type)) {
 			boolean editable = Boolean.valueOf(message);
 			getTextCmd().setEditable(editable);
+			requestFocus(getTextCmd());
 		} else if (XCLEvent.present.name().equals(type)) {
 			getTextCmd().setText(message);
-			getTextCmd().setCaretPosition(getTextCmd().getDocument().getLength());
+			requestFocus(getTextCmd());
 		} else if (XCLEvent.textTitle.name().equals(type)) {
-			getTextInputPrompt().setText(message);
+			getTextInputPrompt().setText(" - " + message);
 		} else if (XCLEvent.textInput.name().equals(type)) {
 			cardLayout.show(cardPanel, "input");
-			getTextInput().requestFocus();
 			getTextInput().setText(message);
-			getTextInput().setCaretPosition(textInput.getDocument().getLength());
+			requestFocus(getTextInput());
 		} else if (XCLEvent.getTextInput.name().equals(type)) {
 			try {
 				String inputText = textQueue.take();
 				cardLayout.show(cardPanel, "console");
-				if (!Constants.ESC.equals(inputText)) {
+				if (!XCLConstants.ESC.equals(inputText)) {
 					return inputText;
 				}
 				return message;

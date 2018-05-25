@@ -5,7 +5,7 @@ import java.util.Map;
 
 import van.xcl.Command;
 import van.xcl.XCLConsole;
-import van.xcl.Constants;
+import van.xcl.XCLConstants;
 import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
@@ -19,7 +19,7 @@ public class Paras implements Command, Resolver {
 
 	@Override
 	public String name() {
-		return Constants.PARAS_COMMAND;
+		return XCLConstants.PARAS_COMMAND;
 	}
 	
 	@Override
@@ -66,14 +66,14 @@ public class Paras implements Command, Resolver {
 				}
 				paraCount++;
 			} else if (isDefaultFlag(command)) {
-				commands.set(i, Constants.PARAS_COMMAND);
+				commands.set(i, XCLConstants.PARAS_COMMAND);
 				commands.add(++i, defaultKeyValue());
 				commands.add(++i, defaultKeyValue());
 			} else {
 				if (paraIndex != -1) {
 					commands.add(paraIndex, defaultKeyValue());
 					for (int j = 0 ; j < paraCount ; j++) {
-						commands.add(paraIndex, Constants.PARAS_COMMAND);
+						commands.add(paraIndex, XCLConstants.PARAS_COMMAND);
 					}
 					i += paraCount + 1;
 					paraIndex = -1;
@@ -84,7 +84,7 @@ public class Paras implements Command, Resolver {
 		if (paraIndex != -1) {
 			commands.add(paraIndex, defaultKeyValue());
 			for (int j = 0 ; j < paraCount ; j++) {
-				commands.add(paraIndex, Constants.PARAS_COMMAND);
+				commands.add(paraIndex, XCLConstants.PARAS_COMMAND);
 			}
 			paraIndex = -1;
 			paraCount = 0;
@@ -92,11 +92,11 @@ public class Paras implements Command, Resolver {
 	}
 	
 	public String defaultKeyValue() {
-		return Constants.PARAS_PREFIX + "" + Constants.PARAS_SPLITER + "";
+		return XCLConstants.PARAS_PREFIX + "" + XCLConstants.PARAS_SPLITER + "";
 	}
 	
 	public boolean isDefaultFlag(String string) {
-		return string != null && string.equals(Constants.PARAS_DEFAULT);
+		return string != null && string.equals(XCLConstants.PARAS_DEFAULT);
 	}
 
 }

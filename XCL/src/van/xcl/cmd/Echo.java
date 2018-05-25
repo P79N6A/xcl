@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import van.util.CommonUtils;
 import van.xcl.Command;
-import van.xcl.Constants;
+import van.xcl.XCLConstants;
 import van.xcl.XCLConsole;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
@@ -18,7 +18,7 @@ public class Echo implements Command {
 	
 	@Override
 	public String name() {
-		return Constants.ECHO_COMMAND;
+		return XCLConstants.ECHO_COMMAND;
 	}
 	
 	@Override

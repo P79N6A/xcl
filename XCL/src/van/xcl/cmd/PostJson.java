@@ -46,10 +46,12 @@ public class PostJson implements Command {
 				JSONObject object = (JSONObject) JSONObject.parse(httpResult.getBody());
 				return new XCLVar(object);
 			} catch (Exception e) {
+				console.prompt("error: " + e.getMessage());
 				console.error(e.getMessage());
 				return new XCLVar();
 			}
 		} catch (Exception e) {
+			console.prompt("error: " + e.getMessage());
 			console.error(e.getMessage());
 			return new XCLVar();
 		}

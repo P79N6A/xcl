@@ -6,7 +6,7 @@ import java.util.Map;
 import van.xcl.Command;
 import van.xcl.CommandException;
 import van.xcl.XCLConsole;
-import van.xcl.Constants;
+import van.xcl.XCLConstants;
 import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
@@ -21,7 +21,7 @@ public class RunCraft implements Command, Resolver {
 
 	@Override
 	public String name() {
-		return Constants.RUNCRAFT_COMMAND;
+		return XCLConstants.RUNCRAFT_COMMAND;
 	}
 
 	@Override
@@ -82,13 +82,13 @@ public class RunCraft implements Command, Resolver {
 			String command = commands.get(i);
 			if (context.containsCraft(command)) {
 				String previousCommand =  i > 0 ? commands.get(i - 1) : null;
-				if (!Constants.RUNCRAFT_COMMAND.equals(previousCommand)
-						&& !Constants.CRAFT_COMMAND.equals(previousCommand)
-						&& !Constants.REMOVE_COMMAND.equals(previousCommand)
-						&& !Constants.EDIT_COMMAND.equals(previousCommand)
-						&& !Constants.ECHO_COMMAND.equals(previousCommand)
+				if (!XCLConstants.RUNCRAFT_COMMAND.equals(previousCommand)
+						&& !XCLConstants.CRAFT_COMMAND.equals(previousCommand)
+						&& !XCLConstants.REMOVE_COMMAND.equals(previousCommand)
+						&& !XCLConstants.EDIT_COMMAND.equals(previousCommand)
+						&& !XCLConstants.ECHO_COMMAND.equals(previousCommand)
 						) {
-					commands.add(i, Constants.RUNCRAFT_COMMAND);
+					commands.add(i, XCLConstants.RUNCRAFT_COMMAND);
 				}
 			}
 		}

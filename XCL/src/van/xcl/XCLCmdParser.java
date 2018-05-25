@@ -86,7 +86,7 @@ public class XCLCmdParser {
 					if (args.size() > 0) {
 						argstr = args.toString();
 					}
-					if (!name.equals(Constants.PARAS_COMMAND)) {
+					if (!name.equals(XCLConstants.PARAS_COMMAND)) {
 						console.info(getGap(getDepth(), "~") + " " + name + " " + argstr);
 					}
 					return command.execute(this, args, console, context);

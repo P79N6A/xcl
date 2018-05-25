@@ -4,7 +4,7 @@ import java.util.Map;
 
 import van.xcl.Command;
 import van.xcl.XCLConsole;
-import van.xcl.Constants;
+import van.xcl.XCLConstants;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
 import van.xcl.XCLCmdParser.XCLNode;
@@ -29,8 +29,8 @@ public class Version implements Command {
 
 	@Override
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
-		console.info(Constants.VERSION_PROMPT);
-		return new XCLVar(Constants.VERSION_PROMPT);
+		console.info(XCLConstants.VERSION_PROMPT);
+		return new XCLVar(XCLConstants.VERSION_PROMPT);
 	}
 
 }
