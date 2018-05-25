@@ -83,7 +83,7 @@ public class XCLTextPane extends JTextPane {
 		private Map<Character, Character> map = new HashMap<Character, Character>();
 		private JTextComponent t;
 		private UndoManager und;
-		private AtomicBoolean isControlDown = new AtomicBoolean(false);
+		private AtomicBoolean isUndDown = new AtomicBoolean(false);
 		private String styleChangeText = UIManager.getString("AbstractDocument.styleChangeText");
 		public KeyAssist(JTextComponent t) {
 			this.und = new UndoManager();
@@ -106,7 +106,7 @@ public class XCLTextPane extends JTextPane {
 				t.setText(str1 + c + str2);
 				t.setCaretPosition(pos);
 			}
-			if (!isControlDown.compareAndSet(true, false)) {
+			if (!isUndDown.compareAndSet(true, false)) {
 				handleCurrentRow();
 			}
 		}
@@ -115,7 +115,7 @@ public class XCLTextPane extends JTextPane {
 			if (e.isControlDown()) {
 				int count = 0;
 				if (e.getKeyCode() == KeyEvent.VK_Y) { // redo
-					isControlDown.set(true);
+					isUndDown.set(true);
 					while (und.canRedo() && count == 0) {
 						if (!und.getRedoPresentationName().contains(styleChangeText)) {
 							count++;
@@ -123,7 +123,7 @@ public class XCLTextPane extends JTextPane {
 						und.redo();
 					}
 				} else if (e.getKeyCode() == KeyEvent.VK_Z) { // undo
-					isControlDown.set(true);
+					isUndDown.set(true);
 					while (und.canUndo() && count == 0) {
 						if (!und.getUndoPresentationName().contains(styleChangeText)) {
 							count++;
@@ -131,8 +131,13 @@ public class XCLTextPane extends JTextPane {
 						und.undo();
 					}
 				}
-				t.setCaretPosition(t.getDocument().getLength());
+				if (isUndDown.get()) {
+					t.setCaretPosition(t.getDocument().getLength());
+				}
 			} 
+		}
+		public void discardAllEdits() {
+			this.und.discardAllEdits();
 		}
 		
 	}
@@ -170,6 +175,7 @@ public class XCLTextPane extends JTextPane {
 	 * 所有关键字
 	 */
 	private Set<String> keys = null;
+	private KeyAssist keyAssist = null;
 
 	/**
 	 * 初始化，包括关键字颜色，和非关键字颜色
@@ -180,7 +186,11 @@ public class XCLTextPane extends JTextPane {
 		this.context = new StyleContext();
 		this.document = new DefaultStyledDocument(context);
 		this.setDocument(document);
-		new KeyAssist(this);
+		this.keyAssist = new KeyAssist(this);
+	}
+	
+	public void discardAllEdits() {
+		this.keyAssist.discardAllEdits();
 	}
 
 	/**

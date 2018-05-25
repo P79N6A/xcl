@@ -55,9 +55,12 @@ import van.util.evt.EventHandler;
 public class XCLUI extends EventHandler {
 
 	class XScrollBarUI extends BasicScrollBarUI {
+		public XScrollBarUI() {
+			super();
+		}
 		@Override
 		protected void configureScrollBarColors() {
-			trackColor = XCLConstants.trackColor;
+			trackColor = XCLConstants.backgroundColor;
 		}
 		@Override
 		protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
@@ -77,26 +80,42 @@ public class XCLUI extends EventHandler {
 		}
 		@Override
 		protected JButton createIncreaseButton(int orientation) {
-			JButton button = new JButton();
+			JButton button = super.createIncreaseButton(orientation);
 			button.setBorder(null);
-			button.setPreferredSize(new Dimension(0, 0));
+			button.setForeground(XCLConstants.foregroundColor);
+			button.setBackground(XCLConstants.backgroundColor);
 			return button;
 		}
 		@Override
 		protected JButton createDecreaseButton(int orientation) {
-			JButton button = new JButton();
+			JButton button = super.createDecreaseButton(orientation);
 			button.setBorder(null);
-			button.setPreferredSize(new Dimension(0, 0));
+			button.setForeground(XCLConstants.foregroundColor);
+			button.setBackground(XCLConstants.backgroundColor);
 			return button;
 		}
+//		@Override
+//		protected JButton createIncreaseButton(int orientation) {
+//			JButton button = new JButton();
+//			button.setBorder(null);
+//			button.setPreferredSize(new Dimension(0, 0));
+//			return button;
+//		}
+//		@Override
+//		protected JButton createDecreaseButton(int orientation) {
+//			JButton button = new JButton();
+//			button.setBorder(null);
+//			button.setPreferredSize(new Dimension(0, 0));
+//			return button;
+//		}
 	}
 	
 	private JFrame frame;
 	private XCLConsole console;
 	private JTextPane textConsole;
-	private JTextPane textInput;
+	private XCLTextPane textInput;
 	private JTextField textInputPrompt;
-	private JTextPane textCmd;
+	private XCLTextPane textCmd;
 	private JTextField textPrompt;
 	private JPanel cardPanel = new JPanel();
 	private CardLayout cardLayout = new CardLayout();
@@ -118,6 +137,9 @@ public class XCLUI extends EventHandler {
 		getFrame().addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				console.exit(0);
+			}
+			public void windowDeiconified(WindowEvent e) {
+				requestFocus(getTextCmd());
 			}
 		});
 		this.cardPanel.setLayout(cardLayout);
@@ -187,6 +209,7 @@ public class XCLUI extends EventHandler {
 	private JScrollPane getScrollConsole() {
 		JScrollPane pane = new JScrollPane(getTextConsole());
 		pane.setBorder(null);
+		pane.setBackground(XCLConstants.backgroundColor);
 		JScrollBar vb = pane.getVerticalScrollBar();
 		JScrollBar hb = pane.getHorizontalScrollBar();
 		vb.setUI(new XScrollBarUI());
@@ -197,6 +220,7 @@ public class XCLUI extends EventHandler {
 	private JScrollPane getScrollInput() {
 		JScrollPane pane = new JScrollPane(getTextInput());
 		pane.setBorder(null);
+		pane.setBackground(XCLConstants.backgroundColor);
 		JScrollBar vb = pane.getVerticalScrollBar();
 		JScrollBar hb = pane.getHorizontalScrollBar();
 		vb.setUI(new XScrollBarUI());
@@ -207,6 +231,7 @@ public class XCLUI extends EventHandler {
 	private JScrollPane getScrollCmd() {
 		JScrollPane pane = new JScrollPane(getTextCmd());
 		pane.setBorder(null);
+		pane.setBackground(XCLConstants.backgroundColor);
 		JScrollBar vb = pane.getVerticalScrollBar();
 		JScrollBar hb = pane.getHorizontalScrollBar();
 		vb.setUI(new XScrollBarUI());
@@ -214,7 +239,7 @@ public class XCLUI extends EventHandler {
 		return pane;
 	}
 	
-	private JTextPane getTextCmd() {
+	private XCLTextPane getTextCmd() {
 		if (textCmd == null) {
 //			textCmd = new JTextField();
 			textCmd = new XCLTextPane(keys);
@@ -330,7 +355,7 @@ public class XCLUI extends EventHandler {
 		}
 	}
 	
-	private JTextPane getTextInput() {
+	private XCLTextPane getTextInput() {
 		if (textInput == null) {
 //			textInput = new JTextPane();
 			textInput = new XCLTextPane(keys);
@@ -467,6 +492,7 @@ public class XCLUI extends EventHandler {
 		System.out.println("XCLUI --> handle [type: " + type + ", message: " + message + "]");
 		if (XCLEvent.prepare.name().equals(type)) {
 			requestFocus(getTextCmd());
+			getTextCmd().discardAllEdits();
 		} else if (XCLEvent.input.name().equals(type)) {
 			console(XCLConstants.IN_PROMPT + message + "\n", XCLConstants.foregroundColor);
 		} else if (XCLEvent.output.name().equals(type)) {
@@ -495,6 +521,7 @@ public class XCLUI extends EventHandler {
 		} else if (XCLEvent.textInput.name().equals(type)) {
 			cardLayout.show(cardPanel, "input");
 			getTextInput().setText(message);
+			getTextInput().discardAllEdits();
 			requestFocus(getTextInput());
 		} else if (XCLEvent.getTextInput.name().equals(type)) {
 			try {

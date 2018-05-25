@@ -91,7 +91,7 @@ public class XCLCmdParser {
 					}
 					return command.execute(this, args, console, context);
 				} else {
-					StringBuilder usage = new StringBuilder("[CMD_PARA_ERROR]\n");
+					StringBuilder usage = new StringBuilder("syntax error\n");
 					usage.append("    usage:\n");
 					usage.append("        " + command.name());
 					for (Parameter para : command.parameters().list()) {
