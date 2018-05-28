@@ -21,6 +21,7 @@ public class Exec implements Command {
 		private XCLConsole console;
 		private String prefix;
 		public StreamHandler(InputStream is, XCLConsole console, String prefix) {
+			super("StreamHandler");
 			this.is = is;
 			this.console = console;
 			this.prefix = prefix;

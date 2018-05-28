@@ -143,6 +143,7 @@ public class EventQueue {
 					if (tt instanceof EventThread) {
 						((EventThread) tt).stopThread();
 					} else {
+						tt.setName("Anonymous-" + tt.getName());
 						tt.stop();
 					}
 					threadNames.add("[" + threadGroup.getName() + "] - [" + tt.getName() + "]"); 
