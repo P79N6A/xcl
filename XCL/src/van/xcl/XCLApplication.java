@@ -77,7 +77,9 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 		this.ui.init();
 		prepare();
 		editable(true);
-		startup();
+		if (args != null && args.length > 0) {
+			startup(args[0]);
+		}
 	}
 	
 	@Override
@@ -328,18 +330,19 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	}
 	
 	// ------------------ private methods
-	private void startup() {
-		String lastStartup = this.context.getLastStartup();
-		if (lastStartup != null && !lastStartup.equals(CommonUtils.getCurrentDateString())) {
-			// execute startup
-			String startup = this.context.getStartup();
-			if (!CommonUtils.isEmpty(startup)) {
+	private void startup(String startupFile) {
+		File file = new File(startupFile);
+		if (file.exists()) {
+			try {
+				String startup = CommonUtils.readFileToString(file, "UTF-8");
 				info("startup \r\n" + startup);
 				run(startup);
+			} catch (IOException e) {
+				error(e.getMessage());
 			}
+		} else {
+			error("Startup file not found: " + startupFile);
 		}
-		this.context.setLastStartup(CommonUtils.getCurrentDateString());
-		this.saveContext(this.contextFile);
 	}
 	
 	private void saveContext(String contextFile) {

@@ -79,9 +79,9 @@ public class HttpClientService {
 		builder.setConnectionManager(connManager);
 		httpClient = builder.build();
 		Builder configBuilder = RequestConfig.custom();
-		configBuilder.setConnectTimeout(10*60*1000);
-		configBuilder.setConnectionRequestTimeout(15*60*1000); // 15mins
-		configBuilder.setSocketTimeout(5*60*1000);
+		configBuilder.setConnectTimeout(30*60*1000);
+		configBuilder.setConnectionRequestTimeout(30*60*1000); // 15mins
+		configBuilder.setSocketTimeout(30*60*1000);
 		configBuilder.setStaleConnectionCheckEnabled(true);
 		requestConfig = configBuilder.build();
 		CloseExpiredConnectionTask task = new CloseExpiredConnectionTask(connManager);

@@ -3,7 +3,9 @@ package van.util;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -205,6 +207,18 @@ public class CommonUtils {
 	
 	public static String trim(String str) {
 		return str == null ? "" : str.trim();
+	}
+	
+	public static String readFileToString(File file, String encode) throws IOException {
+		StringBuffer buffer = new StringBuffer();
+		InputStreamReader read = new InputStreamReader(new FileInputStream(file), encode);
+		BufferedReader ins = new BufferedReader(read);
+		String line = null;
+		while (null != (line = ins.readLine())) {
+			buffer.append(line + "\n");
+		}
+		ins.close();
+		return buffer.toString();
 	}
 	
 }

@@ -8,8 +8,7 @@ public class XCLConstants {
 	public static final String LOG_FILE = "XCL.log";
 	public static final String CONTEXT_FILE = "XCL.ctx";
 	public static final String SETTING_FILE = ".xcl";
-	public static final String CMD_TITLE = "XCL";
-	public static final String VERSION_PROMPT = " " + CMD_TITLE + " (version 1.1) was created by Van in 2017/10/18";
+	public static final String VERSION_PROMPT = "XCL (version 1.1) was created by Van in 2017/10/18";
 	public static final String IN_PROMPT = " > ";
 	public static final String OUT_PROMPT = " < ";
 	public static final String INFO_PROMPT = " # ";

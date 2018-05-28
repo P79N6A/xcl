@@ -150,7 +150,7 @@ public class XCLUI extends EventHandler {
 		getFrame().add(getTextPrompt(), BorderLayout.SOUTH);
 		getFrame().add(cardPanel, BorderLayout.CENTER);
 		getFrame().setVisible(true);
-		console.info(XCLConstants.VERSION_PROMPT);
+		console.output(XCLConstants.VERSION_PROMPT);
 		initLogger();
 		for (String cmdKey : console.commands().keySet()) {
 			keys.add(cmdKey);

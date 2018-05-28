@@ -14,8 +14,6 @@ public class XCLContext implements Serializable {
 	private String path;
 	private JSONObject object = null;
 	private Map<String, String> crafts = null;
-	private String startup = null;
-	private String lastStartup = null;
 	private transient XCLHandler handler = null;
 	public XCLContext() {
 	}
@@ -124,18 +122,6 @@ public class XCLContext implements Serializable {
 	}
 	public String getPath() {
 		return this.path;
-	}
-	public void setStartup(String startup) {
-		this.startup = startup;
-	}
-	public String getStartup() {
-		return this.startup;
-	}
-	public String getLastStartup() {
-		return lastStartup;
-	}
-	public void setLastStartup(String lastStartup) {
-		this.lastStartup = lastStartup;
 	}
 	public XCLContext clone() {
 		XCLContext c = new XCLContext();

@@ -8,7 +8,9 @@ Dim classPath
 Dim mainClass
  mainClass = "van.xcl.XCLStartup"
 'command string
+Dim startupPara
+ startupPara = "XCLStartup.xcl"
 Dim cmd 
- cmd = "CMD /c java -Djava.ext.dirs=" + workDir + " -cp " + classPath + " " + mainClass
+ cmd = "CMD /c java -Djava.ext.dirs=" + workDir + " -cp " + classPath + " " + mainClass + " " + startupPara
 'create Wscript.Shell object to run the command
 CreateObject("Wscript.Shell").run cmd, vbhide
