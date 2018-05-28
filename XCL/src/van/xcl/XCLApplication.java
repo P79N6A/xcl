@@ -20,7 +20,8 @@ import javax.swing.JOptionPane;
 import van.util.CommonUtils;
 import van.util.evt.EventCallback;
 import van.util.evt.EventHandler;
-import van.util.evt.EventQueue;
+import van.util.evt.EventManager;
+import van.util.evt.EventType;
 import van.xcl.XCLCmdParser.XCLNode;
 
 public class XCLApplication extends EventHandler implements XCLConsole, XCLHandler {
@@ -30,16 +31,16 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	private XCLCmdParser parser = null;
 	private XCLCmdHolder holder = null;
 	private String contextFile;
-	private EventQueue UIEventQueue = null;
-	private EventQueue CMDEventQueue = null;
+	private EventManager eventManager = null;
 	private static XCLApplication instance = null;
 	private List<String> cmdLineList = new ArrayList<String>();
 	private int currIndex = 0;
 	
 	private XCLApplication() {
 		this.ui = new XCLUI(this);
-		this.UIEventQueue = new EventQueue(ui);
-		this.CMDEventQueue = new EventQueue(this);
+		this.eventManager = new EventManager();
+		this.eventManager.register(XCLEventGroup.ui, ui);
+		this.eventManager.register(XCLEventGroup.cmd, this);
 		this.parser = new XCLCmdParser();
 		this.holder = new XCLCmdHolder();
 		this.contextFile = XCLConstants.CONTEXT_FILE;
@@ -169,7 +170,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	@Override
 	public void cancelCommand() {
 		info("Cancel command requested");
-		List<String> list = CMDEventQueue.stopAll();
+		List<String> list = eventManager.stopAll(XCLEventGroup.cmd);
 		for (String info : list) {
 			info(info + " thread is stopped.");
 		}
@@ -203,8 +204,8 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	// ---------------------------
 	
 	@Override
-	public String handle(String type, String message) {
-		if (XCLEvent.run.name().equals(type)) {
+	public String handle(EventType type, String message) {
+		if (XCLEvent.run.equals(type)) {
 			execute(message, context);
 		}
 		return null;
@@ -251,74 +252,73 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	
 	@Override
 	public void run(String command) {
-		this.CMDEventQueue.addEvent(XCLEvent.run.name(), command);
+		this.eventManager.addEvent(XCLEvent.run, command);
 	}
 
 	@Override
 	public void present(String string) {
-		this.UIEventQueue.addEvent(XCLEvent.present.name(), string);
+		this.eventManager.addEvent(XCLEvent.present, string);
 	}
 
 	@Override
 	public void prepare() {
-		this.UIEventQueue.addEvent(XCLEvent.prepare.name(), null);
+		this.eventManager.addEvent(XCLEvent.prepare, null);
 	}
 
 	@Override
 	public void input(String input) {
-		this.UIEventQueue.addEvent(XCLEvent.input.name(), input);
+		this.eventManager.addEvent(XCLEvent.input, input);
 	}
 
 	@Override
 	public void output(String str) {
-		this.UIEventQueue.addEvent(XCLEvent.output.name(), str);
+		this.eventManager.addEvent(XCLEvent.output, str);
 	}
 
 	@Override
 	public void prompt(String prompt) {
 		prompt = "  -  " + CommonUtils.resolveString(prompt, 90);
-		this.UIEventQueue.addEvent(XCLEvent.prompt.name(), prompt);
+		this.eventManager.addEvent(XCLEvent.prompt, prompt);
 	}
 	
 	@Override
 	public void info(String info) {
-		this.UIEventQueue.addEvent(XCLEvent.info.name(), info);
+		this.eventManager.addEvent(XCLEvent.info, info);
 	}
 	
 	@Override
 	public void error(String error) {
-		this.UIEventQueue.addEvent(XCLEvent.error.name(), error);
+		this.eventManager.addEvent(XCLEvent.error, error);
 	}
 
 	@Override
 	public void title(String title) {
-		this.UIEventQueue.addEvent(XCLEvent.title.name(), title);
+		this.eventManager.addEvent(XCLEvent.title, title);
 	}
 	
 	@Override
 	public void clear() {
-		this.UIEventQueue.addEvent(XCLEvent.clear.name(), null);
+		this.eventManager.addEvent(XCLEvent.clear, null);
 	}
 
 	@Override
 	public void editable(boolean b) {
-		this.UIEventQueue.addEvent(XCLEvent.editable.name(), String.valueOf(b));
+		this.eventManager.addEvent(XCLEvent.editable, String.valueOf(b));
 	}
 	
 	@Override
 	public String getTextInput(String text, String title) {
-		this.UIEventQueue.addEvent(XCLEvent.textInput.name(), text);
-		this.UIEventQueue.addEvent(XCLEvent.textTitle.name(), title);
+		this.eventManager.addEvent(XCLEvent.textInput, text);
+		this.eventManager.addEvent(XCLEvent.textTitle, title);
 		EventCallback callback  = EventCallback.defaultCallback();
-		this.UIEventQueue.addEvent("getTextInput", text, callback);
+		this.eventManager.addEvent(XCLEvent.getTextInput, text, callback);
 		return callback.awaitResult();
 	}
 	
 	@Override
 	public void exit(int status) {
 		shutdown();
-		UIEventQueue.shutdown();
-		CMDEventQueue.shutdown();
+		this.eventManager.shutdown();
 		System.exit(status);
 	}
 	

@@ -11,19 +11,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class EventQueue {
 	class Event {
-		private String type;
+		private EventType type;
 		private String message;
 		private EventCallback callback;
-		public Event(String type, String message) {
+		public Event(EventType type, String message) {
 			this.type = type;
 			this.message = message;
 		}
-		public Event(String type, String message, EventCallback callback) {
+		public Event(EventType type, String message, EventCallback callback) {
 			this.type = type;
 			this.message = message;
 			this.callback = callback;
 		}
-		public String getType() {
+		public EventType getType() {
 			return type;
 		}
 		public String getMessage() {
@@ -64,15 +64,15 @@ public class EventQueue {
 	}
 	
 	class EventThreadGroup extends ThreadGroup {
-		public EventThreadGroup() {
-			super("EventThreadGroup-" + threadGroupCount.incrementAndGet());
+		public EventThreadGroup(EventGroup group) {
+			super("EventGroup-" + group.getGroupName() + "-" + threadGroupCount.incrementAndGet());
 		}
 	}
 	
 	abstract class EventThread extends Thread {
 		private CountDownLatch latch = null;
-		public EventThread(CountDownLatch latch, String type) {
-			super(new EventThreadGroup(), "EventThread-" + threadCount.incrementAndGet() + "-" + type);
+		public EventThread(CountDownLatch latch, EventType type) {
+			super(new EventThreadGroup(type.getGroup()), "Event-" + type.getName() + "-" + threadCount.incrementAndGet());
 			this.latch = latch;
 			this.start();
 		}
@@ -105,17 +105,17 @@ public class EventQueue {
 	private AtomicInteger threadCount = new AtomicInteger();
 	private Vector<EventThread> threads = new Vector<EventThread>();
 	
-	public EventQueue(EventHandler handler) {
+	EventQueue(EventHandler handler) {
 		this.handler = handler;
 		this.isRunning.set(true);
 		this.task.start();
 	}
 	
-	public void addEvent(String type, String message) {
+	void addEvent(EventType type, String message) {
 		addEvent(type, message, null);
 	}
 	
-	public void addEvent(String type, String message, EventCallback callback) {
+	void addEvent(EventType type, String message, EventCallback callback) {
 		Event e = new Event(type, message, callback);
 		eventQueue.add(e);
 		synchronized (this.task) {
@@ -123,7 +123,7 @@ public class EventQueue {
 		}
 	}
 	
-	public void shutdown() {
+	void shutdown() {
 		if (this.isRunning.compareAndSet(true, false)) {
 			synchronized (this.task) {
 				this.task.notifyAll();
@@ -153,7 +153,7 @@ public class EventQueue {
 		return threadNames;
 	}
 	
-	private String handle(String type, String message) throws InterruptedException, ExecutionException {
+	private String handle(EventType type, String message) throws InterruptedException, ExecutionException {
 		String[] result = {null};
 		CountDownLatch latch = new CountDownLatch(1);
 		new EventThread(latch, type) {

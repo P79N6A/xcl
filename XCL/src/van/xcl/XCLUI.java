@@ -51,6 +51,7 @@ import javax.swing.text.StyleConstants;
 
 import van.util.CommonUtils;
 import van.util.evt.EventHandler;
+import van.util.evt.EventType;
 
 public class XCLUI extends EventHandler {
 
@@ -488,42 +489,42 @@ public class XCLUI extends EventHandler {
 	}
 	
 	@Override
-	public String handle(String type, String message) {
+	public String handle(EventType type, String message) {
 		System.out.println("XCLUI --> handle [type: " + type + ", message: " + message + "]");
-		if (XCLEvent.prepare.name().equals(type)) {
+		if (XCLEvent.prepare.equals(type)) {
 			requestFocus(getTextCmd());
 			getTextCmd().discardAllEdits();
-		} else if (XCLEvent.input.name().equals(type)) {
+		} else if (XCLEvent.input.equals(type)) {
 			console(XCLConstants.IN_PROMPT + message + "\n", XCLConstants.foregroundColor);
-		} else if (XCLEvent.output.name().equals(type)) {
+		} else if (XCLEvent.output.equals(type)) {
 			console(XCLConstants.OUT_PROMPT + message + "\n", XCLConstants.foregroundColor);
-		} else if (XCLEvent.info.name().equals(type)) {
+		} else if (XCLEvent.info.equals(type)) {
 			console(XCLConstants.INFO_PROMPT + message + "\n", XCLConstants.promptColor);
-		} else if (XCLEvent.error.name().equals(type)) {
+		} else if (XCLEvent.error.equals(type)) {
 			console(XCLConstants.ERROR_PROMPT + message + "\n", XCLConstants.errorColor);
-		} else if (XCLEvent.prompt.name().equals(type)) {
+		} else if (XCLEvent.prompt.equals(type)) {
 			getTextPrompt().setText(message + "  ");
-		} else if (XCLEvent.title.name().equals(type)) {
+		} else if (XCLEvent.title.equals(type)) {
 			getFrame().setTitle(message);
-		} else if (XCLEvent.clear.name().equals(type)) {
+		} else if (XCLEvent.clear.equals(type)) {
 			getTextConsole().setText("");
 			getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
 			initLogger();
-		} else if (XCLEvent.editable.name().equals(type)) {
+		} else if (XCLEvent.editable.equals(type)) {
 			boolean editable = Boolean.valueOf(message);
 			getTextCmd().setEditable(editable);
 			requestFocus(getTextCmd());
-		} else if (XCLEvent.present.name().equals(type)) {
+		} else if (XCLEvent.present.equals(type)) {
 			getTextCmd().setText(message);
 			requestFocus(getTextCmd());
-		} else if (XCLEvent.textTitle.name().equals(type)) {
+		} else if (XCLEvent.textTitle.equals(type)) {
 			getTextInputPrompt().setText(" - " + message);
-		} else if (XCLEvent.textInput.name().equals(type)) {
+		} else if (XCLEvent.textInput.equals(type)) {
 			cardLayout.show(cardPanel, "input");
 			getTextInput().setText(message);
 			getTextInput().discardAllEdits();
 			requestFocus(getTextInput());
-		} else if (XCLEvent.getTextInput.name().equals(type)) {
+		} else if (XCLEvent.getTextInput.equals(type)) {
 			try {
 				String inputText = textQueue.take();
 				cardLayout.show(cardPanel, "console");
