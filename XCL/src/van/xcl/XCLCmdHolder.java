@@ -37,4 +37,9 @@ public class XCLCmdHolder {
 		}
 		return map;
 	}
+	
+	public void clear() {
+		resolvers.clear();
+		commands.clear();
+	}
 }

@@ -32,41 +32,22 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	private XCLCmdHolder holder = null;
 	private String contextFile;
 	private EventManager eventManager = null;
-	private static XCLApplication instance = null;
 	private List<String> cmdLineList = new ArrayList<String>();
 	private int currIndex = 0;
 	
-	private XCLApplication() {
-		this.ui = new XCLUI(this);
-		this.eventManager = new EventManager();
-		this.eventManager.register(XCLEventGroup.ui, ui);
-		this.eventManager.register(XCLEventGroup.cmd, this);
-		this.parser = new XCLCmdParser();
-		this.holder = new XCLCmdHolder();
-		this.contextFile = getContextFile();
-	}
-	
-	public static XCLApplication getInstance() {
-		if (instance == null) {
-			synchronized (XCLApplication.class) {
-				if (instance == null) {
-					instance = new XCLApplication();
-				}
-			}
-		}
-		return instance;
+	public XCLApplication() {
+		
 	}
 	
 	@Override
-	public void launch(String[] args) {
+	public void launch(XCLStartupParas paras) {
+		init(paras.getContext());
 		loadContext(this.contextFile);
 		registerCommand();
 		this.ui.init();
 		prepare();
 		editable(true);
-		if (args != null && args.length > 0) {
-			startup(args[0]);
-		}
+		startup(paras.getStartup());
 	}
 	
 	@Override
@@ -101,6 +82,9 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
+		this.holder.clear();
+		this.eventManager.shutdown();
+		this.ui.dispose();
 	}
 	
 	@Override
@@ -136,14 +120,23 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	}
 	
 	@Override
-	public void switchContext(String context) {
-		String contextFile = context.toUpperCase() + ".ctx";
+	public boolean switchContext(String context) {
+		String currentFile = context.toUpperCase() + ".ctx";
 		String originalFile = this.contextFile;
-		this.contextFile = contextFile;
-		if (!originalFile.equals(this.contextFile)) {
-			saveContext(originalFile);
-			loadContext(this.contextFile);
+		if (!originalFile.equals(currentFile)) {
+			File file = new File(currentFile);
+			if (file.exists()) {
+				this.contextFile = currentFile;
+				saveContext(originalFile);
+				loadContext(this.contextFile);
+				return true;
+			} else {
+				error("Context file not found: " + currentFile);
+			}
+		} else {
+			error("Current context is already '" + context + "'");
 		}
+		return false;
 	}
 	
 	@Override
@@ -307,8 +300,8 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	@Override
 	public void exit(int status) {
 		shutdown();
-		this.eventManager.shutdown();
-		System.exit(status);
+		XCLStartup.shutdown(this, status);
+		// System.exit(status);
 	}
 	
 	@Override
@@ -318,7 +311,24 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	
 	// ------------------ private methods
 	
-	private String getContextFile() {
+	private XCLApplication getInstance() {
+		return this;
+	}
+	
+	private void init(String contextName) {
+		this.ui = new XCLUI(this);
+		this.eventManager = new EventManager();
+		this.eventManager.register(XCLEventGroup.ui, ui);
+		this.eventManager.register(XCLEventGroup.cmd, this);
+		this.parser = new XCLCmdParser();
+		this.holder = new XCLCmdHolder();
+		this.contextFile = getContextFile(contextName);
+	}
+	
+	private String getContextFile(String contextName) {
+		if (!CommonUtils.isEmpty(contextName)) {
+			return contextName.toUpperCase() + ".ctx";
+		}
 		File settingFile = new File(XCLConstants.SETTING_FILE);
 		String contextFile = XCLConstants.DEFAULT_CONTEXT_FILE;
 		try {
@@ -338,17 +348,19 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	
 	
 	private void startup(String startupFile) {
-		File file = new File(startupFile);
-		if (file.exists()) {
-			try {
-				String startup = CommonUtils.readFileToString(file, "UTF-8");
-				info("startup \r\n" + startup);
-				run(startup);
-			} catch (IOException e) {
-				error(e.getMessage());
+		if (!CommonUtils.isEmpty(startupFile)) {
+			File file = new File(startupFile);
+			if (file.exists()) {
+				try {
+					String startup = CommonUtils.readFileToString(file, "UTF-8");
+					info("startup \r\n" + startup);
+					run(startup);
+				} catch (IOException e) {
+					error(e.getMessage());
+				}
+			} else {
+				error("Startup file not found: " + startupFile);
 			}
-		} else {
-			error("Startup file not found: " + startupFile);
 		}
 	}
 	
@@ -358,9 +370,9 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 			oos = new ObjectOutputStream(new FileOutputStream(contextFile));
 			oos.writeObject(context);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			error(e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			error(e.getMessage());
 		} finally {
 			if (oos != null) {
 				try {
@@ -408,7 +420,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	private void registerCommand() {
 		List<Class<? extends Command>> list = CommandLoader.loadCommandClasses();
 		for (Class<? extends Command> clazz : list) {
-			XCLApplication.getInstance().register(clazz);
+			getInstance().register(clazz);
 		}
 	}
 	

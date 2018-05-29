@@ -3,21 +3,23 @@ package van.xcl.cmd;
 import java.util.Map;
 
 import van.xcl.Command;
-import van.xcl.XCLConsole;
 import van.xcl.Parameters;
-import van.xcl.XCLContext;
 import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLConsole;
+import van.xcl.XCLContext;
+import van.xcl.XCLStartup;
+import van.xcl.XCLStartupParas;
 import van.xcl.XCLVar;
 
-public class Switch implements Command {
+public class Startup implements Command {
 	@Override
 	public String name() {
-		return "switch";
+		return "startup";
 	}
 	
 	@Override
 	public String description() {
-		return "switch context";
+		return "startup context";
 	}
 
 	@Override
@@ -30,14 +32,9 @@ public class Switch implements Command {
 	@Override
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		String contextName = args.get("context_name").toString();
-		String orginal = context.getHandler().currentContext();
-		if (context.getHandler().switchContext(contextName)) {
-			String current = context.getHandler().currentContext();
-			console.output("Context is switched: " + orginal + "-->" + current);
-		} else {
-			console.output("Context switching failed.");
-		}
-		return new XCLVar();
+		XCLStartupParas paras = new XCLStartupParas(new String[] {"", contextName});
+		XCLStartup.startup(paras);
+		return new XCLVar(contextName + " is startup");
 	}
 
 }

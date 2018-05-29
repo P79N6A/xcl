@@ -95,20 +95,6 @@ public class XCLUI extends EventHandler {
 			button.setBackground(XCLConstants.backgroundColor);
 			return button;
 		}
-//		@Override
-//		protected JButton createIncreaseButton(int orientation) {
-//			JButton button = new JButton();
-//			button.setBorder(null);
-//			button.setPreferredSize(new Dimension(0, 0));
-//			return button;
-//		}
-//		@Override
-//		protected JButton createDecreaseButton(int orientation) {
-//			JButton button = new JButton();
-//			button.setBorder(null);
-//			button.setPreferredSize(new Dimension(0, 0));
-//			return button;
-//		}
 	}
 	
 	private JFrame frame;
@@ -483,6 +469,11 @@ public class XCLUI extends EventHandler {
 	}
 	
 	// ---
+	
+	public void dispose() {
+		this.frame.setVisible(false);
+		this.frame.dispose();
+	}
 	
 	public void addKey(String key) {
 		this.keys.add(key);
