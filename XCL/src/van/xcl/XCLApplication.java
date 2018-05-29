@@ -43,20 +43,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 		this.eventManager.register(XCLEventGroup.cmd, this);
 		this.parser = new XCLCmdParser();
 		this.holder = new XCLCmdHolder();
-		this.contextFile = XCLConstants.CONTEXT_FILE;
-		File settingFile = new File(XCLConstants.SETTING_FILE);
-		try {
-			if (settingFile.exists()) {
-				BufferedReader br = new BufferedReader(new FileReader((settingFile)));
-				String line = br.readLine();
-				if (line != null) {
-					this.contextFile = line;
-				}
-				br.close();
-			}
-		} catch (IOException e) {
-			JOptionPane.showConfirmDialog(null, "[XCLApplication init error]: " + e.getMessage());
-		}
+		this.contextFile = getContextFile();
 	}
 	
 	public static XCLApplication getInstance() {
@@ -330,6 +317,26 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	}
 	
 	// ------------------ private methods
+	
+	private String getContextFile() {
+		File settingFile = new File(XCLConstants.SETTING_FILE);
+		String contextFile = XCLConstants.DEFAULT_CONTEXT_FILE;
+		try {
+			if (settingFile.exists()) {
+				BufferedReader br = new BufferedReader(new FileReader((settingFile)));
+				String line = br.readLine();
+				if (line != null) {
+					contextFile = line;
+				}
+				br.close();
+			}
+		} catch (IOException e) {
+			JOptionPane.showConfirmDialog(null, "[XCLApplication getContextFile error]: " + e.getMessage());
+		}
+		return contextFile;
+	}
+	
+	
 	private void startup(String startupFile) {
 		File file = new File(startupFile);
 		if (file.exists()) {
@@ -395,6 +402,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 		}
 		this.context.setHandler(this);
 		this.title(context.getPath());
+		this.info(contextFile);
 	}
 	
 	private void registerCommand() {
