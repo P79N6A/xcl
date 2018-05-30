@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import van.util.uuid.Unid;
+
 public class EventManager {
 	
 	private Map<EventGroup, EventQueue> queueMap = new HashMap<EventGroup, EventQueue>();
@@ -25,13 +27,13 @@ public class EventManager {
 		return new ArrayList<String>();
 	}
 	
-	public void addEvent(EventType type, String message) {
-		addEvent(type, message, null);
+	public void addEvent(Unid token, EventType type, String message) {
+		addEvent(token, type, message, null);
 	}
 	
-	public void addEvent(EventType type, String message, EventCallback callback) {
+	public void addEvent(Unid token, EventType type, String message, EventCallback callback) {
 		if (queueMap.containsKey(type.getGroup())) {
-			queueMap.get(type.getGroup()).addEvent(type, message, callback);
+			queueMap.get(type.getGroup()).addEvent(token, type, message, callback);
 		}
 	}
 	

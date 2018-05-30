@@ -51,7 +51,7 @@ public class XCLStartup {
 		});
 		return app;
 	}
-
+	
 	public static void main(String[] args) {
 		initLookAndFeel();
 		startup(new XCLStartupParas(args));

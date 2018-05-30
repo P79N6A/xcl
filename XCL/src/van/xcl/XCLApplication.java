@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.swing.JOptionPane;
 
@@ -22,9 +23,10 @@ import van.util.evt.EventCallback;
 import van.util.evt.EventHandler;
 import van.util.evt.EventManager;
 import van.util.evt.EventType;
+import van.util.uuid.Unid;
 import van.xcl.XCLCmdParser.XCLNode;
 
-public class XCLApplication extends EventHandler implements XCLConsole, XCLHandler {
+public class XCLApplication extends EventHandler implements XCLConsole, XCLHandler, Unid {
 	
 	private XCLUI ui = null;
 	private XCLContext context = null;
@@ -33,10 +35,11 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	private String contextFile;
 	private EventManager eventManager = null;
 	private List<String> cmdLineList = new ArrayList<String>();
+	private String uuid;
 	private int currIndex = 0;
 	
 	public XCLApplication() {
-		
+		uuid = UUID.randomUUID().toString();
 	}
 	
 	@Override
@@ -234,66 +237,66 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	
 	@Override
 	public void run(String command) {
-		this.eventManager.addEvent(XCLEvent.run, command);
+		this.eventManager.addEvent(this, XCLEvent.run, command);
 	}
 
 	@Override
 	public void present(String string) {
-		this.eventManager.addEvent(XCLEvent.present, string);
+		this.eventManager.addEvent(this, XCLEvent.present, string);
 	}
 
 	@Override
 	public void prepare() {
-		this.eventManager.addEvent(XCLEvent.prepare, null);
+		this.eventManager.addEvent(this, XCLEvent.prepare, null);
 	}
 
 	@Override
 	public void input(String input) {
-		this.eventManager.addEvent(XCLEvent.input, input);
+		this.eventManager.addEvent(this, XCLEvent.input, input);
 	}
 
 	@Override
 	public void output(String str) {
-		this.eventManager.addEvent(XCLEvent.output, str);
+		this.eventManager.addEvent(this, XCLEvent.output, str);
 	}
 
 	@Override
 	public void prompt(String prompt) {
 		prompt = "  -  " + CommonUtils.resolveString(prompt, 90);
-		this.eventManager.addEvent(XCLEvent.prompt, prompt);
+		this.eventManager.addEvent(this, XCLEvent.prompt, prompt);
 	}
 	
 	@Override
 	public void info(String info) {
-		this.eventManager.addEvent(XCLEvent.info, info);
+		this.eventManager.addEvent(this, XCLEvent.info, info);
 	}
 	
 	@Override
 	public void error(String error) {
-		this.eventManager.addEvent(XCLEvent.error, error);
+		this.eventManager.addEvent(this, XCLEvent.error, error);
 	}
 
 	@Override
 	public void title(String title) {
-		this.eventManager.addEvent(XCLEvent.title, title);
+		this.eventManager.addEvent(this, XCLEvent.title, title);
 	}
 	
 	@Override
 	public void clear() {
-		this.eventManager.addEvent(XCLEvent.clear, null);
+		this.eventManager.addEvent(this, XCLEvent.clear, null);
 	}
 
 	@Override
 	public void editable(boolean b) {
-		this.eventManager.addEvent(XCLEvent.editable, String.valueOf(b));
+		this.eventManager.addEvent(this, XCLEvent.editable, String.valueOf(b));
 	}
 	
 	@Override
 	public String getTextInput(String text, String title) {
-		this.eventManager.addEvent(XCLEvent.textInput, text);
-		this.eventManager.addEvent(XCLEvent.textTitle, title);
+		this.eventManager.addEvent(this, XCLEvent.textInput, text);
+		this.eventManager.addEvent(this, XCLEvent.textTitle, title);
 		EventCallback callback  = EventCallback.defaultCallback();
-		this.eventManager.addEvent(XCLEvent.getTextInput, text, callback);
+		this.eventManager.addEvent(this, XCLEvent.getTextInput, text, callback);
 		return callback.awaitResult();
 	}
 	
@@ -307,6 +310,11 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	@Override
 	public Map<String, Command> commands() {
 		return this.holder.allCommands();
+	}
+	
+	@Override
+	public String getUuid() {
+		return uuid;
 	}
 	
 	// ------------------ private methods
