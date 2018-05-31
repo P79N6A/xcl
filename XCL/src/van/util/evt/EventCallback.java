@@ -9,7 +9,7 @@ public abstract class EventCallback implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 4765410615146748609L;
-	private CountDownLatch latch = new CountDownLatch(1);
+	private transient CountDownLatch latch = new CountDownLatch(1);
 	private String result = null;
 	
 	final void handleResult(String result) {

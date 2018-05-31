@@ -9,24 +9,100 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JOptionPane;
 
 import van.util.CommonUtils;
 import van.util.evt.EventCallback;
+import van.util.evt.EventEntity;
 import van.util.evt.EventHandler;
 import van.util.evt.EventManager;
-import van.util.evt.EventType;
-import van.util.uuid.Unid;
+import van.util.io.IoSerilizer;
+import van.util.task.Task;
+import van.util.task.TaskService;
 import van.xcl.XCLCmdParser.XCLNode;
 
-public class XCLApplication extends EventHandler implements XCLConsole, XCLHandler, Unid {
+public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1247965919743709171L;
+
+	class XCLServerTask implements Task {
+		private ServerSocket ss;
+		public XCLServerTask(ServerSocket ss) {
+			this.ss = ss;
+		}
+		public void run() {
+			while (isRunning.get()) {
+				try {
+					Socket s = ss.accept();
+					accept(s);
+				} catch (IOException e) {
+					prepare();
+					editable(true);
+					if (isAccepted.compareAndSet(true, false)) {
+						output("Remote connection is disconnected.");
+					}
+				}
+			}
+		}
+	}
+	
+	class XCLEventReceiver implements Task {
+		private Socket s;
+		public XCLEventReceiver(Socket s) {
+			this.s = s;
+		}
+		public void run() {
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+				String line = null;
+				while (null != (line = br.readLine())) {
+					IoSerilizer<EventEntity> s = new IoSerilizer<EventEntity>(line);
+					eventManager.addEvent(s.getObject());
+				}
+			} catch (IOException e) {
+				prepare();
+				editable(true);
+				if (isConnected.compareAndSet(true, false)) {
+					output("Local connection is disconnected.");
+				}
+			}
+		}
+	}
+	
+	class XCLEventSender {
+		private BufferedWriter bw = null;
+		public XCLEventSender(Socket s) throws IOException {
+			this.bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+		}
+		public void send(EventEntity event) throws IOException {
+			IoSerilizer<EventEntity> s = new IoSerilizer<EventEntity>(event);
+			String xstring = s.getString();
+			this.bw.write(xstring + "\r\n");
+			this.bw.flush();
+		}
+		public void close() {
+			try {
+				this.bw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	private XCLUI ui = null;
 	private XCLContext context = null;
@@ -35,11 +111,18 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	private String contextFile;
 	private EventManager eventManager = null;
 	private List<String> cmdLineList = new ArrayList<String>();
-	private String uuid;
 	private int currIndex = 0;
+	private AtomicBoolean isConnected = new AtomicBoolean(false);
+	private AtomicBoolean isAccepted = new AtomicBoolean(false);
+	private AtomicBoolean isRunning = new AtomicBoolean(false);
+	private ServerSocket serverSocket;
+	private Socket socket;
+	private XCLEventSender sender;
+	private int port;
+	private String source;
 	
 	public XCLApplication() {
-		uuid = UUID.randomUUID().toString();
+		this.source = CommonUtils.getLocalIPAddress() + "@" + System.currentTimeMillis();
 	}
 	
 	@Override
@@ -50,6 +133,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 		this.ui.init();
 		prepare();
 		editable(true);
+		startServer();
 		startup(paras.getStartup());
 	}
 	
@@ -76,6 +160,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	
 	@Override
 	public void shutdown() {
+		stopServer();
 		saveContext(this.contextFile);
 		File settingFile = new File(XCLConstants.SETTING_FILE);
 		try {
@@ -88,6 +173,7 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 		this.holder.clear();
 		this.eventManager.shutdown();
 		this.ui.dispose();
+		TaskService.getService().shutdown();
 	}
 	
 	@Override
@@ -189,9 +275,24 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	// ---------------------------
 	
 	@Override
-	public String handle(EventType type, String message) {
-		if (XCLEvent.run.equals(type)) {
-			execute(message, context);
+	public boolean prepareEvent(EventEntity e) {
+		if (this.getSource().equals(e.getSource())) {
+			String command = CommonUtils.trim(e.getMessage());
+			if (isConnected.get() 
+					&& !command.startsWith(XCLConstants.DISCONNECT_COMMAND)) {
+				syncEvent(e);
+				prepare();
+				editable(true);
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public String handleEvent(EventEntity event) {
+		if (XCLEvent.run.equals(event.getType())) {
+			execute(event.getMessage(), context);
 		}
 		return null;
 	}
@@ -313,17 +414,136 @@ public class XCLApplication extends EventHandler implements XCLConsole, XCLHandl
 	}
 	
 	@Override
-	public String getUuid() {
-		return uuid;
+	public String getSource() {
+		return source;
+	}
+	
+	@Override
+	public boolean isConnected() {
+		return isConnected.get();
+	}
+
+	@Override
+	public boolean isAccepted() {
+		return isAccepted.get();
+	}
+	
+	@Override
+	public int getPort() {
+		return port;
+	}
+	
+	@Override
+	public void connect(String ip, int port) {
+		if (!isConnected.get() && !isAccepted.get()) {
+			try {
+				this.socket = new Socket(ip, port);
+				setSocket(socket);
+				isConnected.set(true);
+			} catch (UnknownHostException e) {
+				error("server connect failed: " + e.getMessage());
+			} catch (IOException e) {
+				error("server connect failed: " + e.getMessage());
+			} finally {
+				prepare();
+				editable(true);
+			}
+		} else {
+			error("There is a connected/accepted instance currently running!");
+		}
+	}
+
+	@Override
+	public void disconnect() {
+		if (isConnected.get() || isAccepted.get()) {
+			try {
+				socket.close();
+				info("server disconnected");
+				this.isConnected.compareAndSet(true, false);
+				this.isAccepted.compareAndSet(true, false);
+			} catch (IOException e) {
+				error("server disconnected: " + e.getMessage());
+			} finally {
+				prepare();
+				editable(true);
+			}
+		}
+	}
+	
+	@Override
+	public void syncEvent(EventEntity e) {
+		if (this.isConnected() || this.isAccepted()) {
+			try {
+				this.sender.send(e);
+			} catch (IOException e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
 	}
 	
 	// ------------------ private methods
+	
+	private void accept(Socket socket) {
+		if (this.isAccepted.compareAndSet(false, true)) {
+			setSocket(socket);
+		} else {
+			error("connection is already accepted!");
+		}
+	}
+	
+	private void setSocket(Socket socket) {
+		this.socket = socket;
+		try {
+			this.sender = new XCLEventSender(this.socket);
+			XCLEventReceiver receiver = new XCLEventReceiver(this.socket);
+			TaskService.getService().runTask(receiver);
+		} catch (IOException e) {
+			error("IOException: " + e.getMessage());
+		}
+	}
+	
+	private void startServer() {
+		int port = XCLConstants.DEFAULT_PORT;
+		int offset = 0;
+		boolean isSuccess = false;
+		do {
+			try {
+				this.serverSocket = new ServerSocket(port);
+				this.isRunning.set(true);
+				this.port = port;
+				info("[" + source + "] Server startup succeed: " + port);
+				isSuccess = true;
+			} catch (IOException e) {
+				error("[" + source + "] Server startup failed: " + port + " error: " + e.getMessage());
+				port++;
+				offset++;
+			}
+		} while (!isSuccess && offset < XCLConstants.DEFAULT_PORT_OFFSET);
+		if (isSuccess) {
+			XCLServerTask task = new XCLServerTask(this.serverSocket);
+			TaskService.getService().runTask(task);
+		} else {
+			JOptionPane.showMessageDialog(null, "[" + source + "] startup failed!");
+		}
+	}
+	
+	private void stopServer() {
+		try {
+			this.serverSocket.close();
+			this.isRunning.set(false);
+			info("[" + source + "] Server has been closed");
+		} catch (IOException e) {
+			error("[" + source + "] Server has been closed: " + e.getMessage());
+		}
+	}
+	
 	
 	private XCLApplication getInstance() {
 		return this;
 	}
 	
 	private void init(String contextName) {
+		TaskService.getService().init("XCL", 10);
 		this.ui = new XCLUI(this);
 		this.eventManager = new EventManager();
 		this.eventManager.register(XCLEventGroup.ui, ui);

@@ -2,7 +2,10 @@ package van.xcl;
 
 import java.util.Map;
 
-public interface XCLConsole {
+import van.util.evt.EventEntity;
+import van.util.evt.EventSource;
+
+public interface XCLConsole extends EventSource {
 	public String getTextInput(String text, String tile);
 	public void prepare();
 	public void editable(boolean b);
@@ -24,4 +27,10 @@ public interface XCLConsole {
 	public int getHistorySize();
 	public String getHistory(int index);
 	public void saveHistory(String cmd);
+	public void connect(String ip, int port);
+	public void disconnect();
+	public boolean isConnected();
+	public boolean isAccepted();
+	public int getPort();
+	public void syncEvent(EventEntity e);
 }

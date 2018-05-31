@@ -50,10 +50,11 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 import van.util.CommonUtils;
+import van.util.evt.EventEntity;
 import van.util.evt.EventHandler;
 import van.util.evt.EventType;
 
-public class XCLUI extends EventHandler {
+public class XCLUI implements EventHandler {
 
 	class XScrollBarUI extends BasicScrollBarUI {
 		public XScrollBarUI() {
@@ -480,7 +481,22 @@ public class XCLUI extends EventHandler {
 	}
 	
 	@Override
-	public String handle(EventType type, String message) {
+	public boolean prepareEvent(EventEntity e) {
+		if (this.console.getSource().equals(e.getSource())) {
+			if (this.console.isConnected() || this.console.isAccepted()) {
+				this.console.syncEvent(e);
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public String handleEvent(EventEntity event) {
+		EventType type = event.getType();
+		String message = event.getMessage();
+		if (!event.getSource().equals(event.getSource())) {
+			message = "[" + event.getSource() + "]: " + message;
+		}
 		System.out.println("XCLUI --> handle [type: " + type + ", message: " + message + "]");
 		if (XCLEvent.prepare.equals(type)) {
 			requestFocus(getTextCmd());

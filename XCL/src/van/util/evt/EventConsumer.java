@@ -12,7 +12,8 @@ public class EventConsumer extends Thread {
 				EventEntity event = eventQueue.getEventQueue().poll();
 				if (event != null) {
 					try {
-						String result = eventQueue.handle(event.getUuid(), event.getType(), event.getMessage());
+						String result = eventQueue.handle(event);
+						
 						if (event.hasCallback()) {
 							event.getCallback().handleResult(result);
 						}

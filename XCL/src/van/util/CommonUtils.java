@@ -9,8 +9,13 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -220,5 +225,26 @@ public class CommonUtils {
 		ins.close();
 		return buffer.toString();
 	}
+	
+	public static final String getLocalIPAddress() {
+		try {
+			String IPString = "";
+			Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
+			InetAddress ip = null;
+			while (allNetInterfaces.hasMoreElements()) {
+				NetworkInterface netInterface = (NetworkInterface) allNetInterfaces.nextElement();
+				Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+				while (addresses.hasMoreElements()) {
+					ip = (InetAddress) addresses.nextElement();
+					if (ip != null && ip instanceof Inet4Address && !ip.getHostAddress().equals("127.0.0.1")) {
+						return ip.getHostAddress();
+					}
+				}
+			}
+			return IPString;
+		} catch (SocketException e) {
+			return "N/A";
+		}
+    }
 	
 }

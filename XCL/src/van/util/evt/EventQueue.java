@@ -8,8 +8,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import van.util.uuid.Unid;
-
 public class EventQueue {
 	
 	private EventHandler handler;
@@ -31,13 +29,22 @@ public class EventQueue {
 		return eventQueue;
 	}
 	
-	protected void addEvent(Unid token, EventType type, String message) {
-		addEvent(token, type, message, null);
+	protected void addEvent(EventSource source, EventType type, String message) {
+		addEvent(source, type, message, null);
 	}
 	
-	protected void addEvent(Unid token, EventType type, String message, EventCallback callback) {
-		EventEntity e = new EventEntity(token, type, message, callback);
+	protected void addEvent(EventSource source, EventType type, String message, EventCallback callback) {
+		EventEntity e = new EventEntity(source, type, message, callback);
 		addEvent(e);
+	}
+	
+	protected void addEvent(EventEntity e) {
+		if (this.handler.prepareEvent(e)) {
+			this.eventQueue.add(e);
+			synchronized (this.eventConsumer) {
+				this.eventConsumer.notifyAll();
+			}
+		}
 	}
 	
 	protected void shutdown() {
@@ -69,18 +76,18 @@ public class EventQueue {
 		return threadNames;
 	}
 	
-	protected String handle(String token, EventType type, String message) throws InterruptedException, ExecutionException {
+	protected String handle(EventEntity event) throws InterruptedException, ExecutionException {
 		// we create a thread to handle the event to 
 		// allow other to call EventQueue.stopAll() to interrupt the current operation
-		EventTask<String> task = new EventTask<String>(type) {
+		EventTask<String> task = new EventTask<String>(event.getType()) {
 			@Override
 			public String onTask() {
 				try {
 					synchronized (activeTasks) {
 						activeTasks.add(this);
 					}
-					System.out.println("EventQueue --> handle [token: " + token + ", type: " + type + ", message: " + message + "]");
-					return handler.handle(type, message);
+					System.out.println("EventQueue --> handle [source: " + event.getSource() + ", type: " + event.getType() + ", message: " + event.getMessage() + "]");
+					return handler.handleEvent(event);
 				} finally {
 					synchronized (activeTasks) {
 						activeTasks.remove(this);
@@ -106,13 +113,6 @@ public class EventQueue {
 			threadName = "[" + t.getName() + "]";
 		}
 		return groupName + " - " + threadName;
-	}
-	
-	private void addEvent(EventEntity e) {
-		this.eventQueue.add(e);
-		synchronized (this.eventConsumer) {
-			this.eventConsumer.notifyAll();
-		}
 	}
 	
 }

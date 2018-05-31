@@ -5,6 +5,8 @@ import java.awt.Font;
 
 public class XCLConstants {
 
+	public static final int DEFAULT_PORT = 40056;
+	public static final int DEFAULT_PORT_OFFSET = 100;
 	public static final String LOG_FILE = "XCL.log";
 	public static final String DEFAULT_CONTEXT_FILE = "XCL.ctx";
 	public static final String SETTING_FILE = ".xcl";
@@ -26,6 +28,7 @@ public class XCLConstants {
 	public static final String EDIT_COMMAND = "edit";
 	public static final String ECHO_COMMAND = "echo";
 	public static final String CRAFT_COMMAND = "craft";
+	public static final String DISCONNECT_COMMAND = "disconnect";
 	public static final String ESC = ":esc";
 	public static final Font DEFAULT_FONT = XCLUtils.getDefaultFont(Font.PLAIN, 15);
 	

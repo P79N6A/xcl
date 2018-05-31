@@ -2,8 +2,6 @@ package van.util.evt;
 
 import java.io.Serializable;
 
-import van.util.uuid.Unid;
-
 public class EventEntity implements Serializable {
 	/**
 	 * 
@@ -12,14 +10,14 @@ public class EventEntity implements Serializable {
 	private EventType type;
 	private String message;
 	private EventCallback callback;
-	private String uuid;
-	public EventEntity(Unid uuid, EventType type, String message) {
-		this.uuid = uuid.getUuid();
+	private String source;
+	public EventEntity(EventSource source, EventType type, String message) {
+		this.source = source.getSource();
 		this.type = type;
 		this.message = message;
 	}
-	public EventEntity(Unid uuid, EventType type, String message, EventCallback callback) {
-		this.uuid = uuid.getUuid();
+	public EventEntity(EventSource source, EventType type, String message, EventCallback callback) {
+		this.source = source.getSource();
 		this.type = type;
 		this.message = message;
 		this.callback = callback;
@@ -36,7 +34,11 @@ public class EventEntity implements Serializable {
 	public boolean hasCallback() {
 		return callback != null;
 	}
-	public String getUuid() {
-		return uuid;
+	public String getSource() {
+		return source;
 	}
+	public String toString() {
+		return "source=" + source + ",type=" + type.getGroup() + "." + type.getName() + ",message=" + message + ",callback=" + callback;
+	}
+	
 }

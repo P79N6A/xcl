@@ -6,39 +6,47 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import van.util.uuid.Unid;
-
 public class EventManager {
 	
-	private Map<EventGroup, EventQueue> queueMap = new HashMap<EventGroup, EventQueue>();
+	private Map<String, EventQueue> queueMap = new HashMap<String, EventQueue>();
 	
 	public void register(EventGroup group, EventHandler handler) {
 		if (!queueMap.containsKey(group)) {
 			EventQueue queue = new EventQueue(handler);
-			queueMap.put(group, queue);
+			queueMap.put(group.getGroupName(), queue);
 			System.out.println("event group is registered: " + group.getGroupName());
 		}
 	}
 	
 	public List<String> stopAll(EventGroup group) {
-		if (queueMap.containsKey(group)) {
-			return queueMap.get(group).stopAll();
+		if (queueMap.containsKey(group.getGroupName())) {
+			return queueMap.get(group.getGroupName()).stopAll();
 		}
 		return new ArrayList<String>();
 	}
 	
-	public void addEvent(Unid token, EventType type, String message) {
-		addEvent(token, type, message, null);
+	public void addEvent(EventEntity event) {
+		if (event != null) {
+			String groupName = event.getType().getGroup().getGroupName();
+			if (queueMap.containsKey(groupName)) {
+				queueMap.get(groupName).addEvent(event);
+			}
+		}
 	}
 	
-	public void addEvent(Unid token, EventType type, String message, EventCallback callback) {
-		if (queueMap.containsKey(type.getGroup())) {
-			queueMap.get(type.getGroup()).addEvent(token, type, message, callback);
+	public void addEvent(EventSource source, EventType type, String message) {
+		addEvent(source, type, message, null);
+	}
+	
+	public void addEvent(EventSource source, EventType type, String message, EventCallback callback) {
+		String groupName = type.getGroup().getGroupName();
+		if (queueMap.containsKey(groupName)) {
+			queueMap.get(groupName).addEvent(source, type, message, callback);
 		}
 	}
 	
 	public void shutdown() {
-		for (Entry<EventGroup, EventQueue> entry : queueMap.entrySet()) {
+		for (Entry<String, EventQueue> entry : queueMap.entrySet()) {
 			entry.getValue().shutdown();
 		}
 	}

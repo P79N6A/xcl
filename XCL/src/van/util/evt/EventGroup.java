@@ -1,7 +1,7 @@
 package van.util.evt;
 
-public interface EventGroup {
+import java.io.Serializable;
 
+public interface EventGroup extends Serializable {
 	public String getGroupName();
-	
 }

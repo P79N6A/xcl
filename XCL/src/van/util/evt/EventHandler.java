@@ -1,7 +1,9 @@
 package van.util.evt;
 
-public abstract class EventHandler {
+public interface EventHandler {
 
-	public abstract String handle(EventType type, String message);
+	public String handleEvent(EventEntity e);
+	
+	public boolean prepareEvent(EventEntity e);
 	
 }
