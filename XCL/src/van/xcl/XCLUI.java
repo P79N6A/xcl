@@ -35,6 +35,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -43,7 +44,6 @@ import javax.swing.JTextPane;
 import javax.swing.TransferHandler;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.SimpleAttributeSet;
@@ -255,11 +255,6 @@ public class XCLUI implements EventHandler {
 				}
 				@Override
 				public void keyPressed(KeyEvent e) {
-					/*
-					if (e.getModifiers() == InputEvent.CTRL_MASK && e.getKeyCode() == KeyEvent.VK_C) {
-						console.cancelCommand();
-					}
-					*/
 					if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
 						console.cancelCommand();
 					}
@@ -268,16 +263,18 @@ public class XCLUI implements EventHandler {
 				public void keyReleased(KeyEvent e) {
 					if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
 						if (e.getModifiers() == InputEvent.ALT_MASK) {
-							int idx = console.getHistoryIndex();
-							if (e.getKeyCode() == KeyEvent.VK_UP) {
-								idx--;
-							} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-								idx++;
-							}
-							if (idx > -1 && idx < console.getHistorySize()) {
-								String cmdStr = console.getHistory(idx);
-								console.present(cmdStr);
-								console.setHistoryIndex(idx);
+							if (getTextCmd().isEditable()) {
+								int idx = console.getHistoryIndex();
+								if (e.getKeyCode() == KeyEvent.VK_UP) {
+									idx--;
+								} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+									idx++;
+								}
+								if (idx > -1 && idx < console.getHistorySize()) {
+									String cmdStr = console.getHistory(idx);
+									console.present(cmdStr);
+									console.setHistoryIndex(idx);
+								}
 							}
 						} else {
 							if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -287,7 +284,6 @@ public class XCLUI implements EventHandler {
 					}
 				}
 			});
-//			new KeyAssist(textCmd);
 		}
 		return textCmd;
 	}
@@ -321,18 +317,18 @@ public class XCLUI implements EventHandler {
 	}
 	
 	private void console(String str, Color color) {
-		SimpleAttributeSet attr = new SimpleAttributeSet();
-		Font font = getDefaultFont();
-		StyleConstants.setFontSize(attr, font.getSize());
-		StyleConstants.setFontFamily(attr, font.getFamily());
-		StyleConstants.setForeground(attr, color);
-		Document docs = getTextConsole().getDocument();
 		try {
+			SimpleAttributeSet attr = new SimpleAttributeSet();
+			Font font = getDefaultFont();
+			StyleConstants.setFontSize(attr, font.getSize());
+			StyleConstants.setFontFamily(attr, font.getFamily());
+			StyleConstants.setForeground(attr, color);
+			Document docs = getTextConsole().getDocument();
 			docs.insertString(docs.getLength(), str, attr);
-		} catch (BadLocationException e) {
-			e.printStackTrace();
+			getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
+		} catch (Throwable e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
-		getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
 		if (logWriter != null) {
 			try {
 				logWriter.append(str);
@@ -484,7 +480,7 @@ public class XCLUI implements EventHandler {
 	public boolean prepareEvent(EventEntity e) {
 		if (this.console.getSource().equals(e.getSource())) {
 			if (this.console.isConnected() || this.console.isAccepted()) {
-				this.console.syncEvent(e);
+				this.console.syncEvent(e); // synchronize local UI events to remote except XCLEvent.present
 			}
 		}
 		return true;
@@ -494,25 +490,25 @@ public class XCLUI implements EventHandler {
 	public String handleEvent(EventEntity event) {
 		EventType type = event.getType();
 		String message = event.getMessage();
-		if (!event.getSource().equals(event.getSource())) {
-			message = "[" + event.getSource() + "]: " + message;
-		}
-		System.out.println("XCLUI --> handle [type: " + type + ", message: " + message + "]");
-		if (XCLEvent.prepare.equals(type)) {
+		String source = !console.getSource().equals(event.getSource()) ? "[" + event.getSource() + "]: " : "";
+		System.out.println("[" + console.getSource() + "] XCLUI.handleEvent [type: " + type + ", message: " + message + "]");
+		if (XCLEvent.input.equals(type)) {
+			console(XCLConstants.IN_PROMPT + source + message + "\n", XCLConstants.foregroundColor); // source
+		} else if (XCLEvent.output.equals(type)) {
+			console(XCLConstants.OUT_PROMPT + source + message + "\n", XCLConstants.foregroundColor); // source
+		} else if (XCLEvent.info.equals(type)) {
+			console(XCLConstants.INFO_PROMPT + source + message + "\n", XCLConstants.promptColor); // source
+		} else if (XCLEvent.error.equals(type)) {
+			console(XCLConstants.ERROR_PROMPT + source + message + "\n", XCLConstants.errorColor); // source
+		} else if (XCLEvent.prompt.equals(type)) {
+			getTextPrompt().setText(source + message + "  "); // source
+		} else if (XCLEvent.title.equals(type)) {
+			getFrame().setTitle(source + message); // source
+		} else if (XCLEvent.textTitle.equals(type)) {
+			getTextInputPrompt().setText(" - " + source + message); // source
+		} else if (XCLEvent.prepare.equals(type)) {
 			requestFocus(getTextCmd());
 			getTextCmd().discardAllEdits();
-		} else if (XCLEvent.input.equals(type)) {
-			console(XCLConstants.IN_PROMPT + message + "\n", XCLConstants.foregroundColor);
-		} else if (XCLEvent.output.equals(type)) {
-			console(XCLConstants.OUT_PROMPT + message + "\n", XCLConstants.foregroundColor);
-		} else if (XCLEvent.info.equals(type)) {
-			console(XCLConstants.INFO_PROMPT + message + "\n", XCLConstants.promptColor);
-		} else if (XCLEvent.error.equals(type)) {
-			console(XCLConstants.ERROR_PROMPT + message + "\n", XCLConstants.errorColor);
-		} else if (XCLEvent.prompt.equals(type)) {
-			getTextPrompt().setText(message + "  ");
-		} else if (XCLEvent.title.equals(type)) {
-			getFrame().setTitle(message);
 		} else if (XCLEvent.clear.equals(type)) {
 			getTextConsole().setText("");
 			getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
@@ -524,8 +520,6 @@ public class XCLUI implements EventHandler {
 		} else if (XCLEvent.present.equals(type)) {
 			getTextCmd().setText(message);
 			requestFocus(getTextCmd());
-		} else if (XCLEvent.textTitle.equals(type)) {
-			getTextInputPrompt().setText(" - " + message);
 		} else if (XCLEvent.textInput.equals(type)) {
 			cardLayout.show(cardPanel, "input");
 			getTextInput().setText(message);
