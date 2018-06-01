@@ -162,5 +162,9 @@ public class XCLCmdParser {
 		return node;
 	}
 	
+	public void clear() {
+		
+	}
+	
 	
 }

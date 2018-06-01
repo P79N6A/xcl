@@ -46,7 +46,7 @@ public class XCLStartup {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				app.launch(paras);
+				app.startup(paras);
 			}
 		});
 		return app;

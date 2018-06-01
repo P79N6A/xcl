@@ -24,8 +24,9 @@ import van.util.evt.EventHandler;
 import van.util.evt.EventManager;
 import van.util.task.TaskService;
 import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLHealthChecker.XCLHealthEntity;
 
-public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
+public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCLHealthEntity {
 	
 	/**
 	 * 
@@ -41,50 +42,43 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
 	private XCLEventSyncer eventSyncer = null;
 	private List<String> cmdLineList = new ArrayList<String>();
 	private int currIndex = 0;
+	private String runFile;
 	
 	
 	public XCLApplication() {
 	}
 	
 	@Override
-	public void launch(XCLStartupParas paras) {
-		init(paras.getContext());
-		loadContext(this.contextFile);
-		registerCommand();
-		this.ui.init();
-		prepare();
-		editable(true);
+	public void startup(XCLStartupParas paras) {
+		initRunFile();
+		TaskService.getService().init("XCL", 10);
+		this.ui = new XCLUI(this);
+		this.eventManager = new EventManager();
+		this.eventManager.register(XCLEventGroup.SYNC_UI_EVENT, ui);
+		this.eventManager.register(XCLEventGroup.ASYNC_UI_EVENT, ui);
+		this.eventManager.register(XCLEventGroup.CMD_EVENT, this);
+		this.eventSyncer = new XCLEventSyncer(this, eventManager);
 		this.eventSyncer.startup();
-		startup(paras.getStartup());
+		this.parser = new XCLCmdParser();
+		this.holder = new XCLCmdHolder();
+		this.contextFile = getContextFile(paras.getPara("context"));
+		loadContext(this.contextFile);
+		loadCommands();
+		this.ui.init();
+		XCLHealthChecker.getChecker().register(this);
+		startupCommand(paras.getPara("startup"));
 	}
 	
 	@Override
 	public void shutdown() {
 		this.eventSyncer.shutdown();
+		XCLHealthChecker.getChecker().shutdown();
 		saveContext(this.contextFile);
-		File settingFile = new File(XCLConstants.SETTING_FILE);
-		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter((settingFile)));
-			bw.write(this.contextFile);
-			bw.close();
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage());
-		}
 		this.holder.clear();
 		this.eventManager.shutdown();
 		this.ui.dispose();
 		TaskService.getService().shutdown();
-	}
-	
-	@Override
-	public void register(Class<? extends Command> clazz) {
-		try {
-			Command command = clazz.newInstance();
-			this.holder.addCommand(command.name(), command);
-			System.out.println("--> " + command.name() + " is loaded.");
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		removeRunFile();
 	}
 	
 	@Override
@@ -370,23 +364,18 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
 		this.eventSyncer.syncEvent(e);
 	}
 	
-	// ------------------ private methods
-	
-	private XCLApplication getInstance() {
-		return this;
+	@Override
+	public void onHealthCheck() {
+		if (!getRunFile().exists()) {
+			this.exit(-1);
+		}
 	}
 	
-	private void init(String contextName) {
-		TaskService.getService().init("XCL", 10);
-		this.ui = new XCLUI(this);
-		this.eventManager = new EventManager();
-		this.eventManager.register(XCLEventGroup.SYNC_UI_EVENT, ui);
-		this.eventManager.register(XCLEventGroup.ASYNC_UI_EVENT, ui);
-		this.eventManager.register(XCLEventGroup.CMD_EVENT, this);
-		this.eventSyncer = new XCLEventSyncer(this, eventManager);
-		this.parser = new XCLCmdParser();
-		this.holder = new XCLCmdHolder();
-		this.contextFile = getContextFile(contextName);
+	// ------------------ private methods
+	
+
+	private XCLApplication getInstance() {
+		return this;
 	}
 	
 	private String getContextFile(String contextName) {
@@ -411,7 +400,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
 	}
 	
 	
-	private void startup(String startupFile) {
+	private void startupCommand(String startupFile) {
 		if (!CommonUtils.isEmpty(startupFile)) {
 			File file = new File(startupFile);
 			if (file.exists()) {
@@ -426,6 +415,8 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
 				error("Startup file not found: " + startupFile);
 			}
 		}
+		prepare();
+		editable(true);
 	}
 	
 	private void saveContext(String contextFile) {
@@ -445,6 +436,14 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
 					e.printStackTrace();
 				}
 			}
+		}
+		File settingFile = new File(XCLConstants.SETTING_FILE);
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter((settingFile)));
+			bw.write(this.contextFile);
+			bw.close();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 	}
 	
@@ -481,11 +480,40 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
 		this.info(contextFile);
 	}
 	
-	private void registerCommand() {
+	private void loadCommands() {
 		List<Class<? extends Command>> list = CommandLoader.loadCommandClasses();
 		for (Class<? extends Command> clazz : list) {
-			getInstance().register(clazz);
+			try {
+				Command command = clazz.newInstance();
+				this.holder.addCommand(command.name(), command);
+				System.out.println("--> " + command.name() + " is loaded.");
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
 		}
+	}
+	
+	private void initRunFile() {
+		this.runFile = "XCL-" + System.currentTimeMillis() + ".run";
+		boolean isSuccess = false;
+		try {
+			isSuccess = getRunFile().createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (!isSuccess) {
+				JOptionPane.showMessageDialog(null, "Instance file create failed!");
+			}
+		}
+	}
+	
+	private void removeRunFile() {
+		getRunFile().delete();
+	}
+	
+	private File getRunFile() {
+		File file = new File(runFile);
+		return file;
 	}
 	
 	private String delimeter() {

@@ -32,7 +32,8 @@ public class Startup implements Command {
 	@Override
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		String contextName = args.get("context_name").toString();
-		XCLStartupParas paras = new XCLStartupParas(new String[] {"", contextName});
+		XCLStartupParas paras = new XCLStartupParas();
+		paras.setPara("context", contextName);
 		XCLStartup.startup(paras);
 		return new XCLVar(contextName + " is startup");
 	}
