@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.HeadlessException;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
@@ -117,30 +118,34 @@ public class XCLUI implements EventHandler {
 	}
 
 	protected void init() {
-		ImageIcon icon = new ImageIcon(XCLUI.class.getResource(XCLConstants.ICON_IMAGE_PATH));
-		getFrame().setIconImage(icon.getImage());  
-		getFrame().setSize(1000, 600);
-		getFrame().setResizable(true);
-		getFrame().setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		getFrame().addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				console.exit(0);
+		try {
+			ImageIcon icon = new ImageIcon(XCLUI.class.getResource(XCLConstants.ICON_IMAGE_PATH));
+			getFrame().setIconImage(icon.getImage());  
+			getFrame().setSize(1000, 600);
+			getFrame().setResizable(true);
+			getFrame().setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+			getFrame().addWindowListener(new WindowAdapter() {
+				public void windowClosing(WindowEvent e) {
+					console.exit(0);
+				}
+				public void windowDeiconified(WindowEvent e) {
+					requestFocus(getTextCmd());
+				}
+			});
+			this.cardPanel.setLayout(cardLayout);
+			this.cardPanel.add("console", getConsolePanel());
+			this.cardPanel.add("input", getInputPanel());
+			getFrame().setLayout(new BorderLayout(0, 0));
+			getFrame().add(getTextPrompt(), BorderLayout.SOUTH);
+			getFrame().add(cardPanel, BorderLayout.CENTER);
+			getFrame().setVisible(true);
+			console.output(XCLConstants.VERSION_PROMPT);
+			initLogger();
+			for (String cmdKey : console.commands().keySet()) {
+				keys.add(cmdKey);
 			}
-			public void windowDeiconified(WindowEvent e) {
-				requestFocus(getTextCmd());
-			}
-		});
-		this.cardPanel.setLayout(cardLayout);
-		this.cardPanel.add("console", getConsolePanel());
-		this.cardPanel.add("input", getInputPanel());
-		getFrame().setLayout(new BorderLayout(0, 0));
-		getFrame().add(getTextPrompt(), BorderLayout.SOUTH);
-		getFrame().add(cardPanel, BorderLayout.CENTER);
-		getFrame().setVisible(true);
-		console.output(XCLConstants.VERSION_PROMPT);
-		initLogger();
-		for (String cmdKey : console.commands().keySet()) {
-			keys.add(cmdKey);
+		} catch (HeadlessException e) {
+			e.printStackTrace();
 		}
 	}
 	

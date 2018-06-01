@@ -27,7 +27,10 @@ public class XCLStartupParas {
 	private void parsePara(String str) {
 		String p[] = str.split("=");
 		if (p.length == 2) {
-			paras.put(CommonUtils.trim(p[0]), CommonUtils.trim(p[1]));
+			String key = CommonUtils.trim(p[0]);
+			String value = CommonUtils.trim(p[1]);
+			paras.put(key, value);
+			System.setProperty(key, value);
 		}
 	}
 	

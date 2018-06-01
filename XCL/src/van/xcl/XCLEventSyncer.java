@@ -158,13 +158,9 @@ public class XCLEventSyncer {
 	}
 	
 	public void disconnect() {
-		/*
 		if (connectSender != null) {
 			connectSender.close();
-		} else if (acceptSender != null) {
-			acceptSender.close();
 		}
-		*/
 		if (acceptSender != null) {
 			acceptSender.close();
 		}
@@ -174,7 +170,8 @@ public class XCLEventSyncer {
 		System.out.println("XCLEventReceiver.syncEvent: isAccepted=" + isAccepted() + ",isConnected=" + isConnected());
 		if (connectSender != null) {
 			connectSender.send(event);
-		} else if (acceptSender != null) {
+		}
+		if (acceptSender != null) {
 			acceptSender.send(event);
 		}
 	}
