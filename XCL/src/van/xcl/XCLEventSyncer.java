@@ -158,9 +158,14 @@ public class XCLEventSyncer {
 	}
 	
 	public void disconnect() {
+		/*
 		if (connectSender != null) {
 			connectSender.close();
 		} else if (acceptSender != null) {
+			acceptSender.close();
+		}
+		*/
+		if (acceptSender != null) {
 			acceptSender.close();
 		}
 	}

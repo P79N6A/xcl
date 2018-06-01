@@ -341,27 +341,26 @@ public class XCLUI implements EventHandler {
 	
 	private XCLTextPane getTextInput() {
 		if (textInput == null) {
-//			textInput = new JTextPane();
 			textInput = new XCLTextPane(keys);
 			textInput.setBackground(XCLConstants.backgroundColor);
 			textInput.setForeground(XCLConstants.foregroundColor);
 			textInput.setSelectionColor(XCLConstants.selectionColor);
 			textInput.setCaretColor(XCLConstants.foregroundColor);
 			textInput.setFont(getDefaultFont());
-			//textInput.setWrapStyleWord(false);
 			textInput.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
 					if ((e.isControlDown() || e.isShiftDown()) && e.getKeyChar() == KeyEvent.VK_ENTER) {
 						String text = textInput.getText();
-						textQueue.add(text);
+						//textQueue.add(text);
+						console.setTextInput(text);
 					} else if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
-						textQueue.add(XCLConstants.ESC);
+						//textQueue.add(XCLConstants.ESC);
+						console.setTextInput(XCLConstants.ESC);
 					}
 				}
 			});
 			textInput.setEditable(true);
-//			new KeyAssist(textInput);
 		}
 		return textInput;
 	}
@@ -525,6 +524,8 @@ public class XCLUI implements EventHandler {
 			getTextInput().setText(message);
 			getTextInput().discardAllEdits();
 			requestFocus(getTextInput());
+		} else if (XCLEvent.setTextInput.equals(type)) {
+			textQueue.add(message);
 		} else if (XCLEvent.getTextInput.equals(type)) {
 			try {
 				String inputText = textQueue.take();

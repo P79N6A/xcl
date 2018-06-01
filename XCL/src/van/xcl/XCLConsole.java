@@ -6,6 +6,7 @@ import van.util.evt.EventEntity;
 import van.util.evt.EventSource;
 
 public interface XCLConsole extends EventSource {
+	public void setTextInput(String text);
 	public String getTextInput(String text, String tile);
 	public void prepare();
 	public void editable(boolean b);

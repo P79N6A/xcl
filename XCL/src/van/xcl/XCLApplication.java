@@ -162,7 +162,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
 	@Override
 	public void cancelCommand() {
 		info("Cancel command requested");
-		List<String> list = eventManager.stopAll(XCLEventGroup.cmd);
+		List<String> list = eventManager.stopAll(XCLEventGroup.CMD_EVENT);
 		for (String info : list) {
 			info(info + " thread is stopped.");
 		}
@@ -310,6 +310,11 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
 	}
 	
 	@Override
+	public void setTextInput(String text) {
+		this.eventManager.addEvent(this, XCLEvent.setTextInput, text);
+	}
+	
+	@Override
 	public String getTextInput(String text, String title) {
 		this.eventManager.addEvent(this, XCLEvent.textInput, text);
 		this.eventManager.addEvent(this, XCLEvent.textTitle, title);
@@ -375,8 +380,9 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler {
 		TaskService.getService().init("XCL", 10);
 		this.ui = new XCLUI(this);
 		this.eventManager = new EventManager();
-		this.eventManager.register(XCLEventGroup.ui, ui);
-		this.eventManager.register(XCLEventGroup.cmd, this);
+		this.eventManager.register(XCLEventGroup.SYNC_UI_EVENT, ui);
+		this.eventManager.register(XCLEventGroup.ASYNC_UI_EVENT, ui);
+		this.eventManager.register(XCLEventGroup.CMD_EVENT, this);
 		this.eventSyncer = new XCLEventSyncer(this, eventManager);
 		this.parser = new XCLCmdParser();
 		this.holder = new XCLCmdHolder();
