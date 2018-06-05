@@ -483,7 +483,7 @@ public class XCLUI implements EventHandler {
 	@Override
 	public boolean prepareEvent(EventEntity e) {
 		if (this.console.getSource().equals(e.getSource())) {
-			if (this.console.isConnected() || this.console.isAccepted()) {
+			if (this.console.hasConnectors() || this.console.hasAcceptors()) {
 				this.console.syncEvent(e); // synchronize local UI events to remote except XCLEvent.present
 			}
 		}

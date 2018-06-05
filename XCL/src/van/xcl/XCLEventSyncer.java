@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JOptionPane;
@@ -36,21 +37,21 @@ public class XCLEventSyncer {
 					eventManager.addEvent(s.getObject());
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
-				if (connectSender != null) {
-					connectSender.close();
-					connectSender = null;
-					console.info("XCLEventReceiver - Remote connection is disconnected.");
-				}
-				if (acceptSender != null) {
-					acceptSender.close();
-					acceptSender = null;
-					console.info("XCLEventReceiver - Local connection is disconnected.");
-				}
+				onSocketClosed(s);
+				console.info("XCLEventReceiver - Remote connection is disconnected.");
 			} finally {
 				console.info("Connection is disconnected.");
 				console.prepare();
 				console.editable(true);
+			}
+		}
+		public void close() {
+			if (this.s != null) {
+				try {
+					this.s.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -69,16 +70,8 @@ public class XCLEventSyncer {
 				this.bw.write(xstring + "\r\n");
 				this.bw.flush();
 			} catch (IOException e) {
-				if (connectSender != null) {
-					connectSender.close();
-					connectSender = null;
-					console.info("XCLEventSender - Remote connection is disconnected.");
-				}
-				if (acceptSender != null) {
-					acceptSender.close();
-					acceptSender = null;
-					console.info("XCLEventSender - Local connection is disconnected.");
-				}
+				onSocketClosed(s);
+				console.info("XCLEventReceiver - Remote connection is disconnected.");
 				e.printStackTrace();
 			}
 		}
@@ -89,6 +82,16 @@ public class XCLEventSyncer {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+		public Socket getSocket() {
+			return s;
+		}
+		@Override
+		public boolean equals(Object other) {
+			if (other instanceof XCLEventSender) {
+				return this.s.equals(((XCLEventSender) other).s);
+			}
+			return false;
 		}
 	}
 
@@ -101,13 +104,10 @@ public class XCLEventSyncer {
 			while (isRunning.get()) {
 				try {
 					Socket socket = ss.accept();
-					System.out.println("0--------------> " + socket.toString());
-					if (acceptSender == null) {
-						connected(socket);
-						acceptSender = new XCLEventSender(socket);
-					} else {
-						console.info("Client connection is skipped: " + socket.getRemoteSocketAddress().toString());
-					}
+					XCLEventReceiver receiver = new XCLEventReceiver(socket);
+					TaskService.getService().runTask(receiver);
+					XCLEventSender acceptor = new XCLEventSender(socket);
+					acceptors.add(acceptor);
 				} catch (IOException e) {
 					console.error(e.getMessage());
 				}
@@ -125,8 +125,9 @@ public class XCLEventSyncer {
 	private XCLConsole console;
 	private EventManager eventManager;
 	private AtomicBoolean isRunning = new AtomicBoolean(false);
-	private XCLEventSender connectSender;
-	private XCLEventSender acceptSender;
+	private Vector<XCLEventSender> connectors = new Vector<XCLEventSender>();
+	private Vector<XCLEventSender> acceptors = new Vector<XCLEventSender>();
+	
 	private XCLServerTask serverTask;
 	private String source;
 	private int port;
@@ -138,41 +139,47 @@ public class XCLEventSyncer {
 	}
 	
 	public void connect(String ip, int port) {
-		if (connectSender == null) {
-			try {
-				Socket socket = new Socket(ip, port);
-				connected(socket);
-				connectSender = new XCLEventSender(socket);
-				this.console.info("Server is connected: " + ip + ":" + port);
-			} catch (UnknownHostException e) {
-				console.error("Server connect failed: " + e.getMessage());
-			} catch (IOException e) {
-				console.error("Server connect failed: " + e.getMessage());
-			} finally {
-				console.prepare();
-				console.editable(true);
-			}
-		} else {
-			console.error("it is already connected!");
+		try {
+			Socket socket = new Socket(ip, port);
+			XCLEventReceiver receiver = new XCLEventReceiver(socket);
+			TaskService.getService().runTask(receiver);
+			XCLEventSender connector = new XCLEventSender(socket);
+			connectors.add(connector);
+			this.console.info("Server is connected: " + ip + ":" + port);
+		} catch (UnknownHostException e) {
+			console.error("Server connect failed: " + e.getMessage());
+		} catch (IOException e) {
+			console.error("Server connect failed: " + e.getMessage());
+		} finally {
+			console.prepare();
+			console.editable(true);
 		}
 	}
 	
 	public void disconnect() {
-		if (connectSender != null) {
-			connectSender.close();
+		synchronized (connectors) {
+			for (XCLEventSender sender : connectors) {
+				sender.close();
+			}
 		}
-		if (acceptSender != null) {
-			acceptSender.close();
+		synchronized (acceptors) {
+			for (XCLEventSender sender : acceptors) {
+				sender.close();
+			}
 		}
 	}
 	
 	public void syncEvent(EventEntity event) {
-		System.out.println("XCLEventReceiver.syncEvent: isAccepted=" + isAccepted() + ",isConnected=" + isConnected());
-		if (connectSender != null) {
-			connectSender.send(event);
+		System.out.println("XCLEventReceiver.syncEvent: hasAcceptors=" + hasAcceptors() + ",hasConnectors=" + hasConnectors());
+		synchronized (connectors) {
+			for (XCLEventSender sender : connectors) {
+				sender.send(event);
+			}
 		}
-		if (acceptSender != null) {
-			acceptSender.send(event);
+		synchronized (acceptors) {
+			for (XCLEventSender sender : acceptors) {
+				sender.send(event);
+			}
 		}
 	}
 	
@@ -193,29 +200,29 @@ public class XCLEventSyncer {
 			try {
 				serverSocket = new ServerSocket(port);
 				this.port = port;
-				this.console.info("[" + source + "] Server startup succeed: " + port);
 				isSuccess = true;
 			} catch (IOException e) {
-				this.console.error("[" + source + "] Server startup failed: " + port + " error: " + e.getMessage());
 				port++;
 				offset++;
 			}
 		} while (!isSuccess && offset < XCLConstants.DEFAULT_PORT_OFFSET);
 		if (isSuccess) {
+			this.source = CommonUtils.getLocalIPAddress() + ":" + this.port;
 			this.isRunning.set(true);
 			this.serverTask = new XCLServerTask(serverSocket);
 			TaskService.getService().runTask(serverTask);
+			this.console.info("[" + source + "] Server startup succeed");
 		} else {
 			JOptionPane.showMessageDialog(null, "[" + source + "] startup failed!");
 		}
 	}
 	
-	public boolean isConnected() {
-		return connectSender != null;
+	public boolean hasConnectors() {
+		return connectors.size() > 0;
 	}
 	
-	public boolean isAccepted() {
-		return acceptSender != null;
+	public boolean hasAcceptors() {
+		return acceptors.size() > 0;
 	}
 	
 	public String getSource() {
@@ -228,9 +235,23 @@ public class XCLEventSyncer {
 	
 	// ------------ private methods 
 	
-	private void connected(Socket socket) throws IOException {
-		XCLEventReceiver receiver = new XCLEventReceiver(socket);
-		TaskService.getService().runTask(receiver);
+	private void onSocketClosed(Socket s) {
+		synchronized (connectors) {
+			for (XCLEventSender sender : connectors) {
+				if (sender.getSocket().equals(s)) {
+					sender.close();
+					connectors.remove(sender);
+				}
+			}
+		}
+		synchronized (acceptors) {
+			for (XCLEventSender sender : acceptors) {
+				if (sender.getSocket().equals(s)) {
+					sender.close();
+					acceptors.remove(sender);
+				}
+			}
+		}
 	}
 	
 }

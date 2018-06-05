@@ -192,7 +192,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	@Override
 	public boolean prepareEvent(EventEntity e) {
 		if (this.getSource().equals(e.getSource())) {
-			if (this.eventSyncer.isConnected()) {
+			if (this.eventSyncer.hasConnectors()) {
 				this.syncEvent(e); // synchronize local command event to remote
 				return false;
 			}
@@ -335,13 +335,13 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	}
 	
 	@Override
-	public boolean isConnected() {
-		return this.eventSyncer.isConnected();
+	public boolean hasConnectors() {
+		return this.eventSyncer.hasConnectors();
 	}
 
 	@Override
-	public boolean isAccepted() {
-		return this.eventSyncer.isAccepted();
+	public boolean hasAcceptors() {
+		return this.eventSyncer.hasAcceptors();
 	}
 	
 	@Override

@@ -30,8 +30,8 @@ public interface XCLConsole extends EventSource {
 	public void saveHistory(String cmd);
 	public void connect(String ip, int port);
 	public void disconnect();
-	public boolean isConnected();
-	public boolean isAccepted();
+	public boolean hasConnectors();
+	public boolean hasAcceptors();
 	public int getPort();
 	public void syncEvent(EventEntity e);
 }
