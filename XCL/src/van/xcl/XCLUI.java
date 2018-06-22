@@ -246,6 +246,7 @@ public class XCLUI implements EventHandler {
 			textCmd.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
+					/*
 					if (e.getKeyChar() == KeyEvent.VK_ENTER) {
 						String cmdStr = CommonUtils.trim(textCmd.getText());
 						if (!CommonUtils.isEmpty(cmdStr)) {
@@ -257,11 +258,24 @@ public class XCLUI implements EventHandler {
 							textCmd.setText(null);
 						}
 					}
+					*/
 				}
 				@Override
 				public void keyPressed(KeyEvent e) {
 					if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
+						e.consume();
 						console.cancelCommand();
+					} else if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+						e.consume();
+						String cmdStr = CommonUtils.trim(textCmd.getText());
+						if (!CommonUtils.isEmpty(cmdStr)) {
+							console.input(cmdStr);
+							console.run(cmdStr);
+							console.present(null);
+						} else {
+							// clear
+							textCmd.setText(null);
+						}
 					}
 				}
 				@Override
