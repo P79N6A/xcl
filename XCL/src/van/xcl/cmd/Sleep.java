@@ -4,12 +4,12 @@ import java.util.Map;
 
 import van.xcl.Command;
 import van.xcl.CommandException;
-import van.xcl.XCLConsole;
 import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
-import van.xcl.XCLContext;
 import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLConsole;
+import van.xcl.XCLContext;
 import van.xcl.XCLVar;
 
 public class Sleep implements Command {
@@ -44,7 +44,13 @@ public class Sleep implements Command {
 		long timeout = args.get("timeout").getNumber().longValue();
 		try {
 			console.info("sleep " + timeout + "ms");
-			Thread.sleep(timeout);
+			long startMillis = System.currentTimeMillis();
+			long elapsed = 0L;
+			for (; elapsed < timeout ;) {
+				Thread.sleep(1000L);
+				elapsed = System.currentTimeMillis() - startMillis;
+				console.info(elapsed + "ms is elapsed");
+			}
 		} catch (InterruptedException e) {
 			return new XCLVar(Boolean.FALSE.toString());
 		}
