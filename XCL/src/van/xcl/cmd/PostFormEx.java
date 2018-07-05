@@ -7,29 +7,30 @@ import com.alibaba.fastjson.JSONObject;
 import van.util.http.HttpClientService;
 import van.util.http.HttpResult;
 import van.xcl.Command;
-import van.xcl.XCLConsole;
 import van.xcl.Parameters;
-import van.xcl.XCLContext;
 import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLConsole;
+import van.xcl.XCLContext;
 import van.xcl.XCLVar;
 
-public class PostForm implements Command {
+public class PostFormEx implements Command {
 	private HttpClientService service = new HttpClientService();
 
 	@Override
 	public String name() {
-		return "postf";
+		return "postx";
 	}
 	
 	@Override
 	public String description() {
-		return "post form";
+		return "post form ex";
 	}
 
 	@Override
 	public Parameters parameters() {
 		Parameters parameters = new Parameters();
 		parameters.add("url");
+		parameters.add("header");
 		parameters.add("body");
 		return parameters;
 	}
@@ -38,6 +39,7 @@ public class PostForm implements Command {
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		try {
 			String url = args.get("url").toString();
+			String header = args.get("header").toString();
 			String body = args.get("body").toString();
 			console.prompt("Posting... [url: " + url + "]");
 			Map<String, String> params = new HashMap<String, String>();
@@ -47,7 +49,15 @@ public class PostForm implements Command {
 					params.put(attr[0], attr[1]);
 				}
 			}
-			HttpResult httpResult = service.doPost(url, params);
+			Map<String, String> headers = new HashMap<String, String>();
+			String[] arr = header.split(";");
+			for (String str : arr) {
+				String[] a = str.split(":");
+				if (a.length == 2) {
+					headers.put(a[0], a[1]);
+				}
+			}
+			HttpResult httpResult = service.doPost(url, params, headers);
 			console.info(httpResult.toString());
 			console.prompt("posted. [url: " + url + "]");
 			try {

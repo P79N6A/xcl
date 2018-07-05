@@ -40,6 +40,7 @@ public class PostJson implements Command {
 			String body = args.get("body").toString();
 			console.prompt("Posting... [url: " + url + "]");
 			HttpResult httpResult = service.doPostJson(url, body);
+			console.info(httpResult.toString());
 			console.prompt("posted. [url: " + url + "]");
 			
 			try {

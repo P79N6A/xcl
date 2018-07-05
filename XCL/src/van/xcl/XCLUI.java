@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -145,7 +146,7 @@ public class XCLUI implements EventHandler {
 				keys.add(cmdKey);
 			}
 		} catch (HeadlessException e) {
-			e.printStackTrace();
+			console.output("HeadlessException found");
 		}
 	}
 	
@@ -506,6 +507,10 @@ public class XCLUI implements EventHandler {
 	
 	@Override
 	public String handleEvent(EventEntity event) {
+		if (GraphicsEnvironment.isHeadless()) {
+			// skipped as headless
+			return null;
+		}
 		EventType type = event.getType();
 		String message = event.getMessage();
 		String source = !console.getSource().equals(event.getSource()) ? "[" + event.getSource() + "]: " : "";

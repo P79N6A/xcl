@@ -6,6 +6,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -173,7 +174,7 @@ public class HttpClientService {
 	public HttpResult doPost(String url) throws ClientProtocolException, IOException {
 		return doPost(url, new HashMap<String, String>());
 	}
-
+	
 	/**
 	 * Handle POST request with given parameters
 	 * @param url
@@ -183,6 +184,18 @@ public class HttpClientService {
 	 * @throws IOException
 	 */
 	public HttpResult doPost(String url, Map<String, String> params) throws ClientProtocolException, IOException {
+		return doPost(url, params, null);
+	}
+
+	/**
+	 * Handle POST request with given parameters and headers
+	 * @param url
+	 * @param params
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public HttpResult doPost(String url, Map<String, String> params, Map<String, String> headers) throws ClientProtocolException, IOException {
 		System.out.println("HttpClientService.doPost [url: " + url + ", params: " + params.toString() + "]");
 		HttpPost httpPost = new HttpPost(url);
 		if (null != params && !params.isEmpty()) {
@@ -196,10 +209,15 @@ public class HttpClientService {
 
 		httpPost.setConfig(this.requestConfig);
 		httpPost.setHeader("User-Agent", DEFAULT_USER_AGENT);
+		if (headers != null) {
+			for (Entry<String, String> header : headers.entrySet()) {
+				httpPost.setHeader(header.getKey(), header.getValue());
+			}
+		}
 		CloseableHttpResponse response = null;
 		try {
 			response = getHttpClient().execute(httpPost);
-			return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), "UTF-8"));
+			return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), "UTF-8"), response.toString());
 		} finally {
 			if (response != null) {
 				response.close();
@@ -226,7 +244,7 @@ public class HttpClientService {
 		CloseableHttpResponse response = null;
 		try {
 			response = this.getHttpClient().execute(httpPost);
-			return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), "UTF-8"));
+			return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), "UTF-8"), response.toString());
 		} finally {
 			if (response != null) {
 				response.close();
