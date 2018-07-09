@@ -237,7 +237,8 @@ public class XCLUI implements EventHandler {
 		if (textCmd == null) {
 //			textCmd = new JTextField();
 			textCmd = new XCLTextPane(keys);
-			textCmd.setEditable(false);
+//			textCmd.setEditable(false);
+			textCmd.setEditable(true);
 			textCmd.setBorder(null);
 			textCmd.setBackground(XCLConstants.backgroundColor);
 			textCmd.setForeground(XCLConstants.foregroundColor);
@@ -537,8 +538,8 @@ public class XCLUI implements EventHandler {
 			getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
 			initLogger();
 		} else if (XCLEvent.editable.equals(type)) {
-			boolean editable = Boolean.valueOf(message);
-			getTextCmd().setEditable(editable);
+			// boolean editable = Boolean.valueOf(message);
+			// getTextCmd().setEditable(editable);
 			requestFocus(getTextCmd());
 		} else if (XCLEvent.present.equals(type)) {
 			getTextCmd().setText(message);
