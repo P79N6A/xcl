@@ -33,6 +33,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 /**
  * HttpClientService
@@ -40,6 +41,8 @@ import org.apache.http.util.EntityUtils;
  *
  */
 public class HttpClientService {
+	
+	private Logger logger = Logger.getLogger(getClass());
 
 	private static final String DEFAULT_USER_AGENT = 
 			"Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36";
@@ -152,7 +155,7 @@ public class HttpClientService {
 	 * @throws URISyntaxException
 	 */
 	public String doGet(String url, Map<String, String> params) throws ClientProtocolException, IOException, URISyntaxException {
-		System.out.println("HttpClientService.doGet [url: " + url + ", params: " + params.toString() + "]");
+		logger.info("HttpClientService.doGet [url: " + url + ", params: " + params.toString() + "]");
 		if (!params.isEmpty()) {
 			URIBuilder uriBuilder = new URIBuilder();
 			for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -196,7 +199,7 @@ public class HttpClientService {
 	 * @throws IOException
 	 */
 	public HttpResult doPost(String url, Map<String, String> params, Map<String, String> headers) throws ClientProtocolException, IOException {
-		System.out.println("HttpClientService.doPost [url: " + url + ", params: " + params.toString() + "]");
+		logger.info("HttpClientService.doPost [url: " + url + ", params: " + params.toString() + "]");
 		HttpPost httpPost = new HttpPost(url);
 		if (null != params && !params.isEmpty()) {
 			ArrayList<NameValuePair> pairs = new ArrayList<NameValuePair>();
@@ -234,7 +237,7 @@ public class HttpClientService {
 	 * @throws IOException
 	 */
 	public HttpResult doPostJson(String url, String json) throws ClientProtocolException, IOException {
-		System.out.println("HttpClientService.doPost [url: " + url + ", params: " + json + "]");
+		logger.info("HttpClientService.doPost [url: " + url + ", params: " + json + "]");
 		HttpPost httpPost = new HttpPost(url);
 		httpPost.setConfig(this.requestConfig);
 		if (json != null) {

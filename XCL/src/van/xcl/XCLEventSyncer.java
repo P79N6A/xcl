@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+
 import van.util.CommonUtils;
 import van.util.ObjectSerilizer;
 import van.util.evt.EventEntity;
@@ -22,6 +24,8 @@ import van.util.task.TaskService;
 
 public class XCLEventSyncer {
 	
+	private Logger logger = Logger.getLogger(getClass());
+	
 	class XCLEventReceiver implements Task {
 		private Socket s;
 		public XCLEventReceiver(Socket s) {
@@ -29,7 +33,7 @@ public class XCLEventSyncer {
 		}
 		public void run() {
 			try {
-				System.out.println("XCLEventReceiver is running...");
+				logger.info("XCLEventReceiver is running...");
 				BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 				String line = null;
 				while (null != (line = br.readLine())) {
@@ -172,7 +176,7 @@ public class XCLEventSyncer {
 	}
 	
 	public void syncEvent(EventEntity event) {
-		System.out.println("XCLEventReceiver.syncEvent: hasAcceptors=" + hasAcceptors() + ",hasConnectors=" + hasConnectors());
+		logger.info("XCLEventReceiver.syncEvent: hasAcceptors=" + hasAcceptors() + ",hasConnectors=" + hasConnectors());
 		synchronized (connectors) {
 			for (XCLEventSender sender : connectors) {
 				sender.send(event);

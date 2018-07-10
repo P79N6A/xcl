@@ -6,7 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 public class EventManager {
+	
+	private Logger logger = Logger.getLogger(getClass());
 	
 	private Map<String, EventQueue> queueMap = new HashMap<String, EventQueue>();
 	
@@ -14,7 +18,7 @@ public class EventManager {
 		if (!queueMap.containsKey(group)) {
 			EventQueue queue = new EventQueue(handler);
 			queueMap.put(group.getGroupName(), queue);
-			System.out.println("event group is registered: " + group.getGroupName());
+			logger.info("event group is registered: " + group.getGroupName());
 		}
 	}
 	

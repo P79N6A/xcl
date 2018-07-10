@@ -51,6 +51,8 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+import org.apache.log4j.Logger;
+
 import van.util.CommonUtils;
 import van.util.evt.EventEntity;
 import van.util.evt.EventHandler;
@@ -58,6 +60,8 @@ import van.util.evt.EventType;
 
 public class XCLUI implements EventHandler {
 
+	private Logger logger = Logger.getLogger(getClass());
+	
 	class XScrollBarUI extends BasicScrollBarUI {
 		public XScrollBarUI() {
 			super();
@@ -515,7 +519,7 @@ public class XCLUI implements EventHandler {
 		EventType type = event.getType();
 		String message = event.getMessage();
 		String source = !console.getSource().equals(event.getSource()) ? "[" + event.getSource() + "]: " : "";
-		System.out.println("[" + console.getSource() + "] XCLUI.handleEvent [type: " + type + ", message: " + message + "]");
+		logger.info("[" + console.getSource() + "] XCLUI.handleEvent [type: " + type + ", message: " + message + "]");
 		if (XCLEvent.input.equals(type)) {
 			console(XCLConstants.IN_PROMPT + source + message + "\n", XCLConstants.foregroundColor); // source
 		} else if (XCLEvent.output.equals(type)) {

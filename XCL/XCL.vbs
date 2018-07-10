@@ -9,7 +9,8 @@ Dim mainClass
  mainClass = "van.xcl.XCLStartup"
 'command string
 Dim startupPara
- startupPara = "startup=XCLStartup.xcl"
+ 'startupPara = "startup=XCLStartup.xcl"
+ startupPara = ""
 Dim cmd 
  cmd = "CMD /c java -Djava.ext.dirs=" + workDir + " -cp " + classPath + " " + mainClass + " " + startupPara
 'create Wscript.Shell object to run the command

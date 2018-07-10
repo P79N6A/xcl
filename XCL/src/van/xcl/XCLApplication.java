@@ -17,6 +17,8 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+
 import van.util.CommonUtils;
 import van.util.evt.EventCallback;
 import van.util.evt.EventEntity;
@@ -32,6 +34,8 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	 * 
 	 */
 	private static final long serialVersionUID = -1247965919743709171L;
+	
+	private Logger logger = Logger.getLogger(getClass());
 
 	private XCLUI ui = null;
 	private XCLContext context = null;
@@ -486,7 +490,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 			try {
 				Command command = clazz.newInstance();
 				this.holder.addCommand(command.name(), command);
-				System.out.println("--> " + command.name() + " is loaded.");
+				logger.info("--> " + command.name() + " is loaded.");
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}

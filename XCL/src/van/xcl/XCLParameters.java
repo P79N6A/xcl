@@ -3,10 +3,14 @@ package van.xcl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.log4j.Logger;
+
 import java.util.Set;
 
 public class XCLParameters {
 
+	private static Logger logger = Logger.getLogger(XCLParameters.class);
 	private Map<String, String> map = new HashMap<String, String>();
 	
 	public String getValue(String key) {
@@ -100,7 +104,7 @@ public class XCLParameters {
 	
 	public static void main(String[] args) {
 		XCLParameters p = resolveXCLParas("-abcdsa=123213~-asdfasdfsdfsdfa=323323");
-		System.out.println(p.toString());
+		logger.info(p.toString());
 		
 	}
 	

@@ -86,7 +86,7 @@ public class EventQueue {
 					synchronized (activeTasks) {
 						activeTasks.add(this);
 					}
-					// System.out.println("EventQueue --> handle [source: " + event.getSource() + ", type: " + event.getType() + ", message: " + event.getMessage() + "]");
+					// logger.info("EventQueue --> handle [source: " + event.getSource() + ", type: " + event.getType() + ", message: " + event.getMessage() + "]");
 					return handler.handleEvent(event);
 				} finally {
 					synchronized (activeTasks) {

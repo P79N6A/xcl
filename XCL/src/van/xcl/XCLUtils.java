@@ -14,9 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.log4j.Logger;
+
 import java.util.Scanner;
 
 public class XCLUtils {
+	
+	private static Logger logger = Logger.getLogger(XCLUtils.class);
 	
 	public static String defaulltFontPath = "font/YaheiConsolasHybrid.ttf";
 	
@@ -165,7 +170,7 @@ public class XCLUtils {
 	
 	public static void main(String[] args) {
 		String s = "cmd asdfas \"{\\\"sadfsad\\\": \\\"asdfsad\\\"}\" asdfasd;\n asadfsadf asdfasd";
-		System.out.println(resolveCommands(s));
+		logger.info(resolveCommands(s));
 	}
 	
 }
