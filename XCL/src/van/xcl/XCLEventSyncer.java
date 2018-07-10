@@ -14,9 +14,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JOptionPane;
 
 import van.util.CommonUtils;
+import van.util.ObjectSerilizer;
 import van.util.evt.EventEntity;
 import van.util.evt.EventManager;
-import van.util.io.IoSerilizer;
 import van.util.task.Task;
 import van.util.task.TaskService;
 
@@ -33,7 +33,7 @@ public class XCLEventSyncer {
 				BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 				String line = null;
 				while (null != (line = br.readLine())) {
-					IoSerilizer<EventEntity> s = new IoSerilizer<EventEntity>(line);
+					ObjectSerilizer<EventEntity> s = new ObjectSerilizer<EventEntity>(line);
 					eventManager.addEvent(s.getObject());
 				}
 			} catch (IOException e) {
@@ -65,7 +65,7 @@ public class XCLEventSyncer {
 		}
 		public void send(EventEntity event) {
 			try {
-				IoSerilizer<EventEntity> s = new IoSerilizer<EventEntity>(event);
+				ObjectSerilizer<EventEntity> s = new ObjectSerilizer<EventEntity>(event);
 				String xstring = s.getString();
 				this.bw.write(xstring + "\r\n");
 				this.bw.flush();

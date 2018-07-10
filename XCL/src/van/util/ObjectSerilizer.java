@@ -1,4 +1,4 @@
-package van.util.io;
+package van.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class IoSerilizer<T> {
+public class ObjectSerilizer<T> {
 
 	private static final char delimeter = (char)0;
 	private T object;
 	private String string;
 	
-	public IoSerilizer(T object) {
+	public ObjectSerilizer(T object) {
 		this.object = object;
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -31,7 +31,7 @@ public class IoSerilizer<T> {
 		}
 	}
 	@SuppressWarnings("unchecked")
-	public IoSerilizer(String string) {
+	public ObjectSerilizer(String string) {
 		this.string = string;
 		try {
 			String[] array = string.split(String.valueOf(delimeter));
