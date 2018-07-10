@@ -109,7 +109,9 @@ public class XCLEventSyncer {
 					XCLEventSender acceptor = new XCLEventSender(socket);
 					acceptors.add(acceptor);
 				} catch (IOException e) {
-					console.error(e.getMessage());
+					if (isRunning.get()) {
+						console.error(e.getMessage());
+					}
 				}
 			}
 		}

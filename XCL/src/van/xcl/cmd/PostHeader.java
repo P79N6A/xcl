@@ -13,17 +13,17 @@ import van.xcl.XCLConsole;
 import van.xcl.XCLContext;
 import van.xcl.XCLVar;
 
-public class PostFormEx implements Command {
+public class PostHeader implements Command {
 	private HttpClientService service = new HttpClientService();
 
 	@Override
 	public String name() {
-		return "postx";
+		return "posth";
 	}
 	
 	@Override
 	public String description() {
-		return "post form ex";
+		return "post header";
 	}
 
 	@Override
