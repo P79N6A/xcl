@@ -145,7 +145,7 @@ public class XCLUI implements EventHandler {
 			getFrame().add(cardPanel, BorderLayout.CENTER);
 			getFrame().setVisible(true);
 			console.output(XCLConstants.VERSION_PROMPT);
-			initLogger();
+			initOutFile();
 			for (String cmdKey : console.commands().keySet()) {
 				keys.add(cmdKey);
 			}
@@ -154,15 +154,15 @@ public class XCLUI implements EventHandler {
 		}
 	}
 	
-	private void initLogger() {
-		File logFile = new File(XCLConstants.LOG_FILE);
+	private void initOutFile() {
+		File outFile = new File(XCLConstants.OUT_FILE);
 		try {
 			if (logWriter != null) {
 				logWriter.close();
-				logFile.delete();
+				outFile.delete();
 			}
-			logWriter = new BufferedWriter(new FileWriter(logFile));
-			console(XCLConstants.INFO_PROMPT + " - " + logFile.getAbsolutePath() + "\n", XCLConstants.promptColor);
+			logWriter = new BufferedWriter(new FileWriter(outFile));
+			console(XCLConstants.INFO_PROMPT + " - " + outFile.getAbsolutePath() + "\n", XCLConstants.promptColor);
 		} catch (IOException e) {
 			console("Failed to init the log file: " + e.getMessage(), XCLConstants.errorColor);
 		}
@@ -540,7 +540,7 @@ public class XCLUI implements EventHandler {
 		} else if (XCLEvent.clear.equals(type)) {
 			getTextConsole().setText("");
 			getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
-			initLogger();
+			initOutFile();
 		} else if (XCLEvent.editable.equals(type)) {
 			// boolean editable = Boolean.valueOf(message);
 			// getTextCmd().setEditable(editable);
