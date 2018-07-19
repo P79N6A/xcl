@@ -241,6 +241,7 @@ public class XCLUI implements EventHandler {
 		if (textCmd == null) {
 //			textCmd = new JTextField();
 			textCmd = new XCLTextPane(keys);
+			textCmd.setCaret(new XCLCaret());
 //			textCmd.setEditable(false);
 			textCmd.setEditable(true);
 			textCmd.setBorder(null);
