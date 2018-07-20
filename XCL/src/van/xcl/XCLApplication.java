@@ -323,7 +323,6 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	
 	@Override
 	public void exit(int status) {
-		shutdown();
 		XCLStartup.shutdown(this, status);
 		// System.exit(status);
 	}
@@ -498,7 +497,8 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	}
 	
 	private void initRunFile() {
-		this.runFile = "XCL-" + System.currentTimeMillis() + ".run";
+		String pid = XCLUtils.getPid();
+		this.runFile = "XCL-" + pid + ".run";
 		boolean isSuccess = false;
 		try {
 			isSuccess = getRunFile().createNewFile();

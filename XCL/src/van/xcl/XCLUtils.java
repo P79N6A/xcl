@@ -9,15 +9,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 
 import org.apache.log4j.Logger;
-
-import java.util.Scanner;
 
 public class XCLUtils {
 	
@@ -166,6 +166,12 @@ public class XCLUtils {
 		}
 		font = font.deriveFont(style, size);
 		return font;
+	}
+	
+	public static String getPid() {
+		String name = ManagementFactory.getRuntimeMXBean().getName();
+		String pid = name.split("@")[0];
+		return pid;
 	}
 	
 	public static void main(String[] args) {

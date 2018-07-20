@@ -33,10 +33,33 @@ public class XCLStartup {
 		}
 	}
 	
+	private static void initShutdownHook() {
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				if (!activeApps.isEmpty()) {
+					System.out.println("ShutdownHook - terminated!");
+					terminate(-1);
+				} else {
+					System.out.println("ShutdownHook - normal shutdown.");
+				}
+			}
+		});
+	}
+	
 	public static void shutdown(XCLApplication app, int status) {
+		app.shutdown();
 		activeApps.remove(app);
 		if (activeApps.isEmpty()) {
 			System.exit(status);
+		}
+	}
+	
+	public static void terminate(int status) {
+		if (!activeApps.isEmpty()) {
+			for (XCLApplication app : activeApps) {
+				app.shutdown();
+			}
+			activeApps.clear();
 		}
 	}
 	
@@ -53,9 +76,9 @@ public class XCLStartup {
 	}
 	
 	public static void main(String[] args) {
-		XCLStartupParas paras = new XCLStartupParas(args);
 		initLookAndFeel();
-		startup(paras);
+		initShutdownHook();
+		startup(new XCLStartupParas(args));
 	}
 
 }
