@@ -104,7 +104,7 @@ public class XCLUtils {
 				throw new RuntimeException("Incomplete command line found: " + str);
 			}
 		}
-		String[] newArr = newStr.toString().split(";");
+		String[] newArr = newStr.toString().split(XCLConstants.TERMINATE_TAG);
 		List<List<String>> cmdList = new ArrayList<List<String>>();
 		for (String s : newArr) {
 			for (Entry<String, String> entry : map.entrySet()) {

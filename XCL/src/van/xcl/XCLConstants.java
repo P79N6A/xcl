@@ -29,6 +29,7 @@ public class XCLConstants {
 	public static final String ECHO_COMMAND = "echo";
 	public static final String CRAFT_COMMAND = "craft";
 	public static final String DISCONNECT_COMMAND = "disconnect";
+	public static final String TERMINATE_TAG = ";";
 	public static final String ESC = ":esc";
 	public static final Font DEFAULT_FONT = XCLUtils.getDefaultFont(Font.PLAIN, 15);
 	public static final long HEALTH_CHECK_PERIOD = 5000L;

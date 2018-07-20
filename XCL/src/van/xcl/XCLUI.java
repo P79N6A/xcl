@@ -274,10 +274,13 @@ public class XCLUI implements EventHandler {
 						console.cancelCommand();
 					} else if (e.getKeyChar() == KeyEvent.VK_ENTER) {
 						e.consume();
-						String cmdStr = CommonUtils.trim(textCmd.getText());
-						if (!CommonUtils.isEmpty(cmdStr)) {
-							console.input(cmdStr);
-							console.run(cmdStr);
+						String cmd = CommonUtils.trim(textCmd.getText());
+						if (!CommonUtils.isEmpty(cmd)) {
+							if (!cmd.endsWith(XCLConstants.TERMINATE_TAG) && !cmd.endsWith(XCLConstants.PARAS_DEFAULT)) { // add terminate tag by default
+								cmd += " " + XCLConstants.PARAS_DEFAULT;
+							}
+							console.input(cmd); // save historic command
+							console.run(cmd);
 							console.present(null);
 						} else {
 							// clear
