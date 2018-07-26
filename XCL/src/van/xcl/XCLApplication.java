@@ -322,6 +322,16 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	}
 	
 	@Override
+	public void addKey(String key) {
+		this.ui.addKey(key);
+	}
+
+	@Override
+	public void removeKey(String key) {
+		this.ui.removeKey(key);
+	}
+
+	@Override
 	public void exit(int status) {
 		XCLStartup.shutdown(this, status);
 		// System.exit(status);

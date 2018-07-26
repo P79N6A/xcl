@@ -504,6 +504,10 @@ public class XCLUI implements EventHandler {
 		this.keys.add(key);
 	}
 	
+	public void removeKey(String key) {
+		this.keys.remove(key);
+	}
+	
 	@Override
 	public boolean prepareEvent(EventEntity e) {
 		if (this.console.getSource().equals(e.getSource())) {

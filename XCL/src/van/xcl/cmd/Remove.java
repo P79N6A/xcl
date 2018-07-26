@@ -37,6 +37,7 @@ public class Remove implements Command {
 				console.output("[" + objectName + "] variable is removed.");
 			} else if (context.containsCraft(objectName)) {
 				context.removeCraft(objectName);
+				console.removeKey(objectName);
 				console.output("[" + objectName + "] craft is removed.");
 			} else {
 				console.error("[" + objectName + "] object not found.");
