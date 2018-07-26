@@ -37,6 +37,9 @@ public class Craft implements Command {
 				if (context.containsCraft(value.toString())) {
 					throw new ParameterException("Syntax error: duplicate craft: " + value.toString());
 				}
+				if ("-=".equals(value.toString())) {
+					throw new ParameterException("Syntax error: illegal craft name: " + value.toString());
+				}
 			}
 		}).setAutoResolve(false);
 		return parameters;
