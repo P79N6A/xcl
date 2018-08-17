@@ -1,0 +1,2 @@
+ssh2 -action=cmd -username=appuser -hostname=10.0.62.153 -password=lMiS2)1^ 
+"cd /home/appuser/logs/lms-uat;tail -f lms.log";

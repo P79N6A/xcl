@@ -1,0 +1,7 @@
+echo postf 
+		http://localhost:8080/lms.application/lmsMobileRest/getDocDetail.json 
+		sys={}&biz=e30=
+
+// adasdfads
+// asdfasdfasd
+// xxx

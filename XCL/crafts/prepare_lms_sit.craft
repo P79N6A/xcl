@@ -1,0 +1,8 @@
+delete C:\Users\FORMSSI\Desktop\deploy "*";
+delete D:\gitCode.deploy\lms "*";
+cp D:\gitCode\lms D:\gitCode.deploy\lms "!*.class";
+exec "cmd /c mvn clean -f D:/gitCode.deploy/lms";
+exec "cmd /c mvn install -f D:/gitCode.deploy/lms";
+cp D:\gitCode.deploy\lms\lms.application\target\lms.application.war C:\Users\FORMSSI\Desktop\deploy\lms.application.war;
+cp D:\gitCode.deploy\lms\lms.bpm\target\lms.bpm.war C:\Users\FORMSSI\Desktop\deploy\lms.bpm.war;
+cp D:\Workspaces\Workspace2\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\lms.html C:\Users\FORMSSI\Desktop\deploy\lms.html;

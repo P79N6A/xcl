@@ -1,0 +1,8 @@
+// the following tools will be started one by one.
+login_portal ~;
+start C:\Users\FORMSSI\AppData\Local\SourceTree\SourceTree.exe;
+start D:\Tools\eclipse\eclipse.exe;
+start D:\Tools\sqlyog10\SQLyog10.2\SQLyog.exe;
+start D:\Tools\Notepad++\notepad++.exe;
+start outlook;
+edit;

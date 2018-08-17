@@ -1,0 +1,10 @@
+set u appuser;
+set p lMiS2)1^;
+set h 10.0.62.151;
+
+// stop server
+ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/app/apache-tomcat-7.0.73/bin;shutdown.sh";
+// wait 15s
+sleep 10000;
+// start server
+ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/app/apache-tomcat-7.0.73/bin;startup.sh";

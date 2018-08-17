@@ -197,7 +197,7 @@ public class XCLEventSyncer {
 		}
 	}
 	
-	public void startup() {
+	public int startup() {
 		int port = XCLConstants.DEFAULT_PORT;
 		int offset = 0;
 		boolean isSuccess = false;
@@ -220,7 +220,9 @@ public class XCLEventSyncer {
 			this.console.info("[" + source + "] Server startup succeed");
 		} else {
 			JOptionPane.showMessageDialog(null, "[" + source + "] startup failed!");
+			throw new IllegalArgumentException("fail");
 		}
+		return this.port;
 	}
 	
 	public boolean hasConnectors() {

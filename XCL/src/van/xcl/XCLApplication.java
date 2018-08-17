@@ -46,7 +46,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	private XCLEventSyncer eventSyncer = null;
 	private List<String> cmdLineList = new ArrayList<String>();
 	private int currIndex = 0;
-	private String runFile;
+	private String lockFile;
 	
 	
 	public XCLApplication() {
@@ -54,7 +54,6 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	
 	@Override
 	public void startup(XCLStartupParas paras) {
-		initRunFile();
 		TaskService.getService().init("XCL", 10);
 		this.ui = new XCLUI(this);
 		this.eventManager = new EventManager();
@@ -62,7 +61,8 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 		this.eventManager.register(XCLEventGroup.ASYNC_UI_EVENT, ui);
 		this.eventManager.register(XCLEventGroup.CMD_EVENT, this);
 		this.eventSyncer = new XCLEventSyncer(this, eventManager);
-		this.eventSyncer.startup();
+		int port = this.eventSyncer.startup();
+		createLockFile(port);
 		this.parser = new XCLCmdParser();
 		this.holder = new XCLCmdHolder();
 		this.contextFile = getContextFile(paras.getPara("context"));
@@ -70,7 +70,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 		loadCommands();
 		this.ui.init();
 		XCLHealthChecker.getChecker().register(this);
-		startupCommand(paras.getPara("startup"));
+		invokeStartup(paras.getPara("startup"));
 	}
 	
 	@Override
@@ -82,7 +82,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 		this.eventManager.shutdown();
 		this.ui.dispose();
 		TaskService.getService().shutdown();
-		removeRunFile();
+		removeLockFile();
 	}
 	
 	@Override
@@ -379,7 +379,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	
 	@Override
 	public void onHealthCheck() {
-		if (!getRunFile().exists()) {
+		if (!getLockFile().exists()) {
 			this.exit(-1);
 		}
 	}
@@ -413,7 +413,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	}
 	
 	
-	private void startupCommand(String startupFile) {
+	private void invokeStartup(String startupFile) {
 		if (!CommonUtils.isEmpty(startupFile)) {
 			File file = new File(startupFile);
 			if (file.exists()) {
@@ -506,27 +506,26 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 		}
 	}
 	
-	private void initRunFile() {
-		String pid = XCLUtils.getPid();
-		this.runFile = "XCL-" + pid + ".run";
+	private void createLockFile(int port) {
+		this.lockFile = port + ".lock";
 		boolean isSuccess = false;
 		try {
-			isSuccess = getRunFile().createNewFile();
+			isSuccess = getLockFile().createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
 			if (!isSuccess) {
-				JOptionPane.showMessageDialog(null, "Instance file create failed!");
+				error("The lock file was not created properly, it may not be gracefully closed last time.");
 			}
 		}
 	}
 	
-	private void removeRunFile() {
-		getRunFile().delete();
+	private void removeLockFile() {
+		getLockFile().delete();
 	}
 	
-	private File getRunFile() {
-		File file = new File(runFile);
+	private File getLockFile() {
+		File file = new File(lockFile);
 		return file;
 	}
 	

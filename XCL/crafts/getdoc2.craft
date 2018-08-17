@@ -1,0 +1,44 @@
+//getdoc craft ...
+// lms_sit=9C3E929D9D57E1EF443A24483851B3C3
+// lms_uat=E03D4E2D0BA90A17EA1920A0E96A8D69
+set doc_url "/lms.application/lmsMobileRest/getDocDetail.json";
+set usr_sit "lms_sit";
+set usr_uat "lms_uat";
+set pwd_sit 9C3E929D9D57E1EF443A24483851B3C3;
+set pwd_uat E03D4E2D0BA90A17EA1920A0E96A8D69;
+set url_local concat http://localhost:8080 doc_url;
+set url_sit concat http://lmssit.crc.com.cn doc_url;
+set url_uat concat http://lmsuat.crc.com.cn doc_url;
+// env
+set url if equal env sit url_sit if equal env uat url_uat url_local;
+set usr if equal env sit usr_sit if equal env uat usr_uat usr_sit;
+set pwd if equal env sit pwd_sit if equal env uat pwd_uat pwd_sit;
+
+echo url;
+echo usr;
+echo pwd;
+
+set req_str sys={"user":"${usr}","pwd":"${pwd}","emapsn":"M002601201712260915265e543256c480ac577d30f76f9120eb74662479","appcode":"002601","userid":"","usertoken":"","ext2":"iPhone_Simulator","ext3":"10.3.1","ext1":"Lms202","devicetype":"iPhone","deviceid":"1A283E7B-F167-41E3-8974-493D57B74581","networktype":"(null)_Wifi","locationx":"","locationy":""}&biz=${biz};
+set biz_str {"businessunid":"${businessunid}","systemcode":"0043","username":"${user}"};
+// user
+set biz_str replace biz_str ${user} user;
+// unid
+set biz_str replace biz_str ${businessunid} unid;
+set biz_str b64 -e biz_str;
+set req_str replace req_str ${biz} biz_str;
+set req_str replace req_str ${usr} usr;
+set req_str replace req_str ${pwd} pwd;
+
+echo req_str;
+
+set result postf url req_str;
+
+set post_result if equal result.returnCode MS000A000 true false;
+// check result, if result = false, throw error at here to interrupt the command execution
+errif not post_result concat "返回信息:" result.returnDesc -error=请求失败 -success=请求成功;
+
+// decode result if result is ok
+set a b64 -d result.returnData;
+// show result
+echo '-----------------------result------------------';
+echo jsonf a;

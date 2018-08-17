@@ -31,6 +31,8 @@ public class XCLConstants {
 	public static final String DISCONNECT_COMMAND = "disconnect";
 	public static final String TERMINATE_TAG = ";";
 	public static final String ESC = ":esc";
+	public static final String CRAFT_FILE_PATH = "crafts";
+	public static final String CRAFT_FILE_EXT = ".craft";
 	public static final Font DEFAULT_FONT = XCLUtils.getDefaultFont(Font.PLAIN, 15);
 	public static final long HEALTH_CHECK_PERIOD = 5000L;
 	
@@ -44,15 +46,15 @@ public class XCLConstants {
 	public static final Color commentColor = new Color(128, 128, 128);
 	public static final Color trackColor = new Color(128, 128, 128);
 	
-//	public static final Color backgroundColor = Color.white;
-//	public static final Color foregroundColor = Color.black;
-//	public static final Color selectionColor = Color.lightGray;
-//	public static final Color promptColor = Color.gray;
-//	public static final Color errorColor = Color.red;
-//	public static final Color normalColor = Color.black;
-//	public static final Color keyColor = Color.blue;
-//	public static final Color commentColor = Color.gray;
-//	public static final Color trackColor = Color.white;
+	//	public static final Color backgroundColor = Color.white;
+	//	public static final Color foregroundColor = Color.black;
+	//	public static final Color selectionColor = Color.lightGray;
+	//	public static final Color promptColor = Color.gray;
+	//	public static final Color errorColor = Color.red;
+	//	public static final Color normalColor = Color.black;
+	//	public static final Color keyColor = Color.blue;
+	//	public static final Color commentColor = Color.gray;
+	//	public static final Color trackColor = Color.white;
 	
 	
 }

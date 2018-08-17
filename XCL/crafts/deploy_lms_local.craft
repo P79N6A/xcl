@@ -1,0 +1,48 @@
+// build war package
+delete C:\Users\FORMSSI\Desktop\deploy "*";
+delete D:\gitCode.deploy\lms "*";
+cp D:\gitCode\lmsnew D:\gitCode.deploy\lms "!*.class";
+exec "cmd /c mvn clean -f D:/gitCode.deploy/lms";
+exec "cmd /c mvn install -f D:/gitCode.deploy/lms";
+cp D:\gitCode.deploy\lms\lms.application\target\lms.application.war C:\Users\FORMSSI\Desktop\deploy\lms.application.war;
+cp D:\gitCode.deploy\lms\lms.bpm\target\lms.bpm.war C:\Users\FORMSSI\Desktop\deploy\lms.bpm.war;
+
+// cp D:\Workspaces\Workspace2\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\lms.html C:\Users\FORMSSI\Desktop\deploy\lms.html;
+// cp D:\Workspaces\Workspace2\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\lms.html C:\Users\FORMSSI\Desktop\deploy\lms.html\lms.html;
+cp D:\Workspaces\Workspace5\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\lms.html C:\Users\FORMSSI\Desktop\deploy\lms.html\lms.html;
+
+zip C:\Users\FORMSSI\Desktop\deploy\lms.html C:\Users\FORMSSI\Desktop\deploy lms.html.zip;
+delete C:\Users\FORMSSI\Desktop\deploy\lms.html "*";
+// checking ...
+start C:\Users\FORMSSI\Desktop\deploy;
+
+// prepare ssh parameters
+set u appuser;
+set p lMiS2)1^;
+set h 10.0.62.151;
+set local_deploy 'C:\Users\FORMSSI\Desktop\deploy\';
+set sit_tomcat '/home/appuser/app/apache-tomcat-7.0.73/';
+set webapps concat sit_tomcat "webapps";
+set bin concat sit_tomcat "bin";
+
+// stop server and remove the old wars
+
+ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/app/apache-tomcat-7.0.73/bin;shutdown.sh";
+
+ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/app/apache-tomcat-7.0.73/webapps;rm -rf lms.*";
+
+// upload wars to SIT
+set lf concat local_deploy "lms.application.war";
+ssh2 -action=put -username=u -hostname=h -password=p -localFile=lf -remoteDir=webapps "x";
+
+set lf concat local_deploy "lms.bpm.war";
+ssh2 -action=put -username=u -hostname=h -password=p -localFile=lf -remoteDir=webapps "x";
+
+set lf concat local_deploy "lms.html.zip";
+ssh2 -action=put -username=u -hostname=h -password=p -localFile=lf -remoteDir=webapps "x";
+
+// unzip lms.html.zip and start the server
+ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/app/apache-tomcat-7.0.73/webapps;unzip lms.html.zip";
+ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/app/apache-tomcat-7.0.73/bin;startup.sh";
+
+// end

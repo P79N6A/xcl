@@ -1,0 +1,5 @@
+xcp D:\Temp\pom\sit\lms.application\pom.xml D:\gitCode\lmsnew\lms.application\pom.xml "*";
+xcp D:\Temp\pom\sit\lms.bpm\pom.xml D:\gitCode\lmsnew\lms.bpm\pom.xml "*";
+xcp D:\Temp\pom\sit\lms.common\pom.xml D:\gitCode\lmsnew\lms.common\pom.xml "*";
+xcp D:\Temp\pom\sit\lms.base\pom.xml D:\gitCode\lmsnew\lms.base\pom.xml "*";
+exec "cmd /c mvn compile -f D:/gitCode/lmsnew";

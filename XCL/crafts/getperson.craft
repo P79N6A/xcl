@@ -1,0 +1,32 @@
+//getdoc craft ...
+// http://localhost:8080/lms.application/lmsMobileRest/getPerson.json
+// http://lmsuat.crc.com.cn/lms.application/lmsMobileRest/getPerson.json
+// lms_sit=9C3E929D9D57E1EF443A24483851B3C3
+// lms_uat=E03D4E2D0BA90A17EA1920A0E96A8D69
+remove result;
+var result 
+	postf 
+		http://lmsuat.crc.com.cn/lms.application/lmsMobileRest/getPerson.json
+		replace sys={"user":"lms_uat","pwd":"E03D4E2D0BA90A17EA1920A0E96A8D69","emapsn":"M002601201712260915265e543256c480ac577d30f76f9120eb74662479","appcode":"002601","userid":"","usertoken":"","ext2":"iPhone_Simulator","ext3":"10.3.1","ext1":"Lms202","devicetype":"iPhone","deviceid":"1A283E7B-F167-41E3-8974-493D57B74581","networktype":"(null)_Wifi","locationx":"","locationy":""}&biz=${biz} 
+			${biz} 
+			b64 -e replace {"businessunid":"RCFY2017051510080","systemcode":"0043","username":"lms061","data":"${data}"}
+                               "${data}"
+                                   b64 -e {"pageindex":1,"pagesize":"30","totalPage":1,"queryparam":"LMS","filterparam":"o_crccw:get_child"}
+
+remove post_result;
+var post_result 
+	if equal result.returnCode MS000A000 
+		true 
+		false;
+// check result, if result = false, throw error at here to interrupt the command execution
+errif not post_result 
+	concat "返回信息:" result.returnDesc 
+	-error=请求失败 
+	-success=请求成功;
+
+// decode result if result is ok
+remove a;
+var a b64 -d result.returnData;
+// show result
+echo '-----------------------result------------------';
+echo jsonf a;

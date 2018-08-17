@@ -1,0 +1,13 @@
+set u appuser;
+set p lMiS2)1^;
+set h 10.0.62.151;
+
+ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/logs/lms-sit";
+
+// upload wars to SIT
+ssh2 -action=get -username=u -hostname=h -password=p 
+	-localDir=D:\Temp\
+	-remoteFile=/home/appuser/logs/lms-sit/lms.log
+	"pwd";
+
+start D:\Temp\lms.log;

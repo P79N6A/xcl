@@ -1,0 +1,3 @@
+clear;
+ssh2 -action=cmd -username=appuser -hostname=10.0.62.151 -password=lMiS2)1^ 
+"cd /home/appuser/logs/lms-sit;tail -1000 lms.log";

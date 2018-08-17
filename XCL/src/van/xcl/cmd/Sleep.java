@@ -49,7 +49,7 @@ public class Sleep implements Command {
 			for (; elapsed < timeout ;) {
 				Thread.sleep(1000L);
 				elapsed = System.currentTimeMillis() - startMillis;
-				console.info(elapsed + "ms is elapsed");
+				console.info((elapsed / 1000) + "s is elapsed");
 			}
 		} catch (InterruptedException e) {
 			return new XCLVar(Boolean.FALSE.toString());

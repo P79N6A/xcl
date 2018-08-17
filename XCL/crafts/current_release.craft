@@ -1,0 +1,4 @@
+// update git code
+cd D:\gitCode\lmsnew;
+exec "git -c diff.mnemonicprefix=false -c core.quotepath=false fetch origin";
+exec "git -c diff.mnemonicprefix=false -c core.quotepath=false pull --no-commit origin current_release";

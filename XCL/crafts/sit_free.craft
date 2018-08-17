@@ -1,0 +1,12 @@
+// prepare ssh parameters
+set u appuser;
+set p lMiS2)1^;
+set h 10.0.62.151;
+set local_deploy 'D:\Deploy\';
+set sit_tomcat '/home/appuser/app/apache-tomcat-7.0.73/';
+set webapps concat sit_tomcat "webapps";
+set bin concat sit_tomcat "bin";
+
+// 
+
+ssh2 -action=cmd -username=u -hostname=h -password=p "free -g";

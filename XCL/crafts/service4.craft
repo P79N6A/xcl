@@ -1,0 +1,1 @@
+service -user=lms202 -data={"reqType":"ls_case_query_nav","reqCode":"ls_case_query_nav","reqData":{"caseId":"LS201806210001"}}

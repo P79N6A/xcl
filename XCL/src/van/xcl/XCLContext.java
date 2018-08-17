@@ -13,8 +13,8 @@ public class XCLContext implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String path;
 	private JSONObject object = null;
-	private Map<String, String> crafts = null;
 	private transient XCLHandler handler = null;
+	private transient XCLCraftStorage craftStorage = null;
 	public XCLContext() {
 	}
 	private Object getVar(String key, JSONObject par) {
@@ -42,27 +42,6 @@ public class XCLContext implements Serializable {
 			object = new JSONObject();
 		}
 		return object;
-	}
-	public Map<String, String> getCrafts() {
-		if (crafts == null) {
-			crafts = new HashMap<String, String>();
-		}
-		return crafts;
-	}
-	public void setCraft(String name, String craft) {
-		getCrafts().put(name, craft);
-	}
-	public String getCraft(String name) {
-		return getCrafts().get(name);
-	}
-	public boolean removeCraft(String name) {
-		if (getCrafts().containsKey(name)) {
-			getCrafts().remove(name);
-		}
-		return false;
-	}
-	public boolean containsCraft(String name) {
-		return getCrafts().containsKey(name);
 	}
 	public boolean containsVar(String key) {
 		return getObject().containsKey(key);
@@ -110,6 +89,27 @@ public class XCLContext implements Serializable {
 		}
 		return "";
 	}
+	public XCLCraftStorage getCraftStorage() {
+		if (craftStorage == null) {
+			craftStorage = new XCLCraftStorage();
+		}
+		return craftStorage;
+	}
+	public Map<String, String> getCrafts() {
+		return getCraftStorage().getCrafts();
+	}
+	public void setCraft(String name, String craft) {
+		getCraftStorage().setCraft(name, craft);
+	}
+	public String getCraft(String name) {
+		return getCraftStorage().getCraft(name);
+	}
+	public boolean removeCraft(String name) {
+		return getCraftStorage().removeCraft(name);
+	}
+	public boolean containsCraft(String name) {
+		return getCraftStorage().containsCraft(name);
+	}
 	public XCLHandler getHandler() {
 		return handler;
 	}
@@ -126,7 +126,6 @@ public class XCLContext implements Serializable {
 	public XCLContext clone() {
 		XCLContext c = new XCLContext();
 		c.object = (JSONObject) getObject().clone();
-		c.crafts = new HashMap<String, String>(getCrafts());
 		c.path = this.path;
 		c.handler = this.handler;
 		return c;

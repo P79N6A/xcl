@@ -1,0 +1,23 @@
+set u appuser;
+set p lMiS2)1^;
+set h 10.0.62.151;
+
+ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/temp;rm -rf lms.*";
+
+// upload wars to SIT
+ssh2 -action=put -username=u -hostname=h -password=p 
+	-localFile=C:\Users\FORMSSI\Desktop\deploy\lms.application.war
+	-remoteDir=/home/appuser/temp
+	"pwd";
+
+ssh2 -action=put -username=u -hostname=h -password=p
+	-localFile=C:\Users\FORMSSI\Desktop\deploy\lms.bpm.war
+	-remoteDir=/home/appuser/temp
+	"pwd";
+
+ssh2 -action=put -username=u -hostname=h -password=p 
+	-localFile=C:\Users\FORMSSI\Desktop\deploy\lms.html.zip
+	-remoteDir=/home/appuser/temp
+	"pwd";
+
+ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/temp;unzip lms.html.zip";

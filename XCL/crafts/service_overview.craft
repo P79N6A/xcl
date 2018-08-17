@@ -1,0 +1,3 @@
+set overview_data {"reqType":"ls_case_overview","reqData":{"caseId":"${caseId}"}};
+set overview_data replace overview_data ${caseId} caseId;
+service -data=overview_data;
