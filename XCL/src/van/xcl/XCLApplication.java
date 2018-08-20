@@ -120,6 +120,8 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 				console.error(e.getMessage());
 			} else if (e instanceof ParameterException) {
 				console.error(e.getMessage());
+			} else if (e instanceof ThreadDeath) {
+				throw new ThreadDeath();
 			} else {
 				console.error(CommonUtils.getStackTrace(e));
 			}
@@ -242,8 +244,12 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 				}
 			}
 		} catch (Throwable e) {
-			info(CommonUtils.getStackTrace(e));
-			error(e.getMessage());
+			if (e instanceof ThreadDeath) {
+				throw new ThreadDeath();
+			} else {
+				info(CommonUtils.getStackTrace(e));
+				error(e.getMessage());
+			}
 		} finally {
 			prepare();
 			editable(true);
