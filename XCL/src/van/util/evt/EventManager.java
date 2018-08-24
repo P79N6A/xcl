@@ -39,10 +39,18 @@ public class EventManager {
 	}
 	
 	public void addEvent(EventSource source, EventType type, String message) {
-		addEvent(source, type, message, null);
+		addEvent(source, type, message, -1, null);
+	}
+	
+	public void addEvent(EventSource source, EventType type, String message, int traceId) {
+		addEvent(source, type, message, traceId, null);
 	}
 	
 	public void addEvent(EventSource source, EventType type, String message, EventCallback callback) {
+		addEvent(source, type, message, -1, callback);
+	}
+	
+	public void addEvent(EventSource source, EventType type, String message, int traceId, EventCallback callback) {
 		String groupName = type.getGroup().getGroupName();
 		if (queueMap.containsKey(groupName)) {
 			queueMap.get(groupName).addEvent(source, type, message, callback);

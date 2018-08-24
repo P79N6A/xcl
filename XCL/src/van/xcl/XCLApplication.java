@@ -271,6 +271,12 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	public void prepare() {
 		this.eventManager.addEvent(this, XCLEvent.prepare, null);
 	}
+	
+	@Override
+	public void prompt(String prompt) {
+		prompt = "  -  " + CommonUtils.resolveString(prompt, 90);
+		this.eventManager.addEvent(this, XCLEvent.prompt, prompt);
+	}
 
 	@Override
 	public void input(String input) {
@@ -279,23 +285,32 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 
 	@Override
 	public void output(String str) {
-		this.eventManager.addEvent(this, XCLEvent.output, str);
+		this.output(str, -1);
 	}
 
 	@Override
-	public void prompt(String prompt) {
-		prompt = "  -  " + CommonUtils.resolveString(prompt, 90);
-		this.eventManager.addEvent(this, XCLEvent.prompt, prompt);
-	}
-	
-	@Override
 	public void info(String info) {
-		this.eventManager.addEvent(this, XCLEvent.info, info);
+		this.info(info, -1);
 	}
 	
 	@Override
 	public void error(String error) {
-		this.eventManager.addEvent(this, XCLEvent.error, error);
+		this.error(error, -1);
+	}
+	
+	@Override
+	public void output(String str, int traceId) {
+		this.eventManager.addEvent(this, XCLEvent.output, str, traceId);
+	}
+
+	@Override
+	public void info(String info, int traceId) {
+		this.eventManager.addEvent(this, XCLEvent.info, info, traceId);
+	}
+	
+	@Override
+	public void error(String error, int traceId) {
+		this.eventManager.addEvent(this, XCLEvent.error, error, traceId);
 	}
 
 	@Override
@@ -311,6 +326,11 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	@Override
 	public void editable(boolean b) {
 		this.eventManager.addEvent(this, XCLEvent.editable, String.valueOf(b));
+	}
+	
+	@Override
+	public void fixedRow(boolean b, int traceId) {
+		this.eventManager.addEvent(this, XCLEvent.fixedRow, String.valueOf(b), traceId);
 	}
 	
 	@Override

@@ -14,6 +14,7 @@ public enum XCLEvent implements EventType {
 	clear(XCLEventGroup.SYNC_UI_EVENT),
 	editable(XCLEventGroup.SYNC_UI_EVENT),
 	present(XCLEventGroup.SYNC_UI_EVENT),
+	fixedRow(XCLEventGroup.SYNC_UI_EVENT),
 	textTitle(XCLEventGroup.SYNC_UI_EVENT),
 	textInput(XCLEventGroup.SYNC_UI_EVENT),
 	getTextInput(XCLEventGroup.SYNC_UI_EVENT),

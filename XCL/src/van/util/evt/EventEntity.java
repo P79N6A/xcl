@@ -11,15 +11,12 @@ public class EventEntity implements Serializable {
 	private String message;
 	private EventCallback callback;
 	private String source;
-	public EventEntity(EventSource source, EventType type, String message) {
+	private int traceId;
+	public EventEntity(EventSource source, EventType type, String message, int traceId, EventCallback callback) {
 		this.source = source.getSource();
 		this.type = type;
 		this.message = message;
-	}
-	public EventEntity(EventSource source, EventType type, String message, EventCallback callback) {
-		this.source = source.getSource();
-		this.type = type;
-		this.message = message;
+		this.traceId = traceId;
 		this.callback = callback;
 	}
 	public EventType getType() {
@@ -27,6 +24,9 @@ public class EventEntity implements Serializable {
 	}
 	public String getMessage() {
 		return message;
+	}
+	public int getTraceId() {
+		return traceId;
 	}
 	public EventCallback getCallback() {
 		return callback;

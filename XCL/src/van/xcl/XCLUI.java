@@ -28,7 +28,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -115,6 +117,7 @@ public class XCLUI implements EventHandler {
 	private CardLayout cardLayout = new CardLayout();
 	private BufferedWriter logWriter;
 	private Set<String> keys = new HashSet<String>();
+	private Map<Integer, Integer> fixedRows = new HashMap<Integer, Integer>();
 	
 	private LinkedBlockingQueue<String> textQueue = new LinkedBlockingQueue<String>();
 
@@ -162,9 +165,9 @@ public class XCLUI implements EventHandler {
 				outFile.delete();
 			}
 			logWriter = new BufferedWriter(new FileWriter(outFile));
-			console(XCLConstants.INFO_PROMPT + " - " + outFile.getAbsolutePath() + "\n", XCLConstants.promptColor);
+			console(-1, XCLConstants.INFO_PROMPT + " - " + outFile.getAbsolutePath() + "\n", XCLConstants.promptColor);
 		} catch (IOException e) {
-			console("Failed to init the log file: " + e.getMessage(), XCLConstants.errorColor);
+			console(-1, "Failed to init the log file: " + e.getMessage(), XCLConstants.errorColor);
 		}
 	}
 	
@@ -345,15 +348,26 @@ public class XCLUI implements EventHandler {
 		return textInputPrompt;
 	}
 	
-	private void console(String str, Color color) {
+	private SimpleAttributeSet getConsoleAttr(Color color, Font font) {
+		SimpleAttributeSet attr = new SimpleAttributeSet();
+		StyleConstants.setFontSize(attr, font.getSize());
+		StyleConstants.setFontFamily(attr, font.getFamily());
+		StyleConstants.setForeground(attr, color);
+		return attr;
+	}
+	
+	private void console(int traceId, String str, Color color) {
 		try {
-			SimpleAttributeSet attr = new SimpleAttributeSet();
-			Font font = getDefaultFont();
-			StyleConstants.setFontSize(attr, font.getSize());
-			StyleConstants.setFontFamily(attr, font.getFamily());
-			StyleConstants.setForeground(attr, color);
+			SimpleAttributeSet attr = getConsoleAttr(color, getDefaultFont());
 			Document docs = getTextConsole().getDocument();
-			docs.insertString(docs.getLength(), str, attr);
+			if (fixedRows.containsKey(traceId)) {
+				int position = fixedRows.get(traceId);
+				int length = docs.getLength() - position;
+				docs.remove(position, length);
+				docs.insertString(position, str, attr);
+			} else {
+				docs.insertString(docs.getLength(), str, attr);
+			}
 			getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
 		} catch (Throwable e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
@@ -365,6 +379,15 @@ public class XCLUI implements EventHandler {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void fixedRow(int traceId, boolean fixRow) {
+		if (fixRow) {
+			int position = getTextConsole().getDocument().getLength();
+			fixedRows.put(traceId, position);
+		} else {
+			fixedRows.remove(traceId);
 		}
 	}
 	
@@ -524,18 +547,19 @@ public class XCLUI implements EventHandler {
 			// skipped as headless
 			return null;
 		}
+		int traceId = event.getTraceId();
 		EventType type = event.getType();
 		String message = event.getMessage();
 		String source = !console.getSource().equals(event.getSource()) ? "[" + event.getSource() + "]: " : "";
 		logger.info("[" + console.getSource() + "] XCLUI.handleEvent [type: " + type + ", message: " + message + "]");
 		if (XCLEvent.input.equals(type)) {
-			console(XCLConstants.IN_PROMPT + source + message + "\n", XCLConstants.foregroundColor); // source
+			console(traceId, XCLConstants.IN_PROMPT + source + message + "\n", XCLConstants.foregroundColor); // source
 		} else if (XCLEvent.output.equals(type)) {
-			console(XCLConstants.OUT_PROMPT + source + message + "\n", XCLConstants.foregroundColor); // source
+			console(traceId, XCLConstants.OUT_PROMPT + source + message + "\n", XCLConstants.foregroundColor); // source
 		} else if (XCLEvent.info.equals(type)) {
-			console(XCLConstants.INFO_PROMPT + source + message + "\n", XCLConstants.promptColor); // source
+			console(traceId, XCLConstants.INFO_PROMPT + source + message + "\n", XCLConstants.promptColor); // source
 		} else if (XCLEvent.error.equals(type)) {
-			console(XCLConstants.ERROR_PROMPT + source + message + "\n", XCLConstants.errorColor); // source
+			console(traceId, XCLConstants.ERROR_PROMPT + source + message + "\n", XCLConstants.errorColor); // source
 		} else if (XCLEvent.prompt.equals(type)) {
 			getTextPrompt().setText(source + message + "  "); // source
 		} else if (XCLEvent.title.equals(type)) {
@@ -556,6 +580,9 @@ public class XCLUI implements EventHandler {
 		} else if (XCLEvent.present.equals(type)) {
 			getTextCmd().setText(message);
 			requestFocus(getTextCmd());
+		} else if (XCLEvent.fixedRow.equals(type)) {
+			boolean b = Boolean.valueOf(message);
+			fixedRow(traceId, b);
 		} else if (XCLEvent.textInput.equals(type)) {
 			cardLayout.show(cardPanel, "input");
 			getTextInput().setText(message);

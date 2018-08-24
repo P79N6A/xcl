@@ -68,10 +68,12 @@ public class SSH2 implements Command {
 		String action = map.getValue("action");
 		String command = args.get("command").toString();
 		SSH2Entry entry = new SSH2Entry(hostname, username, password);
+		int rowId = this.hashCode();
 		try {
+			console.fixedRow(true, rowId);
 			entry.connect();
 			if ("cmd".equals(action)) {
-				exec(entry, command, console);
+				exec(entry, command, console, rowId);
 			} else {
 				if ("get".equals(action)) {
 					String remoteFile = map.getValue("remoteFile");
@@ -80,22 +82,22 @@ public class SSH2 implements Command {
 					String remoteFileName = remoteFile.substring(remoteFile.lastIndexOf("/") + 1);
 					String remoteFileZip = remoteFileName + ".zip";
 					// compress file
-					console.info("[" + entry.toString() + "] compress remote file...");
-					exec(entry, "cd " + remoteFilePath + ";zip -r " + remoteFileZip + " ./" + remoteFileName, console);
+					console.info("[" + entry.toString() + "] compress remote file...", rowId);
+					exec(entry, "cd " + remoteFilePath + ";zip -r " + remoteFileZip + " ./" + remoteFileName, console, rowId);
 					// download file
-					console.info("[" + entry.toString() + "] [" + remoteFilePath + " --> " + localDir + "] getting...");
+					console.info("[" + entry.toString() + "] [" + remoteFilePath + " --> " + localDir + "] getting...", rowId);
 					entry.getClient().get(remoteFilePath + "/" + remoteFileZip, localDir);
-					console.info("[" + entry.toString() + "] [" + remoteFilePath + " --> " + localDir + "] get end");
+					console.info("[" + entry.toString() + "] [" + remoteFilePath + " --> " + localDir + "] get end", rowId);
 					// remove compressed filed
-					console.info("[" + entry.toString() + "] remove remote zip file...");
-					exec(entry, "cd " + remoteFilePath + ";rm " + remoteFileZip, console);
+					console.info("[" + entry.toString() + "] remove remote zip file...", rowId);
+					exec(entry, "cd " + remoteFilePath + ";rm " + remoteFileZip, console, rowId);
 					// uncompress file
 					File localZipFile = new File(localDir, remoteFileZip);
-					console.info("[" + entry.toString() + "] uncompress local zip file...");
+					console.info("[" + entry.toString() + "] uncompress local zip file...", rowId);
 					ZipUtils.unzip(localZipFile.getAbsolutePath(), localDir, false);
-					console.info("[" + entry.toString() + "] delete local zip file...");
+					console.info("[" + entry.toString() + "] delete local zip file...", rowId);
 					localZipFile.delete();
-					console.info("[" + entry.toString() + "] done.");
+					console.info("[" + entry.toString() + "] done.", rowId);
 				} else if ("put".equals(action)) {
 					String localFile = map.getValue("localFile");
 					String remoteDir = map.getValue("remoteDir");
@@ -103,52 +105,53 @@ public class SSH2 implements Command {
 					String zipFileName = file.getName() + ".zip";
 					File localZipFile = new File(new File(localFile).getParent(), zipFileName);
 					// compress file
-					console.info("[" + entry.toString() + "] compress local file...");
+					console.info("[" + entry.toString() + "] compress local file...", rowId);
 					ZipUtils.zip(localFile, localZipFile.getParent(), localZipFile.getName());
 					// remove remote file if any
-					console.info("[" + entry.toString() + "] remove remote file if any...");
-					exec(entry, "cd " + remoteDir + ";rm " + file.getName(), console);
+					console.info("[" + entry.toString() + "] remove remote file if any...", rowId);
+					exec(entry, "cd " + remoteDir + ";rm " + file.getName(), console, rowId);
 					// put file
-					console.info("[" + entry.toString() + "] [" + localZipFile.getAbsolutePath() + " --> " + remoteDir + "] putting...");
+					console.info("[" + entry.toString() + "] [" + localZipFile.getAbsolutePath() + " --> " + remoteDir + "] putting...", rowId);
 					entry.getClient().put(localZipFile.getAbsolutePath(), remoteDir);
-					console.info("[" + entry.toString() + "] [" + localZipFile.getAbsolutePath() + " --> " + remoteDir + "] put end");
+					console.info("[" + entry.toString() + "] [" + localZipFile.getAbsolutePath() + " --> " + remoteDir + "] put end", rowId);
 					// unzip file
-					console.info("[" + entry.toString() + "] uncompress remote zip file...");
-					exec(entry, "cd " + remoteDir + ";unzip " + zipFileName, console);
+					console.info("[" + entry.toString() + "] uncompress remote zip file...", rowId);
+					exec(entry, "cd " + remoteDir + ";unzip " + zipFileName, console, rowId);
 					// remove remote zip file
-					console.info("[" + entry.toString() + "] remove remote zip file...");
-					exec(entry, "cd " + remoteDir + ";rm " + zipFileName, console);
+					console.info("[" + entry.toString() + "] remove remote zip file...", rowId);
+					exec(entry, "cd " + remoteDir + ";rm " + zipFileName, console, rowId);
 					// remove local zip file
-					console.info("[" + entry.toString() + "] remove local zip file...");
+					console.info("[" + entry.toString() + "] remove local zip file...", rowId);
 					localZipFile.delete();
-					console.info("[" + entry.toString() + "] done.");
+					console.info("[" + entry.toString() + "] done.", rowId);
 				}
 			}
 		} catch (IOException e) {
 			console.error(CommonUtils.getStackTrace(e));
 		} finally {
 			entry.close();
+			console.fixedRow(false, rowId);
 		}
 		return new XCLVar();
 	}
 	
-	private void exec(SSH2Entry entry, String command, XCLConsole console) throws IOException {
+	private void exec(SSH2Entry entry, String command, XCLConsole console, int rowId) throws IOException {
 		Session session = entry.openSession();
 		try {
 			if (command.startsWith("\"") && command.endsWith("\"")) {
 				command = command.substring(1, command.length() - 1);
 			}
-			console.info("[" + entry.toString() + "] command: " + command);
+			console.info("[" + entry.toString() + "] command: " + command, rowId);
 			session.execCommand(command);
 			InputStream stdout = new StreamGobbler(session.getStdout());
 			BufferedReader br = new BufferedReader(new InputStreamReader(stdout, "UTF-8"));
 			String line = null;
 			while (null != (line = br.readLine())) {
-				console.output("[" + entry.toString() + "] - " + line);
+				console.output("[" + entry.toString() + "] - " + line, rowId);
 			}
 			br.close();
 			session.waitForCondition(ChannelCondition.EXIT_STATUS, 30000L);
-			console.info("[" + entry.toString() + "] command done. [Exit Status: " + session.getExitStatus() + "]");
+			console.info("[" + entry.toString() + "] command done. [Exit Status: " + session.getExitStatus() + "]", rowId);
 		} finally {
 			entry.closeSession(session);
 		}

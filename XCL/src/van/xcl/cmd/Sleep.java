@@ -43,14 +43,17 @@ public class Sleep implements Command {
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		long timeout = args.get("timeout").getNumber().longValue();
 		try {
-			console.info("sleep " + timeout + "ms");
 			long startMillis = System.currentTimeMillis();
 			long elapsed = 0L;
+			int rowId = this.hashCode();
+			console.fixedRow(true, rowId);
+			console.info("sleep " + timeout + "ms", rowId);
 			for (; elapsed < timeout ;) {
 				Thread.sleep(1000L);
 				elapsed = System.currentTimeMillis() - startMillis;
-				console.info((elapsed / 1000) + "s is elapsed");
+				console.info((elapsed / 1000) + "s is elapsed", rowId);
 			}
+			console.fixedRow(false, rowId);
 		} catch (InterruptedException e) {
 			return new XCLVar(Boolean.FALSE.toString());
 		}

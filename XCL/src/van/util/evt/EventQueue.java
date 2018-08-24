@@ -30,11 +30,19 @@ public class EventQueue {
 	}
 	
 	protected void addEvent(EventSource source, EventType type, String message) {
-		addEvent(source, type, message, null);
+		addEvent(source, type, message, -1, null);
+	}
+	
+	protected void addEvent(EventSource source, EventType type, String message, int traceId) {
+		addEvent(source, type, message, traceId, null);
 	}
 	
 	protected void addEvent(EventSource source, EventType type, String message, EventCallback callback) {
-		EventEntity e = new EventEntity(source, type, message, callback);
+		addEvent(source, type, message, -1, callback);
+	}
+	
+	protected void addEvent(EventSource source, EventType type, String message, int traceId, EventCallback callback) {
+		EventEntity e = new EventEntity(source, type, message, traceId, callback);
 		addEvent(e);
 	}
 	
