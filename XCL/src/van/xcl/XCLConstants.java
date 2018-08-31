@@ -7,10 +7,11 @@ public class XCLConstants {
 
 	public static final int DEFAULT_PORT = 40056;
 	public static final int DEFAULT_PORT_OFFSET = 100;
+	public static final String VERSION = "v1.1";
 	public static final String OUT_FILE = "XCL.out";
 	public static final String DEFAULT_CONTEXT_FILE = "XCL.ctx";
 	public static final String SETTING_FILE = ".xcl";
-	public static final String VERSION_PROMPT = "XCL (version 1.1) was created by Van in 2017/10/18";
+	public static final String VERSION_PROMPT = "XCL (extended command lines)\n  - Version: " + VERSION + "\n  - Author: Van\n  - Since: 2017/10/18";
 	public static final String IN_PROMPT = " > ";
 	public static final String OUT_PROMPT = " < ";
 	public static final String INFO_PROMPT = " # ";

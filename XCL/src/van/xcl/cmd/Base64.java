@@ -60,14 +60,14 @@ public class Base64 implements Command {
 
 	private String encode(String value, XCLConsole console) {
 		console.info(value);
-		String result = CommonUtils.encode(value);
+		String result = CommonUtils.encodeBase64(value);
 		//console.output("encoded string:\n" + result);
 		return result;
 	}
 	
 	private String decode(String value, XCLConsole console) {
 		console.info(value);
-		String result = CommonUtils.decode(value);
+		String result = CommonUtils.decodeBase64(value);
 		// console.output("decoded string:\n" + CommonUtils.resolveJSONString(result));
 		return result;
 	}

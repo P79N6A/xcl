@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import van.util.codec.Encoder;
+
 public class ObjectSerilizer<T> {
 
-	private static final char delimeter = (char)0;
 	private T object;
 	private String string;
+	private Encoder encoder = new Encoder();
 	
 	public ObjectSerilizer(T object) {
 		this.object = object;
@@ -18,28 +20,17 @@ public class ObjectSerilizer<T> {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(bos);
 			oos.writeObject(object);
-			StringBuilder sb = new StringBuilder();
-			for (byte b : bos.toByteArray()) {
-				if (sb.length() > 0) {
-					sb.append(delimeter);
-				}
-				sb.append(b);
-			}
-			this.string = sb.toString();
+			this.string = encoder.encode(bos.toByteArray());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	
 	@SuppressWarnings("unchecked")
 	public ObjectSerilizer(String string) {
 		this.string = string;
 		try {
-			String[] array = string.split(String.valueOf(delimeter));
-			byte[] bytes = new byte[array.length];
-			for (int i = 0 ; i < array.length ; i++) {
-				byte b = (byte)Integer.parseInt(array[i]);
-				bytes[i] = b;
-			}
+			byte[] bytes = encoder.decode(string);
 			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 			ObjectInputStream ois = new ObjectInputStream(bis);
 			this.object = (T) ois.readObject();

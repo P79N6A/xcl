@@ -356,19 +356,20 @@ public class XCLUI implements EventHandler {
 		return attr;
 	}
 	
-	private void console(int traceId, String str, Color color) {
+	private synchronized void console(int traceId, String str, Color color) {
 		try {
 			SimpleAttributeSet attr = getConsoleAttr(color, getDefaultFont());
-			Document docs = getTextConsole().getDocument();
+			Document document = getTextConsole().getDocument();
 			if (fixedRows.containsKey(traceId)) {
 				int position = fixedRows.get(traceId);
-				int length = docs.getLength() - position;
-				docs.remove(position, length);
-				docs.insertString(position, str, attr);
+				int length = document.getLength() - position;
+				document.remove(position, length);
+				document.insertString(position, str, attr);
 			} else {
-				docs.insertString(docs.getLength(), str, attr);
+				document.insertString(document.getLength(), str, attr);
 			}
-			getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
+			int length = document.getLength();
+			getTextConsole().setCaretPosition(length);
 		} catch (Throwable e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
@@ -377,12 +378,12 @@ public class XCLUI implements EventHandler {
 				logWriter.append(str);
 				logWriter.flush();
 			} catch (IOException e) {
-				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
 		}
 	}
 	
-	private void fixedRow(int traceId, boolean fixRow) {
+	private synchronized void fixedRow(int traceId, boolean fixRow) {
 		if (fixRow) {
 			int position = getTextConsole().getDocument().getLength();
 			fixedRows.put(traceId, position);

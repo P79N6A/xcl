@@ -60,7 +60,7 @@ public abstract class Json implements Serializable {
 	}
 	
 	public String toJSONString() {
-		return toJSONString(this, true);
+		return toJSONString(this, false);
 	}
 	
 }

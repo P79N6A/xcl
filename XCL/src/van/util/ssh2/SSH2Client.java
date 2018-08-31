@@ -6,7 +6,7 @@ import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.Session;
 
-public class SSH2Entry {
+public class SSH2Client {
 	
 	private String hostname;
 	private String username;
@@ -16,7 +16,7 @@ public class SSH2Entry {
 	private SCPClient client;
 	private boolean isConnected = false;
 	
-	public SSH2Entry(String hostname, String username, String password) {
+	public SSH2Client(String hostname, String username, String password) {
 		this.hostname = hostname;
 		this.username = username;
 		this.password = password;

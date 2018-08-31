@@ -57,7 +57,7 @@ public class CommonUtils {
 		return str;
 	}
 
-	public static String encode(String value) {
+	public static String encodeBase64(String value) {
 		try {
 			Encoder encoder = Base64.getEncoder();
 			String result = new String(encoder.encode(value.getBytes("utf-8")), "utf-8");
@@ -67,7 +67,7 @@ public class CommonUtils {
 		}
 	}
 
-	public static String decode(String value) {
+	public static String decodeBase64(String value) {
 		try {
 			Decoder decoder = Base64.getDecoder();
 			String result = new String(decoder.decode(value.getBytes("utf-8")), "utf-8");
