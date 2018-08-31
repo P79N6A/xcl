@@ -3,9 +3,9 @@ package van.xcl;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import van.xcl.util.json.Json;
+import van.xcl.util.json.JsonArray;
+import van.xcl.util.json.JsonObject;
 
 public class XCLVar implements Serializable {
 	
@@ -28,8 +28,8 @@ public class XCLVar implements Serializable {
 	private String string;
 	private Boolean bool;
 	private BigDecimal number;
-	private JSONObject jsonObject;
-	private JSONArray jsonArray;
+	private JsonObject jsonObject;
+	private JsonArray jsonArray;
 	
 	public XCLVar() {
 		this.type = Type.Null;
@@ -49,11 +49,11 @@ public class XCLVar implements Serializable {
 			} else if (object instanceof String) {
 				String string = (String) object;
 				parseString(string);
-			} else if (object instanceof JSONObject) {
-				this.jsonObject = (JSONObject) object;
+			} else if (object instanceof JsonObject) {
+				this.jsonObject = (JsonObject) object;
 				this.type = Type.JSONObject;
-			} else if (object instanceof JSONArray) {
-				this.jsonArray = (JSONArray) object;
+			} else if (object instanceof JsonArray) {
+				this.jsonArray = (JsonArray) object;
 				this.type = Type.JSONArray;
 			} else {
 				parseString(String.valueOf(object));
@@ -62,15 +62,15 @@ public class XCLVar implements Serializable {
 	}
 	
 	private void parseString(String string) {
-		JSON json = parseJSON(string);
+		Json json = parseJSON(string);
 		BigDecimal number = parseNumber(string);
 		Boolean bool = parseBoolean(string);
 		if (json != null) {
-			if (json instanceof JSONObject) {
-				this.jsonObject = (JSONObject) json;
+			if (json instanceof JsonObject) {
+				this.jsonObject = (JsonObject) json;
 				this.type = Type.JSONObject;
-			} else if (json instanceof JSONArray) {
-				this.jsonArray = (JSONArray) json;
+			} else if (json instanceof JsonArray) {
+				this.jsonArray = (JsonArray) json;
 				this.type = Type.JSONArray;
 			} else {
 				this.type = Type.Null;
@@ -87,9 +87,9 @@ public class XCLVar implements Serializable {
 		}
 	}
 	
-	private JSON parseJSON(String string) {
+	private Json parseJSON(String string) {
 		try {
-			JSON json = (JSON) JSONObject.parse(string);
+			Json json = (Json) JsonObject.parse(string);
 			return json;
 		} catch (Exception e) { 
 			return null;
@@ -147,11 +147,11 @@ public class XCLVar implements Serializable {
 		return number;
 	}
 
-	public JSONObject getJsonObject() {
+	public JsonObject getJsonObject() {
 		return jsonObject;
 	}
 
-	public JSONArray getJsonArray() {
+	public JsonArray getJsonArray() {
 		return jsonArray;
 	}
 	

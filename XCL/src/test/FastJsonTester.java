@@ -1,12 +1,12 @@
 package test;
 
-import com.alibaba.fastjson.JSONObject;
+import van.xcl.util.json.JsonObject;
 
 public class FastJsonTester {
 
 	public static void main(String[] args) {
 		
-		System.out.println(JSONObject.parse("{\"abc\":123}").toString());
+		System.out.println(JsonObject.parse("{\"abc\":123}").toString());
 
 	}
 

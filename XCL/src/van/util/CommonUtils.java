@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import van.xcl.util.json.Json;
+import van.xcl.util.json.JsonObject;
 
 import van.util.Base64.Decoder;
 import van.util.Base64.Encoder;
@@ -80,8 +80,8 @@ public class CommonUtils {
 	public static String resolveJSONString(String str) {
 		try {
 			if (str != null) {
-				JSON json = (JSON) JSONObject.parse(str);
-				String prettyString = JSONObject.toJSONString(json, true);
+				Json json = (Json) JsonObject.parse(str);
+				String prettyString = JsonObject.toJSONString(json, true);
 				prettyString = prettyString.replace("\t", "    ");
 				return prettyString;
 			}
@@ -122,9 +122,9 @@ public class CommonUtils {
 		if (text != null) {
 			text = text.trim();
 			if (text.startsWith("{") && text.endsWith("}")) {
-				return JSONObject.parseObject(text);
+				return JsonObject.parseObject(text);
 			} else if (text.startsWith("[") && text.endsWith("]")) {
-				return JSONObject.parseArray(text);
+				return JsonObject.parseArray(text);
 			} else {
 				return text;
 			}

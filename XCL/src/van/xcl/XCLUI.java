@@ -551,7 +551,7 @@ public class XCLUI implements EventHandler {
 		EventType type = event.getType();
 		String message = event.getMessage();
 		String source = !console.getSource().equals(event.getSource()) ? "[" + event.getSource() + "]: " : "";
-		logger.info("[" + console.getSource() + "] XCLUI.handleEvent [type: " + type + ", message: " + message + "]");
+		logger.info("[" + console.getSource() + "] XCLUI.handleEvent [type: " + type + ", message: " + CommonUtils.trim(message) + "]");
 		if (XCLEvent.input.equals(type)) {
 			console(traceId, XCLConstants.IN_PROMPT + source + message + "\n", XCLConstants.foregroundColor); // source
 		} else if (XCLEvent.output.equals(type)) {

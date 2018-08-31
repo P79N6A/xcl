@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.alibaba.fastjson.JSONArray;
+import van.xcl.util.json.JsonArray;
 
 import van.xcl.Command;
 import van.xcl.XCLConsole;
@@ -83,7 +83,7 @@ public class FindStr implements Command {
 			findContent(new File(filePath), contentList, contFilter, console, contentFound);
 		}
 		console.output("contents found: " + contentList.size());
-		JSONArray arrar = new JSONArray();
+		JsonArray arrar = new JsonArray();
 		arrar.addAll(contentList);
 		return new XCLVar(arrar);
 	}

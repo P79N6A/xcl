@@ -2,8 +2,8 @@ package van.xcl.cmd;
 
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import van.xcl.util.json.JsonArray;
+import van.xcl.util.json.JsonObject;
 
 import van.util.CommonUtils;
 import van.xcl.Command;
@@ -54,11 +54,11 @@ public class Edit implements Command {
 				if (var.isString() || var.isBoolean() || var.isNumeric()) {
 					newValue = console.getTextInput(var.toString(), key);
 				} else if (var.isJsonObject()) {
-					JSONObject obj = var.getJsonObject();
-					newValue = console.getTextInput(JSONObject.toJSONString(obj, true), key);
+					JsonObject obj = var.getJsonObject();
+					newValue = console.getTextInput(JsonObject.toJSONString(obj, true), key);
 				} else if (var.isJsonArray()) {
-					JSONArray obj = var.getJsonArray();
-					newValue = console.getTextInput(JSONObject.toJSONString(obj, true), key);
+					JsonArray obj = var.getJsonArray();
+					newValue = console.getTextInput(JsonObject.toJSONString(obj, true), key);
 				}
 				if (newValue != null) {
 					Object object = CommonUtils.parseJsonText(newValue);

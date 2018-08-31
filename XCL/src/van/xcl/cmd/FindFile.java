@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.alibaba.fastjson.JSONArray;
+import van.xcl.util.json.JsonArray;
 
 import van.xcl.Command;
 import van.xcl.XCLConsole;
@@ -65,7 +65,7 @@ public class FindFile implements Command {
 		List<String> fileList = new ArrayList<String>();
 		findFile(file, fileList, fileFilter, console, fileFound);
 		console.output("files found: " + fileList.size());
-		JSONArray arrar = new JSONArray();
+		JsonArray arrar = new JsonArray();
 		arrar.addAll(fileList);
 		return new XCLVar(arrar);
 	}

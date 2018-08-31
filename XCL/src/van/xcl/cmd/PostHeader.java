@@ -2,7 +2,7 @@ package van.xcl.cmd;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONObject;
+import van.xcl.util.json.JsonObject;
 
 import van.util.http.HttpClientService;
 import van.util.http.HttpResult;
@@ -61,7 +61,7 @@ public class PostHeader implements Command {
 			console.info(httpResult.toString());
 			console.prompt("posted. [url: " + url + "]");
 			try {
-				JSONObject object = (JSONObject) JSONObject.parse(httpResult.getBody());
+				JsonObject object = (JsonObject) JsonObject.parse(httpResult.getBody());
 				return new XCLVar(object);
 			} catch (Throwable e) {
 				console.prompt("error: " + e.getMessage());

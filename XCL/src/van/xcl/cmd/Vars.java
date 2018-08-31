@@ -3,8 +3,8 @@ package van.xcl.cmd;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import van.xcl.util.json.JsonArray;
+import van.xcl.util.json.JsonObject;
 
 import van.xcl.Command;
 import van.xcl.XCLConsole;
@@ -38,9 +38,9 @@ public class Vars implements Command {
 			sb.append(entry.getKey());
 			sb.append("\t=\t");
 			Object obj = entry.getValue();
-			if (obj instanceof JSONObject) {
+			if (obj instanceof JsonObject) {
 				sb.append("[JSONObject]");
-			} else if (obj instanceof JSONArray) {
+			} else if (obj instanceof JsonArray) {
 				sb.append("[JSONArray]");
 			} else {
 				 sb.append(String.valueOf(obj));

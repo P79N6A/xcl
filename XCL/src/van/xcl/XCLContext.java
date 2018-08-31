@@ -4,20 +4,20 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import van.xcl.util.json.Json;
+import van.xcl.util.json.JsonObject;
 
 import van.util.CommonUtils;
 
 public class XCLContext implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String path;
-	private JSONObject object = null;
+	private JsonObject object = null;
 	private transient XCLHandler handler = null;
 	private transient XCLCraftStorage craftStorage = null;
 	public XCLContext() {
 	}
-	private Object getVar(String key, JSONObject par) {
+	private Object getVar(String key, JsonObject par) {
 		int idx = key.indexOf(".");
 		if (idx > 0) {
 			String parKey = key.substring(0, idx);
@@ -26,8 +26,8 @@ public class XCLContext implements Serializable {
 				if (CommonUtils.isBasicObject(parObj)) {
 					return String.valueOf(parObj);
 				} else {
-					if (parObj instanceof JSONObject) {
-						return getVar(key.substring(idx + 1), (JSONObject) parObj);
+					if (parObj instanceof JsonObject) {
+						return getVar(key.substring(idx + 1), (JsonObject) parObj);
 					}
 				}
 			}
@@ -37,9 +37,9 @@ public class XCLContext implements Serializable {
 			return obj;
 		}
 	}
-	public JSONObject getObject() {
+	public JsonObject getObject() {
 		if (object == null) {
-			object = new JSONObject();
+			object = new JsonObject();
 		}
 		return object;
 	}
@@ -81,8 +81,8 @@ public class XCLContext implements Serializable {
 			Object obj = getVar(input);
 			if (obj != null && CommonUtils.isBasicObject(obj)) {
 				return String.valueOf(obj);
-			} else if (obj != null && obj instanceof JSON) {
-				return ((JSON)obj).toJSONString();
+			} else if (obj != null && obj instanceof Json) {
+				return ((Json)obj).toJSONString();
 			} else {
 				return input;
 			}
@@ -125,7 +125,7 @@ public class XCLContext implements Serializable {
 	}
 	public XCLContext clone() {
 		XCLContext c = new XCLContext();
-		c.object = (JSONObject) getObject().clone();
+		c.object = (JsonObject) getObject().clone();
 		c.path = this.path;
 		c.handler = this.handler;
 		return c;

@@ -1,8 +1,8 @@
 package van.xcl.cmd;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import van.xcl.util.json.Json;
+import van.xcl.util.json.JsonObject;
 
 import van.xcl.Command;
 import van.xcl.XCLConsole;
@@ -33,7 +33,7 @@ public class Jsonf implements Command {
 	@Override
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		String input = args.get("json_text").toString();
-		JSON json = (JSON) JSONObject.parse(input);
+		Json json = (Json) JsonObject.parse(input);
 		return new XCLVar(json);
 	}
 

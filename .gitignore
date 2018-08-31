@@ -1,4 +1,8 @@
 *.class
 *.log
+*.craft
 
 bin/
+crafts/
+*.err
+*.out

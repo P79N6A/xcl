@@ -2,8 +2,8 @@ package van.xcl.cmd;
 
 import java.util.Map;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import van.xcl.util.json.JsonArray;
+import van.xcl.util.json.JsonObject;
 
 import van.util.CommonUtils;
 import van.xcl.Command;
@@ -46,10 +46,10 @@ public class Echo implements Command {
 			if (var.isString() || var.isBoolean() || var.isNumeric()) {
 				console.output(CommonUtils.resolveJSONString(var.toString()));
 			} else if (var.isJsonObject()) {
-				JSONObject obj = var.getJsonObject();
-				console.output("\n" + CommonUtils.resolveJSONString(JSONObject.toJSONString(obj, true)));
+				JsonObject obj = var.getJsonObject();
+				console.output("\n" + CommonUtils.resolveJSONString(JsonObject.toJSONString(obj, true)));
 			} else if (var.isJsonArray()) {
-				JSONArray obj = var.getJsonArray();
+				JsonArray obj = var.getJsonArray();
 				if (obj.size() > 0) {
 					Object element = obj.get(0);
 					if (element instanceof String) {
@@ -59,7 +59,7 @@ public class Echo implements Command {
 						}
 						console.output(sb.toString());
 					} else {
-						console.output("\n" + CommonUtils.resolveJSONString(JSONObject.toJSONString(obj, true)));
+						console.output("\n" + CommonUtils.resolveJSONString(JsonObject.toJSONString(obj, true)));
 					}
 				}
 			}
