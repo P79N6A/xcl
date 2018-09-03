@@ -182,8 +182,10 @@ public class XCLTextPane extends JTextPane {
 	
 	private void setKeyString(int offset, int length) {
 		try {
+			int postion = this.getCaretPosition();
 			String text = document.getText(offset, length);
 			document.replace(offset, length, text.toLowerCase(), keyAttr);
+			this.setCaretPosition(postion);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
