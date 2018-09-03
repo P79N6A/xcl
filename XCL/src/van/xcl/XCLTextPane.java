@@ -23,18 +23,8 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.rtf.RTFEditorKit;
 import javax.swing.undo.UndoManager;
 
-/**
- * 关键字特殊处理面板
- * 
- * @author Administrator
- *
- */
 public class XCLTextPane extends JTextPane {
 	
-	/**
-	 * 在分析字符串的同时，记录每个token所在的位置
-	 *
-	 */
 	class MyStringTokenizer extends StringTokenizer {
 		private static final String delimeter = " ";
 		private String original;
@@ -151,19 +141,13 @@ public class XCLTextPane extends JTextPane {
 	private static MutableAttributeSet commentAttr;
 	private static MutableAttributeSet inputAttributes = new RTFEditorKit().getInputAttributes();
 	
-	/**
-	 * 所与排除字符集
-	 */
 	private static char[] exceptionCharacters = new char[] { '(', ')', ',', ';', ':', '\t', '\n', '+', '-', '*', '/' };
 	
 	static {
-		// 关键字显示属性
 		keyAttr = new SimpleAttributeSet();
 		StyleConstants.setForeground(keyAttr, XCLConstants.keyColor);
-		// 一般文本显示属性
 		normalAttr = new SimpleAttributeSet();
 		StyleConstants.setForeground(normalAttr, XCLConstants.normalColor);
-		// 注释显示属性
 		commentAttr = new SimpleAttributeSet();
 		StyleConstants.setForeground(commentAttr, XCLConstants.commentColor);
 	}
@@ -171,15 +155,9 @@ public class XCLTextPane extends JTextPane {
 	protected StyleContext context;
 	protected DefaultStyledDocument document;
 	
-	/**
-	 * 所有关键字
-	 */
 	private Set<String> keys = null;
 	private KeyAssist keyAssist = null;
 
-	/**
-	 * 初始化，包括关键字颜色，和非关键字颜色
-	 */
 	public XCLTextPane(Set<String> keys) {
 		super();
 		this.keys = keys;
@@ -193,9 +171,6 @@ public class XCLTextPane extends JTextPane {
 		this.keyAssist.discardAllEdits();
 	}
 
-	/**
-	 * 判断字符是不是在排除字符行列
-	 */
 	private boolean isExceptionCharacter(char _ch) {
 		for (int i = 0; i < exceptionCharacters.length; i++) {
 			if (_ch == exceptionCharacters[i]) {
@@ -204,10 +179,17 @@ public class XCLTextPane extends JTextPane {
 		}
 		return false;
 	}
+	
+	private void setKeyString(int offset, int length) {
+		try {
+			String text = document.getText(offset, length);
+			document.replace(offset, length, text.toLowerCase(), keyAttr);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		// document.setCharacterAttributes(offset, length, keyAttr, false);
+	}
 
-	/**
-	 * 设置关键字颜色
-	 */
 	private int setKeyColor(String text, int startIndex, int textLength) {
 		for (String key : keys) {
 			int index = text.indexOf(key);
@@ -216,25 +198,29 @@ public class XCLTextPane extends JTextPane {
 			}
 			int length = index + key.length();
 			if (length == text.length()) {
-				if (index == 0) {// 处理单独一个关键字的情况，例如：if else 等
-					document.setCharacterAttributes(startIndex, key.length(), keyAttr, false);
-				} else {// 处理关键字前面还有字符的情况，例如：)if ;else 等
+				if (index == 0) {
+					setKeyString(startIndex, key.length());
+					// document.setCharacterAttributes(startIndex, key.length(), keyAttr, false);
+				} else {
 					char ch_temp = text.charAt(index - 1);
 					if (isExceptionCharacter(ch_temp)) {
-						document.setCharacterAttributes(startIndex + index, key.length(), keyAttr, false);
+						setKeyString(startIndex + index, key.length());
+						// document.setCharacterAttributes(startIndex + index, key.length(), keyAttr, false);
 					}
 				}
 			} else {
-				if (index == 0) {// 处理关键字后面还有字符的情况，例如：if( end;等
+				if (index == 0) {
 					char ch_temp = text.charAt(key.length());
 					if (isExceptionCharacter(ch_temp)) {
-						document.setCharacterAttributes(startIndex, key.length(), keyAttr, false);
+						setKeyString(startIndex, key.length());
+						// document.setCharacterAttributes(startIndex, key.length(), keyAttr, false);
 					}
-				} else {// 处理关键字前面和后面都有字符的情况，例如：)if( 等
+				} else {
 					char ch_temp = text.charAt(index - 1);
 					char ch_temp_2 = text.charAt(length);
 					if (isExceptionCharacter(ch_temp) && isExceptionCharacter(ch_temp_2)) {
-						document.setCharacterAttributes(startIndex + index, key.length(), keyAttr, false);
+						setKeyString(startIndex + index, key.length());
+						// document.setCharacterAttributes(startIndex + index, key.length(), keyAttr, false);
 					}
 				}
 			}
@@ -242,9 +228,6 @@ public class XCLTextPane extends JTextPane {
 		return textLength + 1;
 	}
 
-	/**
-	 * 处理一行的数据
-	 */
 	private void handleRowText(int startIndex, int endIndex) {
 		String text = "";
 		try {
@@ -272,23 +255,16 @@ public class XCLTextPane extends JTextPane {
 		}
 	}
 
-	/**
-	 * 在进行文本修改的时候 获得光标所在行，只对该行进行处理
-	 */
 	private void handleCurrentRow() {
 		Element root = document.getDefaultRootElement();
-		// 光标当前行
-		int cursorPos = this.getCaretPosition(); // 前光标的位置
-		int line = root.getElementIndex(cursorPos);// 当前行
+		int cursorPos = this.getCaretPosition();
+		int line = root.getElementIndex(cursorPos);
 		Element para = root.getElement(line);
 		int start = para.getStartOffset();
-		int end = para.getEndOffset() - 1;// 除\r字符
+		int end = para.getEndOffset() - 1;
 		handleRowText(start, end);
 	}
 
-	/**
-	 * 在初始化面板的时候调用该方法， 查找整个篇幅的关键字
-	 */
 	public void handleAllRows() {
 		Element root = document.getDefaultRootElement();
 		int li_count = root.getElementCount();
