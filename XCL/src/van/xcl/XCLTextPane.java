@@ -15,24 +15,22 @@ import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
-import javax.swing.text.JTextComponent;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
-import javax.swing.text.rtf.RTFEditorKit;
 import javax.swing.undo.UndoManager;
 
 public class XCLTextPane extends JTextPane {
 	
-	class MyStringTokenizer extends StringTokenizer {
+	class XCLStringTokenizer extends StringTokenizer {
 		private static final String delimeter = " ";
 		private String original;
 		private String text;
 		private int currPos = 0;
 		private int startPos = 0;
 
-		private MyStringTokenizer(String text) {
+		private XCLStringTokenizer(String text) {
 			super(text, delimeter);
 			this.original = text;
 			this.text = text;
@@ -71,11 +69,11 @@ public class XCLTextPane extends JTextPane {
 	
 	class KeyAssist extends KeyAdapter {
 		private Map<Character, Character> map = new HashMap<Character, Character>();
-		private JTextComponent t;
+		private XCLTextPane t;
 		private UndoManager und;
 		private AtomicBoolean isUndDown = new AtomicBoolean(false);
 		private String styleChangeText = UIManager.getString("AbstractDocument.styleChangeText");
-		public KeyAssist(JTextComponent t) {
+		public KeyAssist(XCLTextPane t) {
 			this.und = new UndoManager();
 			this.t = t;
 			this.t.getDocument().addUndoableEditListener(und);
@@ -88,13 +86,14 @@ public class XCLTextPane extends JTextPane {
 		@Override
 		public void keyReleased(KeyEvent e) {
 			if (map.containsKey(e.getKeyChar())) {
-				char c = map.get(e.getKeyChar());
-				String text = t.getText();
-				int pos = t.getCaretPosition();
-				String str1 = text.substring(0, pos);
-				String str2 = text.substring(pos);
-				t.setText(str1 + c + str2);
-				t.setCaretPosition(pos);
+				try {
+					char c = map.get(e.getKeyChar());
+					int pos = t.getCaretPosition();
+					t.document.insertString(pos, String.valueOf(c), normalAttr);
+					t.setCaretPosition(pos);
+				} catch (BadLocationException e1) {
+					// Do noting
+				}
 			}
 			if (!isUndDown.compareAndSet(true, false)) {
 				handleCurrentRow();
@@ -139,7 +138,7 @@ public class XCLTextPane extends JTextPane {
 	private static MutableAttributeSet keyAttr;
 	private static MutableAttributeSet normalAttr;
 	private static MutableAttributeSet commentAttr;
-	private static MutableAttributeSet inputAttributes = new RTFEditorKit().getInputAttributes();
+//	private static MutableAttributeSet inputAttributes = new RTFEditorKit().getInputAttributes();
 	
 	private static char[] exceptionCharacters = new char[] { '(', ')', ',', ';', ':', '\t', '\n', '+', '-', '*', '/' };
 	
@@ -180,16 +179,8 @@ public class XCLTextPane extends JTextPane {
 		return false;
 	}
 	
-	private void setKeyString(int offset, int length) {
-		try {
-			int postion = this.getCaretPosition();
-			String text = document.getText(offset, length);
-			document.replace(offset, length, text.toLowerCase(), keyAttr);
-			this.setCaretPosition(postion);
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
-		// document.setCharacterAttributes(offset, length, keyAttr, false);
+	private void setAttributes(int offset, int length, MutableAttributeSet attr) {
+		document.setCharacterAttributes(offset, length, attr, false);
 	}
 
 	private int setKeyColor(String text, int startIndex, int textLength) {
@@ -201,28 +192,24 @@ public class XCLTextPane extends JTextPane {
 			int length = index + key.length();
 			if (length == text.length()) {
 				if (index == 0) {
-					setKeyString(startIndex, key.length());
-					// document.setCharacterAttributes(startIndex, key.length(), keyAttr, false);
+					setAttributes(startIndex, key.length(), keyAttr);
 				} else {
 					char ch_temp = text.charAt(index - 1);
 					if (isExceptionCharacter(ch_temp)) {
-						setKeyString(startIndex + index, key.length());
-						// document.setCharacterAttributes(startIndex + index, key.length(), keyAttr, false);
+						setAttributes(startIndex + index, key.length(), keyAttr);
 					}
 				}
 			} else {
 				if (index == 0) {
 					char ch_temp = text.charAt(key.length());
 					if (isExceptionCharacter(ch_temp)) {
-						setKeyString(startIndex, key.length());
-						// document.setCharacterAttributes(startIndex, key.length(), keyAttr, false);
+						setAttributes(startIndex, key.length(), keyAttr);
 					}
 				} else {
 					char ch_temp = text.charAt(index - 1);
 					char ch_temp_2 = text.charAt(length);
 					if (isExceptionCharacter(ch_temp) && isExceptionCharacter(ch_temp_2)) {
-						setKeyString(startIndex + index, key.length());
-						// document.setCharacterAttributes(startIndex + index, key.length(), keyAttr, false);
+						setAttributes(startIndex + index, key.length(), keyAttr);
 					}
 				}
 			}
@@ -231,51 +218,50 @@ public class XCLTextPane extends JTextPane {
 	}
 
 	private void handleRowText(int startIndex, int endIndex) {
-		String text = "";
 		try {
-			text = document.getText(startIndex, endIndex - startIndex).toUpperCase();
+			String text = document.getText(startIndex, endIndex - startIndex);
+			if (text != null && !"".equals(text)) {
+				if (text.trim().startsWith(XCLConstants.COMMONT_PREFIX)) {
+					setAttributes(startIndex, text.length(), commentAttr);
+				} else {
+					int lastPosition = 0;
+					setAttributes(startIndex, text.length(), normalAttr);
+					XCLStringTokenizer st = new XCLStringTokenizer(text);
+					while (st.hasMoreTokens()) {
+						String s = st.nextToken();
+						if (s != null) {
+							lastPosition = st.getCurrPosition();
+							setKeyColor(s, startIndex + lastPosition, s.length());
+						}
+					}
+//					inputAttributes.addAttributes(normalAttr);
+				}
+			}
 		} catch (BadLocationException e) {
 			// do nothing.
-		}
-		if (text == null || text.equals("")) {
-			return;
-		}
-		if (text.trim().startsWith(XCLConstants.COMMONT_PREFIX)) {
-			document.setCharacterAttributes(startIndex, text.length(), commentAttr, false);
-		} else {
-			int lastPosition = 0;
-			document.setCharacterAttributes(startIndex, text.length(), normalAttr, false);
-			MyStringTokenizer st = new MyStringTokenizer(text);
-			while (st.hasMoreTokens()) {
-				String s = st.nextToken();
-				if (s == null)
-					return;
-				lastPosition = st.getCurrPosition();
-				setKeyColor(s.toLowerCase(), startIndex + lastPosition, s.length());
-			}
-			inputAttributes.addAttributes(normalAttr);
 		}
 	}
 
 	private void handleCurrentRow() {
 		Element root = document.getDefaultRootElement();
-		int cursorPos = this.getCaretPosition();
-		int line = root.getElementIndex(cursorPos);
-		Element para = root.getElement(line);
-		int start = para.getStartOffset();
-		int end = para.getEndOffset() - 1;
+		int rowLine = root.getElementIndex(getCaretPosition());
+		Element rowElement = root.getElement(rowLine);
+		int start = rowElement.getStartOffset();
+		int end = rowElement.getEndOffset() - 1;
 		handleRowText(start, end);
 	}
 
 	public void handleAllRows() {
+		int position = this.getCaretPosition();
 		Element root = document.getDefaultRootElement();
-		int li_count = root.getElementCount();
-		for (int i = 0; i < li_count; i++) {
+		int rowCount = root.getElementCount();
+		for (int i = 0; i < rowCount; i++) {
 			Element para = root.getElement(i);
 			int start = para.getStartOffset();
-			int end = para.getEndOffset() - 1;// 除\r字符
+			int end = para.getEndOffset() - 1;
 			handleRowText(start, end);
 		}
+		this.setCaretPosition(position);
 	}
 	
 	@Override
