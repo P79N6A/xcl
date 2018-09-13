@@ -8,13 +8,13 @@ import java.io.ObjectOutputStream;
 
 import van.util.codec.Encoder;
 
-public class ObjectSerilizer<T> {
+public class ObjectSerializer<T> {
 
 	private T object;
 	private String string;
 	private Encoder encoder = new Encoder();
 	
-	public ObjectSerilizer(T object) {
+	public ObjectSerializer(T object) {
 		this.object = object;
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -27,7 +27,7 @@ public class ObjectSerilizer<T> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ObjectSerilizer(String string) {
+	public ObjectSerializer(String string) {
 		this.string = string;
 		try {
 			byte[] bytes = encoder.decode(string);

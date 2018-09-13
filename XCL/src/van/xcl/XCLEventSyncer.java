@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 
 import van.util.CommonUtils;
-import van.util.ObjectSerilizer;
+import van.util.ObjectSerializer;
 import van.util.evt.EventEntity;
 import van.util.evt.EventManager;
 import van.util.task.Task;
@@ -37,7 +37,7 @@ public class XCLEventSyncer {
 				BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 				String line = null;
 				while (null != (line = br.readLine())) {
-					ObjectSerilizer<EventEntity> s = new ObjectSerilizer<EventEntity>(line);
+					ObjectSerializer<EventEntity> s = new ObjectSerializer<EventEntity>(line);
 					eventManager.addEvent(s.getObject());
 				}
 			} catch (IOException e) {
@@ -69,7 +69,7 @@ public class XCLEventSyncer {
 		}
 		public void send(EventEntity event) {
 			try {
-				ObjectSerilizer<EventEntity> s = new ObjectSerilizer<EventEntity>(event);
+				ObjectSerializer<EventEntity> s = new ObjectSerializer<EventEntity>(event);
 				String xstring = s.getString();
 				this.bw.write(xstring + "\r\n");
 				this.bw.flush();
