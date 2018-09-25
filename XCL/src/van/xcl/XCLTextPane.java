@@ -156,6 +156,7 @@ public class XCLTextPane extends JTextPane {
 	
 	private Set<String> keys = null;
 	private KeyAssist keyAssist = null;
+	private Map<String, Object> attrs = new HashMap<String, Object>();
 
 	public XCLTextPane(Set<String> keys) {
 		super();
@@ -262,6 +263,14 @@ public class XCLTextPane extends JTextPane {
 			handleRowText(start, end);
 		}
 		this.setCaretPosition(position);
+	}
+	
+	public void setAttribute(String key, Object value) {
+		attrs.put(key, value);
+	}
+	
+	public Object getAttribute(String key) {
+		return attrs.get(key);
 	}
 	
 	@Override

@@ -48,7 +48,9 @@ import javax.swing.JTextPane;
 import javax.swing.TransferHandler;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -105,6 +107,10 @@ public class XCLUI implements EventHandler {
 			return button;
 		}
 	}
+	
+	private static final String KEY_SEARCH_TEXT = "search_text";
+	private static final String KEY_SEARCH_ROW = "search_row";
+	private static final String KEY_SEARCH_ROW_OFFSET = "search_row_offset";
 	
 	private JFrame frame;
 	private XCLConsole console;
@@ -256,19 +262,6 @@ public class XCLUI implements EventHandler {
 			textCmd.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
-					/*
-					if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-						String cmdStr = CommonUtils.trim(textCmd.getText());
-						if (!CommonUtils.isEmpty(cmdStr)) {
-							console.input(cmdStr);
-							console.run(cmdStr);
-							console.present(null);
-						} else {
-							// clear
-							textCmd.setText(null);
-						}
-					}
-					*/
 				}
 				@Override
 				public void keyPressed(KeyEvent e) {
@@ -288,6 +281,14 @@ public class XCLUI implements EventHandler {
 						} else {
 							// clear
 							textCmd.setText(null);
+						}
+					} else if (e.getKeyCode() == KeyEvent.VK_F1) {
+						String cmd = CommonUtils.trim(textCmd.getText());
+						if (!CommonUtils.isEmpty(cmd)) {
+							textCmd.setAttribute(KEY_SEARCH_TEXT, cmd);
+							textCmd.setAttribute(KEY_SEARCH_ROW, 0);
+							textCmd.setAttribute(KEY_SEARCH_ROW_OFFSET, 0);
+							requestFocus(getTextConsole());
 						}
 					}
 				}
@@ -440,23 +441,62 @@ public class XCLUI implements EventHandler {
 			textConsole.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
-					String selectedText = textConsole.getSelectedText();
-					if (selectedText != null && selectedText.length() > 0) {
-						Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-						Transferable text = new StringSelection(selectedText);
-						clip.setContents(text, null);
+					if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+						String selectedText = textConsole.getSelectedText();
+						if (selectedText != null && selectedText.length() > 0) {
+							Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+							Transferable text = new StringSelection(selectedText);
+							clip.setContents(text, null);
+							console.prompt("The text copied to clipboard: \"" + selectedText + "\"");
+						}
 					}
-					console.prepare();
 				}
 				@Override
 				public void keyPressed(KeyEvent e) {
-					/*
-					if (e.getModifiers() == InputEvent.CTRL_MASK && e.getKeyCode() == KeyEvent.VK_C) {
-						console.cancelCommand();
-					}
-					*/
 					if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
 						console.cancelCommand();
+					} else if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+						console.prepare();
+					} else if (e.getKeyCode() == KeyEvent.VK_F1) {
+						String searchText = (String) getTextCmd().getAttribute(KEY_SEARCH_TEXT);
+						Integer searchRow = (Integer) getTextCmd().getAttribute(KEY_SEARCH_ROW);
+						Integer searchRowOffset = (Integer) getTextCmd().getAttribute(KEY_SEARCH_ROW_OFFSET);
+						console.prompt("Search text: " + searchText);
+						if (!CommonUtils.isEmpty(searchText) && searchRow != null && searchRowOffset != null) {
+							Document document = textConsole.getDocument();
+							Element root = document.getDefaultRootElement();
+							int rowCount = root.getElementCount();
+							boolean isSuccess = false;
+							for (int i = searchRow; i < rowCount ; i++) {
+								System.out.println("row: " + i);
+								Element row = root.getElement(i);
+								int start = row.getStartOffset();
+								int end = row.getEndOffset() - 1;
+								try {
+									String line = document.getText(start, end - start);
+									int index = line.indexOf(searchText, 
+											(searchRow == i) ? searchRowOffset : 0);
+									if (index > -1) {
+										int startOffset = start + index;
+										int endOffset = startOffset + searchText.length();
+										textConsole.setSelectionStart(startOffset);
+										textConsole.setSelectionEnd(endOffset);
+										getTextCmd().setAttribute(KEY_SEARCH_ROW, i);
+										getTextCmd().setAttribute(KEY_SEARCH_ROW_OFFSET, index + searchText.length());
+										console.prompt("Search text: " + searchText + " - 1 matches in Console, row: " + i + ", offset: " + index);
+										isSuccess = true;
+										break;
+									}
+								} catch (BadLocationException e1) {
+									e1.printStackTrace();
+								}
+							}
+							if (!isSuccess) {
+								getTextCmd().setAttribute(KEY_SEARCH_ROW, 0);
+								getTextCmd().setAttribute(KEY_SEARCH_ROW_OFFSET, 0);
+								console.prompt("Search text: " + searchText + " - 0 matches in Console");
+							}
+						}
 					}
 				}
 				@Override
