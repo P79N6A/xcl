@@ -39,8 +39,8 @@ public class XCLConstants {
 	
 	public static final Color backgroundColor = new Color(39, 40, 34);
 	public static final Color foregroundColor = new Color(248, 248, 242);
-	// public static final Color selectionColor = new Color(73, 72, 62);
 	public static final Color selectionColor = new Color(255, 0, 0);
+	public static final Color caretColor = Color.cyan;
 	public static final Color promptColor = new Color(128, 128, 128);
 	public static final Color errorColor = new Color(255, 0, 0);
 	public static final Color normalColor = new Color(248, 248, 242);
@@ -51,6 +51,7 @@ public class XCLConstants {
 	//	public static final Color backgroundColor = Color.white;
 	//	public static final Color foregroundColor = Color.black;
 	//	public static final Color selectionColor = Color.lightGray;
+	//	public static final Color caretColor = Color.black;
 	//	public static final Color promptColor = Color.gray;
 	//	public static final Color errorColor = Color.red;
 	//	public static final Color normalColor = Color.black;

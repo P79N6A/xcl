@@ -45,6 +45,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.TransferHandler;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -217,10 +218,11 @@ public class XCLUI implements EventHandler {
 		JScrollPane pane = new JScrollPane(getTextConsole());
 		pane.setBorder(null);
 		pane.setBackground(XCLConstants.backgroundColor);
+		pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		JScrollBar vb = pane.getVerticalScrollBar();
-		JScrollBar hb = pane.getHorizontalScrollBar();
+		// JScrollBar hb = pane.getHorizontalScrollBar();
 		vb.setUI(new XScrollBarUI());
-		hb.setUI(new XScrollBarUI());
+		// hb.setUI(new XScrollBarUI());
 		return pane;
 	}
 
@@ -256,7 +258,7 @@ public class XCLUI implements EventHandler {
 			textCmd.setBorder(null);
 			textCmd.setBackground(XCLConstants.backgroundColor);
 			textCmd.setForeground(XCLConstants.foregroundColor);
-			textCmd.setCaretColor(XCLConstants.foregroundColor);
+			textCmd.setCaretColor(XCLConstants.caretColor);
 			textCmd.setFont(getDefaultFont());
 			textCmd.setPreferredSize(new Dimension(0, 25));
 			textCmd.addKeyListener(new KeyAdapter() {
@@ -288,6 +290,7 @@ public class XCLUI implements EventHandler {
 							textCmd.setAttribute(KEY_SEARCH_TEXT, cmd);
 							textCmd.setAttribute(KEY_SEARCH_ROW, 0);
 							textCmd.setAttribute(KEY_SEARCH_ROW_OFFSET, 0);
+							console.prompt(cmd);
 							requestFocus(getTextConsole());
 						}
 					}
@@ -328,7 +331,7 @@ public class XCLUI implements EventHandler {
 			textPrompt.setBorder(null);
 			textPrompt.setBackground(XCLConstants.backgroundColor);
 			textPrompt.setForeground(XCLConstants.promptColor);
-			textPrompt.setCaretColor(XCLConstants.foregroundColor);
+			textPrompt.setCaretColor(XCLConstants.caretColor);
 			textPrompt.setFont(getDefaultFont());
 			textPrompt.setPreferredSize(new Dimension(0, 25));
 		}
@@ -342,7 +345,7 @@ public class XCLUI implements EventHandler {
 			textInputPrompt.setBorder(null);
 			textInputPrompt.setBackground(XCLConstants.backgroundColor);
 			textInputPrompt.setForeground(XCLConstants.commentColor);
-			textInputPrompt.setCaretColor(XCLConstants.foregroundColor);
+			textInputPrompt.setCaretColor(XCLConstants.caretColor);
 			textInputPrompt.setFont(getDefaultFont());
 			textInputPrompt.setPreferredSize(new Dimension(0, 25));
 		}
@@ -399,7 +402,7 @@ public class XCLUI implements EventHandler {
 			textInput.setBackground(XCLConstants.backgroundColor);
 			textInput.setForeground(XCLConstants.foregroundColor);
 			textInput.setSelectionColor(XCLConstants.selectionColor);
-			textInput.setCaretColor(XCLConstants.foregroundColor);
+			textInput.setCaretColor(XCLConstants.caretColor);
 			textInput.setFont(getDefaultFont());
 			textInput.addKeyListener(new KeyAdapter() {
 				@Override
@@ -427,7 +430,7 @@ public class XCLUI implements EventHandler {
 			textConsole.setBackground(XCLConstants.backgroundColor);
 			textConsole.setForeground(XCLConstants.foregroundColor);
 			textConsole.setSelectionColor(XCLConstants.selectionColor);
-			textConsole.setCaretColor(XCLConstants.foregroundColor);
+			textConsole.setCaretColor(XCLConstants.caretColor);
 			textConsole.setFont(getDefaultFont());
 			textConsole.addFocusListener(new FocusListener() {
 				@Override
@@ -474,13 +477,13 @@ public class XCLUI implements EventHandler {
 								int end = row.getEndOffset() - 1;
 								try {
 									String line = document.getText(start, end - start);
-									int index = line.indexOf(searchText, 
+									int index = line.toLowerCase().indexOf(searchText.toLowerCase(), 
 											(searchRow == i) ? searchRowOffset : 0);
 									if (index > -1) {
 										int startOffset = start + index;
 										int endOffset = startOffset + searchText.length();
-										textConsole.setSelectionStart(startOffset);
-										textConsole.setSelectionEnd(endOffset);
+										getTextConsole().setSelectionStart(startOffset);
+										getTextConsole().setSelectionEnd(endOffset);
 										getTextCmd().setAttribute(KEY_SEARCH_ROW, i);
 										getTextCmd().setAttribute(KEY_SEARCH_ROW_OFFSET, index + searchText.length());
 										console.prompt("Search text: " + searchText + " - 1 matches in Console, row: " + i + ", offset: " + index);
@@ -554,7 +557,7 @@ public class XCLUI implements EventHandler {
 	private void requestFocus(JTextComponent text) {
 		text.requestFocus();
 		text.setCaretPosition(text.getDocument().getLength());
-		text.setCaretColor(XCLConstants.foregroundColor);
+		text.setCaretColor(XCLConstants.caretColor);
 	}
 	
 	// ---

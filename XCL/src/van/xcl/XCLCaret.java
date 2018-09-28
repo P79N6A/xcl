@@ -58,12 +58,15 @@ public class XCLCaret extends DefaultCaret {
 		}
 		if (isVisible()) {
 			g.setColor(comp.getCaretColor());
-			g.drawLine(r.x, r.y + dist, r.x, r.y + dist + 4); // 5 vertical
-			// pixels
-			g.drawLine(r.x, r.y + dist + 4, r.x + 4, r.y + dist + 4); // 5 horiz
-			// px
-			g.drawLine(r.x, r.y + dist, r.x + 4, r.y + dist + 4);
-			
+//			g.drawLine(r.x, r.y + dist, r.x, r.y + dist + 4); // 5 vertical
+//			// pixels
+//			g.drawLine(r.x, r.y + dist + 4, r.x + 4, r.y + dist + 4); // 5 horiz
+//			// px
+//			g.drawLine(r.x, r.y + dist, r.x + 4, r.y + dist + 4);
+			int[] xPoints = {r.x + 2, r.x, r.x + 4};
+			int[] yPoints = {r.y + dist, r.y + dist + 4, r.y + dist + 4};
+			g.fillPolygon(xPoints, yPoints, 3);
+			g.drawPolygon(xPoints, yPoints, 3);
 		}
 	}
 }
