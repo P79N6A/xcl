@@ -44,7 +44,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.TransferHandler;
 import javax.swing.WindowConstants;
@@ -109,16 +108,25 @@ public class XCLUI implements EventHandler {
 		}
 	}
 	
+	enum ConsoleType {
+		input, output, info, error
+	}
+	
+	enum PaneType {
+		input,
+		console
+	}
+	
 	private static final String KEY_SEARCH_TEXT = "search_text";
 	private static final String KEY_SEARCH_ROW = "search_row";
 	private static final String KEY_SEARCH_ROW_OFFSET = "search_row_offset";
 	
 	private JFrame frame;
 	private XCLConsole console;
-	private JTextPane textConsole;
-	private XCLTextPane textInput;
+	private XCLTextPane textConsole;
+	private XCLTextInputPane textInput;
 	private JTextField textInputPrompt;
-	private XCLTextPane textCmd;
+	private XCLTextInputPane textCmd;
 	private JTextField textPrompt;
 	private JPanel cardPanel = new JPanel();
 	private CardLayout cardLayout = new CardLayout();
@@ -148,8 +156,8 @@ public class XCLUI implements EventHandler {
 				}
 			});
 			this.cardPanel.setLayout(cardLayout);
-			this.cardPanel.add("console", getConsolePanel());
-			this.cardPanel.add("input", getInputPanel());
+			this.cardPanel.add(PaneType.console.name(), getConsolePanel());
+			this.cardPanel.add(PaneType.input.name(), getInputPanel());
 			getFrame().setLayout(new BorderLayout(0, 0));
 			getFrame().add(getTextPrompt(), BorderLayout.SOUTH);
 			getFrame().add(cardPanel, BorderLayout.CENTER);
@@ -172,9 +180,9 @@ public class XCLUI implements EventHandler {
 				outFile.delete();
 			}
 			logWriter = new BufferedWriter(new FileWriter(outFile));
-			console(-1, XCLConstants.INFO_PROMPT + " - " + outFile.getAbsolutePath() + "\n", XCLConstants.promptColor);
+			console(ConsoleType.info, -1, " - " + outFile.getAbsolutePath());
 		} catch (IOException e) {
-			console(-1, "Failed to init the log file: " + e.getMessage(), XCLConstants.errorColor);
+			console(ConsoleType.error, -1, "Failed to init the log file: " + e.getMessage());
 		}
 	}
 	
@@ -207,7 +215,6 @@ public class XCLUI implements EventHandler {
 		label.setText(" > ");
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
-//		panel.add(getTextCmd(), BorderLayout.CENTER);
 		panel.add(getScrollCmd(), BorderLayout.CENTER);
 		panel.add(label, BorderLayout.WEST);
 		consolePanel.add(panel, BorderLayout.SOUTH);
@@ -248,12 +255,11 @@ public class XCLUI implements EventHandler {
 		return pane;
 	}
 	
-	private XCLTextPane getTextCmd() {
+	private XCLTextInputPane getTextCmd() {
 		if (textCmd == null) {
 //			textCmd = new JTextField();
-			textCmd = new XCLTextPane(keys);
+			textCmd = new XCLTextInputPane(keys);
 			textCmd.setCaret(new XCLCaret());
-//			textCmd.setEditable(false);
 			textCmd.setEditable(true);
 			textCmd.setBorder(null);
 			textCmd.setBackground(XCLConstants.backgroundColor);
@@ -274,9 +280,11 @@ public class XCLUI implements EventHandler {
 						e.consume();
 						String cmd = CommonUtils.trim(textCmd.getText());
 						if (!CommonUtils.isEmpty(cmd)) {
+							/*
 							if (!cmd.endsWith(XCLConstants.TERMINATE_TAG) && !cmd.endsWith(XCLConstants.PARAS_DEFAULT)) { // add terminate tag by default
 								cmd += " " + XCLConstants.PARAS_DEFAULT;
 							}
+							*/
 							console.input(cmd); // save historic command
 							console.run(cmd);
 							console.present(null);
@@ -360,7 +368,23 @@ public class XCLUI implements EventHandler {
 		return attr;
 	}
 	
-	private synchronized void console(int traceId, String str, Color color) {
+	private synchronized void console(ConsoleType type, int traceId, String str) {
+		Color color = XCLConstants.foregroundColor;
+		String prefix = XCLConstants.OUT_PROMPT;
+		if (ConsoleType.input.equals(type)) {
+			color = XCLConstants.foregroundColor;
+			prefix = XCLConstants.IN_PROMPT;
+		} else if (ConsoleType.output.equals(type)) {
+			color = XCLConstants.foregroundColor;
+			prefix = XCLConstants.OUT_PROMPT;
+		} else if (ConsoleType.info.equals(type)) {
+			color = XCLConstants.promptColor;
+			prefix = XCLConstants.INFO_PROMPT;
+		} else if (ConsoleType.error.equals(type)) {
+			color = XCLConstants.errorColor;
+			prefix = XCLConstants.ERROR_PROMPT;
+		}
+		str = prefix + str + "\n";
 		try {
 			SimpleAttributeSet attr = getConsoleAttr(color, getDefaultFont());
 			Document document = getTextConsole().getDocument();
@@ -385,6 +409,9 @@ public class XCLUI implements EventHandler {
 				JOptionPane.showMessageDialog(null, e.getMessage());
 			}
 		}
+		if (ConsoleType.input.equals(type)) {
+			getTextConsole().handlePerviousRow();
+		}
 	}
 	
 	private synchronized void fixedRow(int traceId, boolean fixRow) {
@@ -396,9 +423,9 @@ public class XCLUI implements EventHandler {
 		}
 	}
 	
-	private XCLTextPane getTextInput() {
+	private XCLTextInputPane getTextInput() {
 		if (textInput == null) {
-			textInput = new XCLTextPane(keys);
+			textInput = new XCLTextInputPane(keys);
 			textInput.setBackground(XCLConstants.backgroundColor);
 			textInput.setForeground(XCLConstants.foregroundColor);
 			textInput.setSelectionColor(XCLConstants.selectionColor);
@@ -422,9 +449,9 @@ public class XCLUI implements EventHandler {
 		return textInput;
 	}
 
-	private JTextPane getTextConsole() {
+	private XCLTextPane getTextConsole() {
 		if (textConsole == null) {
-			textConsole = new JTextPane();
+			textConsole = new XCLTextPane(keys);
 			textConsole.setEditable(false);
 			textConsole.setBorder(null);
 			textConsole.setBackground(XCLConstants.backgroundColor);
@@ -560,6 +587,10 @@ public class XCLUI implements EventHandler {
 		text.setCaretColor(XCLConstants.caretColor);
 	}
 	
+	private synchronized void showPane(PaneType panelType) {
+		cardLayout.show(cardPanel, panelType.name());
+	}
+	
 	// ---
 	
 	public void dispose() {
@@ -597,13 +628,13 @@ public class XCLUI implements EventHandler {
 		String source = !console.getSource().equals(event.getSource()) ? "[" + event.getSource() + "]: " : "";
 		logger.info("[" + console.getSource() + "] XCLUI.handleEvent [type: " + type + ", message: " + CommonUtils.trim(message) + "]");
 		if (XCLEvent.input.equals(type)) {
-			console(traceId, XCLConstants.IN_PROMPT + source + message + "\n", XCLConstants.foregroundColor); // source
+			console(ConsoleType.input, traceId, source + message); // source
 		} else if (XCLEvent.output.equals(type)) {
-			console(traceId, XCLConstants.OUT_PROMPT + source + message + "\n", XCLConstants.foregroundColor); // source
+			console(ConsoleType.output, traceId, source + message); // source
 		} else if (XCLEvent.info.equals(type)) {
-			console(traceId, XCLConstants.INFO_PROMPT + source + message + "\n", XCLConstants.promptColor); // source
+			console(ConsoleType.info, traceId, source + message); // source
 		} else if (XCLEvent.error.equals(type)) {
-			console(traceId, XCLConstants.ERROR_PROMPT + source + message + "\n", XCLConstants.errorColor); // source
+			console(ConsoleType.error, traceId, source + message); // source
 		} else if (XCLEvent.prompt.equals(type)) {
 			getTextPrompt().setText(source + message + "  "); // source
 		} else if (XCLEvent.title.equals(type)) {
@@ -618,8 +649,6 @@ public class XCLUI implements EventHandler {
 			getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
 			initOutFile();
 		} else if (XCLEvent.editable.equals(type)) {
-			// boolean editable = Boolean.valueOf(message);
-			// getTextCmd().setEditable(editable);
 			requestFocus(getTextCmd());
 		} else if (XCLEvent.present.equals(type)) {
 			getTextCmd().setText(message);
@@ -628,7 +657,7 @@ public class XCLUI implements EventHandler {
 			boolean b = Boolean.valueOf(message);
 			fixedRow(traceId, b);
 		} else if (XCLEvent.textInput.equals(type)) {
-			cardLayout.show(cardPanel, "input");
+			showPane(PaneType.input);
 			getTextInput().setText(message);
 			getTextInput().discardAllEdits();
 			requestFocus(getTextInput());
@@ -637,7 +666,7 @@ public class XCLUI implements EventHandler {
 		} else if (XCLEvent.getTextInput.equals(type)) {
 			try {
 				String inputText = textQueue.take();
-				cardLayout.show(cardPanel, "console");
+				showPane(PaneType.console);
 				if (!XCLConstants.ESC.equals(inputText)) {
 					return inputText;
 				}

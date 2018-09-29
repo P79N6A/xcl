@@ -1,17 +1,13 @@
 package van.xcl;
 
 import java.awt.Dimension;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JTextPane;
-import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
@@ -19,7 +15,6 @@ import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
-import javax.swing.undo.UndoManager;
 
 public class XCLTextPane extends JTextPane {
 	
@@ -67,69 +62,6 @@ public class XCLTextPane extends JTextPane {
 		}
 	}
 	
-	class KeyAssist extends KeyAdapter {
-		private Map<Character, Character> map = new HashMap<Character, Character>();
-		private XCLTextPane t;
-		private UndoManager und;
-		private AtomicBoolean isUndDown = new AtomicBoolean(false);
-		private String styleChangeText = UIManager.getString("AbstractDocument.styleChangeText");
-		public KeyAssist(XCLTextPane t) {
-			this.und = new UndoManager();
-			this.t = t;
-			this.t.getDocument().addUndoableEditListener(und);
-			this.map.put('"', '"');
-			this.map.put('{', '}');
-			this.map.put('[', ']');
-			this.map.put('\'', '\'');
-			this.t.addKeyListener(this);
-		}
-		@Override
-		public void keyReleased(KeyEvent e) {
-			if (map.containsKey(e.getKeyChar())) {
-				try {
-					char c = map.get(e.getKeyChar());
-					int pos = t.getCaretPosition();
-					t.document.insertString(pos, String.valueOf(c), normalAttr);
-					t.setCaretPosition(pos);
-				} catch (BadLocationException e1) {
-					// Do noting
-				}
-			}
-			if (!isUndDown.compareAndSet(true, false)) {
-				handleCurrentRow();
-			}
-		}
-		@Override
-		public void keyPressed(KeyEvent e) {
-			if (e.isControlDown()) {
-				int count = 0;
-				if (e.getKeyCode() == KeyEvent.VK_Y) { // redo
-					isUndDown.set(true);
-					while (und.canRedo() && count == 0) {
-						if (!und.getRedoPresentationName().contains(styleChangeText)) {
-							count++;
-						}
-						und.redo();
-					}
-				} else if (e.getKeyCode() == KeyEvent.VK_Z) { // undo
-					isUndDown.set(true);
-					while (und.canUndo() && count == 0) {
-						if (!und.getUndoPresentationName().contains(styleChangeText)) {
-							count++;
-						}	
-						und.undo();
-					}
-				}
-				if (isUndDown.get()) {
-					t.setCaretPosition(t.getDocument().getLength());
-				}
-			} 
-		}
-		public void discardAllEdits() {
-			this.und.discardAllEdits();
-		}
-		
-	}
 	/**
 	 *
 	 */
@@ -138,7 +70,6 @@ public class XCLTextPane extends JTextPane {
 	private static MutableAttributeSet keyAttr;
 	private static MutableAttributeSet normalAttr;
 	private static MutableAttributeSet commentAttr;
-//	private static MutableAttributeSet inputAttributes = new RTFEditorKit().getInputAttributes();
 	
 	private static char[] exceptionCharacters = new char[] { '(', ')', ',', ';', ':', '\t', '\n', '+', '-', '*', '/' };
 	
@@ -155,7 +86,6 @@ public class XCLTextPane extends JTextPane {
 	protected DefaultStyledDocument document;
 	
 	private Set<String> keys = null;
-	private KeyAssist keyAssist = null;
 	private Map<String, Object> attrs = new HashMap<String, Object>();
 
 	public XCLTextPane(Set<String> keys) {
@@ -164,13 +94,8 @@ public class XCLTextPane extends JTextPane {
 		this.context = new StyleContext();
 		this.document = new DefaultStyledDocument(context);
 		this.setDocument(document);
-		this.keyAssist = new KeyAssist(this);
 	}
 	
-	public void discardAllEdits() {
-		this.keyAssist.discardAllEdits();
-	}
-
 	private boolean isExceptionCharacter(char _ch) {
 		for (int i = 0; i < exceptionCharacters.length; i++) {
 			if (_ch == exceptionCharacters[i]) {
@@ -235,7 +160,6 @@ public class XCLTextPane extends JTextPane {
 							setKeyColor(s, startIndex + lastPosition, s.length());
 						}
 					}
-//					inputAttributes.addAttributes(normalAttr);
 				}
 			}
 		} catch (BadLocationException e) {
@@ -243,13 +167,24 @@ public class XCLTextPane extends JTextPane {
 		}
 	}
 
-	private void handleCurrentRow() {
+	public void handleCurrentRow() {
 		Element root = document.getDefaultRootElement();
 		int rowLine = root.getElementIndex(getCaretPosition());
 		Element rowElement = root.getElement(rowLine);
 		int start = rowElement.getStartOffset();
 		int end = rowElement.getEndOffset() - 1;
 		handleRowText(start, end);
+	}
+	
+	public void handlePerviousRow() {
+		Element root = document.getDefaultRootElement();
+		int rowLine = root.getElementIndex(getCaretPosition());
+		if (rowLine >= 1) {
+			Element rowElement = root.getElement(rowLine - 1);
+			int start = rowElement.getStartOffset();
+			int end = rowElement.getEndOffset() - 1;
+			handleRowText(start, end);
+		}
 	}
 
 	public void handleAllRows() {
@@ -293,5 +228,17 @@ public class XCLTextPane extends JTextPane {
 		super.setSize(d);
 	}
 
+	public static MutableAttributeSet getKeyAttr() {
+		return keyAttr;
+	}
+
+	public static MutableAttributeSet getNormalAttr() {
+		return normalAttr;
+	}
+
+	public static MutableAttributeSet getCommentAttr() {
+		return commentAttr;
+	}
+	
 }
 
