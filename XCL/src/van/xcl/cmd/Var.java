@@ -69,6 +69,7 @@ public class Var implements Command {
 			context.setVar(key, var.getJsonArray());
 			console.prompt(key + "=JSONArray");
 		}
+		console.info("variable \"" + key + "\" is defined");
 		return new XCLVar(key); // key
 	}
 

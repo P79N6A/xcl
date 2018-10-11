@@ -43,6 +43,7 @@ public class Set implements Command {
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		String key = args.get("var").toString();
 		String value = args.get("value").toString();
+		boolean isExists = context.containsVar(key);
 		Object object = CommonUtils.parseJsonText(value);
 		XCLVar var = new XCLVar(object);
 		if (var.isNull()) {
@@ -56,6 +57,11 @@ public class Set implements Command {
 		} else if (var.isJsonArray()) {
 			context.setVar(key, var.getJsonArray());
 			console.prompt(key + "=JSONArray");
+		}
+		if (isExists) {
+			console.info("variable \"" + key + "\" is replaced");
+		} else {
+			console.info("variable \"" + key + "\" is defined");
 		}
 		return new XCLVar(key); // key
 	}
