@@ -91,7 +91,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	}
 	
 	@Override
-	public boolean isScript(String key) {
+	public boolean isCraft(String key) {
 		return this.context.containsCraft(key);
 	}
 	
@@ -209,7 +209,13 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	@Override
 	public String handleEvent(EventEntity event) {
 		if (XCLEvent.run.equals(event.getType())) {
-			execute(event.getMessage(), context);
+			String cmd = event.getMessage();
+			saveHistory(cmd); // save history command
+			if (isCraft(cmd)) { 
+				// add a default dynamic parameter to the end of command
+				cmd += " " + XCLConstants.PARAS_DEFAULT;
+			}
+			execute(cmd, context); // execute input command
 		}
 		return null;
 	}
@@ -230,9 +236,11 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 					result.addResult(var);
 				}
 			}
+			/*
 			if (commandList.size() == 1) {
 				saveHistory(input);
 			}
+			*/
 			int resultSize = result.getResults().size();
 			if (resultSize == commandList.size()) {
 				if (resultSize > 0) {

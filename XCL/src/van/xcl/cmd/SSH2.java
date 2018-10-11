@@ -21,7 +21,7 @@ import van.xcl.Parameters;
 import van.xcl.XCLCmdParser.XCLNode;
 import van.xcl.XCLConsole;
 import van.xcl.XCLContext;
-import van.xcl.XCLParameters;
+import van.xcl.XCLDynamicParameter;
 import van.xcl.XCLVar;
 
 public class SSH2 implements Command {
@@ -42,16 +42,16 @@ public class SSH2 implements Command {
 		parameters.add("parameter", new ParameterValidator() {
 			@Override
 			public void validate(XCLContext context, XCLVar value) throws ParameterException {
-				XCLParameters.validate(value, "hostname", "username", "password", "action");
-				String action = XCLParameters.resolveXCLParas(value.toString()).getValue("action");
+				XCLDynamicParameter.validate(value, "hostname", "username", "password", "action");
+				String action = XCLDynamicParameter.resolveDynamicParameter(value.toString()).getValue("action");
 				if (!"cmd".equals(action) && !"get".equals(action) && !"put".equals(action)) {
 					throw new ParameterException("The allowable value of parameter [action]: exec/get/put");
 				}
 				if ("put".equals(action)) {
-					XCLParameters.validate(value, "localFile", "remoteDir");
+					XCLDynamicParameter.validate(value, "localFile", "remoteDir");
 				}
 				if ("get".equals(action)){
-					XCLParameters.validate(value, "localDir", "remoteFile");
+					XCLDynamicParameter.validate(value, "localDir", "remoteFile");
 				}
 			}
 		});
@@ -61,7 +61,7 @@ public class SSH2 implements Command {
 
 	@Override
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
-		XCLParameters map = XCLParameters.resolveXCLParas(args.get("parameter").toString());
+		XCLDynamicParameter map = XCLDynamicParameter.resolveDynamicParameter(args.get("parameter").toString());
 		String hostname = map.getValue("hostname");
 		String username = map.getValue("username");
 		String password = map.getValue("password");

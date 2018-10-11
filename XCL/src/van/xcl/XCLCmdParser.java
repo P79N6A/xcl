@@ -79,7 +79,7 @@ public class XCLCmdParser {
 							para.validate(context, childVar);
 							args.put(child.getParaName(), childVar);
 						} else {
-							throw new ParameterException("The command '" + name + "' returns an empty object. [para: " + child.getParaName() + "]");
+							throw new ParameterException("Command \"" + name + "\" returns an empty result. [para: " + child.getParaName() + "]");
 						}
 					}
 					String argstr = "";
@@ -123,7 +123,7 @@ public class XCLCmdParser {
 	}
 	
 	private XCLNode parseNode(XCLNode par, List<String> paras, Parameter parameter, XCLContext context, XCLCmdHolder holder) {
-		String value = getHead(paras);
+		String value = takeNode(paras);
 		if (value != null) {
 			XCLNode node = new XCLNode(value, par);
 			if (parameter != null) {
@@ -145,7 +145,7 @@ public class XCLCmdParser {
 		return null;
 	}
 	
-	private String getHead(List<String> paras) {
+	private String takeNode(List<String> paras) {
 		if (paras != null && paras.size() > 0) {
 			String value = paras.get(0);
 			paras.remove(0);

@@ -12,7 +12,7 @@ import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
 import van.xcl.Resolver;
 import van.xcl.XCLContext;
-import van.xcl.XCLParameters;
+import van.xcl.XCLDynamicParameter;
 import van.xcl.XCLCmdParser.XCLNode;
 import van.xcl.XCLResult;
 import van.xcl.XCLVar;
@@ -45,7 +45,7 @@ public class RunCraft implements Command, Resolver {
 			public void validate(XCLContext context, XCLVar value) throws ParameterException {
 				String strval = value.toString();
 				if (!"".equals(strval)) {
-					XCLParameters.validate(value);
+					XCLDynamicParameter.validate(value);
 				}
 			}
 		}).setAutoResolve(false);
@@ -56,7 +56,7 @@ public class RunCraft implements Command, Resolver {
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		String name = args.get("craft_name").toString();
 		String craft = context.getCraft(name);
-		XCLParameters map = XCLParameters.resolveXCLParas(args.get("paras").toString());
+		XCLDynamicParameter map = XCLDynamicParameter.resolveDynamicParameter(args.get("paras").toString());
 		XCLContext current = context.clone();
 		if (map != null) {
 			for (String k : map.keySet()) {

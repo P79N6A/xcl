@@ -11,7 +11,7 @@ import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
 import van.xcl.Resolver;
 import van.xcl.XCLContext;
-import van.xcl.XCLParameters;
+import van.xcl.XCLDynamicParameter;
 import van.xcl.XCLCmdParser.XCLNode;
 import van.xcl.XCLVar;
 
@@ -33,14 +33,14 @@ public class Paras implements Command, Resolver {
 		parameters.add("initial", new ParameterValidator() {
 			@Override
 			public void validate(XCLContext context, XCLVar value) throws ParameterException {
-				XCLParameters.validate(value);
+				XCLDynamicParameter.validate(value);
 			}
 		});
 		parameters.add("append", new ParameterValidator() {
 			@Override
 			public void validate(XCLContext context, XCLVar value) throws ParameterException {
-				if (!XCLParameters.isKeyValue(value.toString())) {
-					throw new ParameterException("Syntax error: key value is allowed");
+				if (!XCLDynamicParameter.isDynamicParameterKeyValue(value.toString())) {
+					throw new ParameterException("Syntax error: only key value is allowed here");
 				}
 			}
 		});
@@ -49,8 +49,8 @@ public class Paras implements Command, Resolver {
 
 	@Override
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
-		XCLParameters initial = XCLParameters.resolveXCLParas(args.get("initial").toString());
-		initial.addKeyValue(args.get("append").toString(), context);
+		XCLDynamicParameter initial = XCLDynamicParameter.resolveDynamicParameter(args.get("initial").toString());
+		initial.addDynamicParameterKeyValue(args.get("append").toString(), context);
 		return new XCLVar(initial.toString());
 	}
 
@@ -60,7 +60,7 @@ public class Paras implements Command, Resolver {
 		int paraCount = 0;
 		for (int i = 0 ; i < commands.size() ; i++) {
 			String command = commands.get(i);
-			if (XCLParameters.isKeyValue(command)) {
+			if (XCLDynamicParameter.isDynamicParameterKeyValue(command)) {
 				if (paraIndex == -1) {
 					paraIndex = i;
 				}

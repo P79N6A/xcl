@@ -8,9 +8,9 @@ import org.apache.log4j.Logger;
 
 import java.util.Set;
 
-public class XCLParameters {
+public class XCLDynamicParameter {
 
-	private static Logger logger = Logger.getLogger(XCLParameters.class);
+	private static Logger logger = Logger.getLogger(XCLDynamicParameter.class);
 	private Map<String, String> map = new HashMap<String, String>();
 	
 	public String getValue(String key) {
@@ -25,8 +25,8 @@ public class XCLParameters {
 		return map.keySet();
 	}
 	
-	public XCLParameters addKeyValue(String str, XCLContext context) {
-		if (isKeyValue(str)) {
+	public XCLDynamicParameter addDynamicParameterKeyValue(String str, XCLContext context) {
+		if (isDynamicParameterKeyValue(str)) {
 			String[] arr = splitKeyValue(str);
 			if (arr != null) {
 				map.put(arr[0].replaceFirst(XCLConstants.PARAS_PREFIX, "").trim(), context.resolveVar(arr[1].trim()));
@@ -35,7 +35,7 @@ public class XCLParameters {
 		return this;
 	}
 	
-	public XCLParameters addAll(XCLParameters mapping) {
+	public XCLDynamicParameter addAll(XCLDynamicParameter mapping) {
 		map.putAll(mapping.map);
 		return this;
 	}
@@ -54,9 +54,9 @@ public class XCLParameters {
 		return sb.toString();
 	}
 	
-	public static XCLParameters resolveXCLParas(String string) {
-		if (isXCLParas(string)) {
-			XCLParameters mapping = new XCLParameters();
+	public static XCLDynamicParameter resolveDynamicParameter(String string) {
+		if (isDynamicParameter(string)) {
+			XCLDynamicParameter mapping = new XCLDynamicParameter();
 			String[] arr = string.split(XCLConstants.PARAS_DELIMETER);
 			for (String str : arr) {
 				String[] kv = splitKeyValue(str);
@@ -69,7 +69,29 @@ public class XCLParameters {
 		return null;
 	}
 	
-	public static String[] splitKeyValue(String str) {
+	public static boolean isDynamicParameter(String string) {
+		return string != null ? string.startsWith(XCLConstants.PARAS_PREFIX) : false;
+	}
+	
+	public static boolean isDynamicParameterKeyValue(String string) {
+		return string != null ? (string.startsWith(XCLConstants.PARAS_PREFIX) && string.contains(XCLConstants.PARAS_SPLITER)) : false;
+	}
+	
+	public static void validate(XCLVar var, String...requiredFields) throws ParameterException {
+		if (!isDynamicParameter(var.toString())) {
+			throw new ParameterException("Only dynamic parameter are allowed here.");
+		}
+		if (requiredFields != null && requiredFields.length > 0) {
+			XCLDynamicParameter map = resolveDynamicParameter(var.toString());
+			for (String field : requiredFields) {
+				if (!map.containsKey(field)) {
+					throw new ParameterException("The parameter \"" + field + "\" must be given.");
+				}
+			}
+		}
+	}
+	
+	private static String[] splitKeyValue(String str) {
 		int idx = str.indexOf(XCLConstants.PARAS_SPLITER);
 		if (idx > 0)  {
 			String[] arr = new String[2];
@@ -80,30 +102,8 @@ public class XCLParameters {
 		return null;
 	}
 	
-	public static boolean isXCLParas(String string) {
-		return string != null ? string.startsWith(XCLConstants.PARAS_PREFIX) : false;
-	}
-	
-	public static boolean isKeyValue(String string) {
-		return string != null ? (string.startsWith(XCLConstants.PARAS_PREFIX) && string.contains(XCLConstants.PARAS_SPLITER)) : false;
-	}
-	
-	public static void validate(XCLVar var, String...requiredFields) throws ParameterException {
-		if (!isXCLParas(var.toString())) {
-			throw new ParameterException("Only input XCL paras are allowed.");
-		}
-		if (requiredFields != null && requiredFields.length > 0) {
-			XCLParameters map = resolveXCLParas(var.toString());
-			for (String field : requiredFields) {
-				if (!map.containsKey(field)) {
-					throw new ParameterException("The required parameter not found: " + field);
-				}
-			}
-		}
-	}
-	
 	public static void main(String[] args) {
-		XCLParameters p = resolveXCLParas("-abcdsa=123213~-asdfasdfsdfsdfa=323323");
+		XCLDynamicParameter p = resolveDynamicParameter("-abcdsa=123213~-asdfasdfsdfsdfa=323323");
 		logger.info(p.toString());
 		
 	}

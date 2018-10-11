@@ -22,9 +22,9 @@ public class XCLConstants {
 	public static final String PARAS_SPLITER = "=";
 	public static final String PARAS_DELIMETER = "~";
 	public static final String PARAS_DEFAULT = "~";
-	public static final String PARAS_COMMAND = "@p";
-	public static final String RUNCRAFT_COMMAND = "@r";
-	public static final String RUNFILE_COMMAND = "@rf";
+	public static final String PARAS_COMMAND = "__prepare_paras";
+	public static final String RUNCRAFT_COMMAND = "__run_craft";
+	public static final String RUNFILE_COMMAND = "__run_file";
 	public static final String REMOVE_COMMAND = "remove";
 	public static final String EDIT_COMMAND = "edit";
 	public static final String ECHO_COMMAND = "echo";
