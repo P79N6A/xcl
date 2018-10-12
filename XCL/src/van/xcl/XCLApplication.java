@@ -490,7 +490,7 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 			bw.write(this.contextFile);
 			bw.close();
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage());
+			JOptionPane.showMessageDialog(null, CommonUtils.getStackTrace(e));
 		}
 	}
 	

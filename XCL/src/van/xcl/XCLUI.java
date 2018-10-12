@@ -399,14 +399,14 @@ public class XCLUI implements EventHandler {
 			int length = document.getLength();
 			getTextConsole().setCaretPosition(length);
 		} catch (Throwable e) {
-			JOptionPane.showMessageDialog(null, e.getMessage());
+			JOptionPane.showMessageDialog(null, CommonUtils.getStackTrace(e));
 		}
 		if (logWriter != null) {
 			try {
 				logWriter.append(str);
 				logWriter.flush();
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, e.getMessage());
+				JOptionPane.showMessageDialog(null, CommonUtils.getStackTrace(e));
 			}
 		}
 		if (ConsoleType.input.equals(type)) {

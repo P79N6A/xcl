@@ -9,6 +9,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 
+import van.util.CommonUtils;
+
 public class XCLStartup {
 	
 	private static Vector<XCLApplication> activeApps = new Vector<XCLApplication>();
@@ -29,7 +31,7 @@ public class XCLStartup {
 			initGlobalFont(XCLConstants.DEFAULT_FONT);
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.getMessage());
+			JOptionPane.showMessageDialog(null, CommonUtils.getStackTrace(e));
 		}
 	}
 	
@@ -38,7 +40,7 @@ public class XCLStartup {
 			public void run() {
 				if (!activeApps.isEmpty()) {
 					System.out.println("ShutdownHook - terminated!");
-					terminate(-1);
+					// terminate(-1);
 				} else {
 					System.out.println("ShutdownHook - normal shutdown.");
 				}
