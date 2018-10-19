@@ -10,6 +10,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 public class XCLCraftStorage {
 	
 	private File getCraftPath() {
@@ -38,10 +40,11 @@ public class XCLCraftStorage {
 		File cf = getCraftFile(name);
 		BufferedWriter bw = null;
 		try {
+			ensureFile(cf, false);
 			bw = new BufferedWriter(new FileWriter(cf));
 			bw.append(craft);
 		} catch (IOException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "FAILED TO SAVE THE CRAFT - [craft: " + name + ", error: " + e.getMessage() + "]");
 		} finally {
 			try {
 				if (bw != null) {
@@ -89,6 +92,18 @@ public class XCLCraftStorage {
 	
 	public boolean containsCraft(String name) {
 		return getCraftFile(name).exists();
+	}
+	
+	private void ensureFile(File file, boolean isFolder) throws IOException {
+		if (!file.exists()) {
+			if (isFolder) {
+				file.mkdirs();
+			} else {
+				File parent = file.getParentFile();
+				ensureFile(parent, true);
+				file.createNewFile();
+			}
+		}
 	}
 	
 }

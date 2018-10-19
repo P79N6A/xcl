@@ -35,6 +35,8 @@ public class Calc implements Command {
 		XCLVar calcStr = args.get("expression");
 		DecEvalParser p = new DecEvalParser(CalcBasic.class);
 		DecEval eval = p.parse(calcStr.toString());
-		return new XCLVar(eval.eval(context).toPlainString());
+		String result = eval.eval(context).toPlainString();
+		console.output(calcStr.toString() + " = " + result);
+		return new XCLVar(result);
 	}
 }

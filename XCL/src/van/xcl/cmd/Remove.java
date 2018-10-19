@@ -34,13 +34,13 @@ public class Remove implements Command {
 		if (objectName != null) {
 			if (context.containsVar(objectName)) {
 				context.removeVar(objectName);
-				console.output("[" + objectName + "] variable is removed.");
+				console.output("[" + objectName + "] variable has been removed");
 			} else if (context.containsCraft(objectName)) {
 				context.removeCraft(objectName);
 				console.removeKey(objectName);
-				console.output("[" + objectName + "] craft is removed.");
+				console.output("[" + objectName + "] craft has been removed");
 			} else {
-				console.error("[" + objectName + "] object not found.");
+				console.error("[" + objectName + "] object does not exist");
 			}
 		}
 		return new XCLVar(objectName);

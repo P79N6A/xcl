@@ -87,7 +87,8 @@ public class XCLCmdParser {
 						argstr = args.toString();
 					}
 					if (!name.equals(XCLConstants.PARAS_COMMAND)) {
-						console.info(getGap(getDepth(), "-") + " " + name + " " + argstr);
+						String execInfo = getGap(getDepth(), "-") + " " + name + " " + argstr;
+						console.info(execInfo);
 					}
 					return command.execute(this, args, console, context);
 				} else {

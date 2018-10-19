@@ -380,6 +380,7 @@ public class XCLUI implements EventHandler {
 		} else if (ConsoleType.info.equals(type)) {
 			color = XCLConstants.promptColor;
 			prefix = XCLConstants.INFO_PROMPT;
+			str = CommonUtils.resolveString(str, 150); // trim length for INFO
 		} else if (ConsoleType.error.equals(type)) {
 			color = XCLConstants.errorColor;
 			prefix = XCLConstants.ERROR_PROMPT;

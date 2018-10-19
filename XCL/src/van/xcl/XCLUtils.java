@@ -4,10 +4,9 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -146,16 +145,14 @@ public class XCLUtils {
 	}
 	
 	public static Font getDefaultFont(int style, float size) {
-		String filepath = XCLUtils.class.getResource(defaulltFontPath).getFile();
-		return getSelfDefinedFont(filepath, style, size);
+		InputStream in = XCLUtils.class.getResourceAsStream(defaulltFontPath);
+		return getSelfDefinedFont(in, style, size);
 	}
 	
-	public static Font getSelfDefinedFont(String filepath, int style, float size) {
+	public static Font getSelfDefinedFont(InputStream in, int style, float size) {
 		Font font = null;
-		File file = new File(filepath);
 		try {
-			FileInputStream fi = new FileInputStream(file);
-			BufferedInputStream fb = new BufferedInputStream(fi);
+			BufferedInputStream fb = new BufferedInputStream(in);
 			font = Font.createFont(Font.TRUETYPE_FONT, fb);
 		} catch (FontFormatException e) {
 			return null;
