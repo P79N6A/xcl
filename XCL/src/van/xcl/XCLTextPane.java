@@ -2,6 +2,7 @@ package van.xcl;
 
 import java.awt.Dimension;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -68,6 +69,7 @@ public class XCLTextPane extends JTextPane {
 	private static final long serialVersionUID = -66377652770879651L;
 	
 	private static MutableAttributeSet keyAttr;
+	private static MutableAttributeSet dynamicKeyAttr;
 	private static MutableAttributeSet normalAttr;
 	private static MutableAttributeSet commentAttr;
 	
@@ -76,6 +78,8 @@ public class XCLTextPane extends JTextPane {
 	static {
 		keyAttr = new SimpleAttributeSet();
 		StyleConstants.setForeground(keyAttr, XCLConstants.keyColor);
+		dynamicKeyAttr = new SimpleAttributeSet();
+		StyleConstants.setForeground(dynamicKeyAttr, XCLConstants.dynamicKeyColor);
 		normalAttr = new SimpleAttributeSet();
 		StyleConstants.setForeground(normalAttr, XCLConstants.normalColor);
 		commentAttr = new SimpleAttributeSet();
@@ -85,12 +89,14 @@ public class XCLTextPane extends JTextPane {
 	protected StyleContext context;
 	protected DefaultStyledDocument document;
 	
-	private Set<String> keys = null;
+	private Set<String> keys = new HashSet<String>();
+	private Set<String> dynamicKeys = new HashSet<String>();
 	private Map<String, Object> attrs = new HashMap<String, Object>();
 
-	public XCLTextPane(Set<String> keys) {
+	public XCLTextPane(Set<String> keys, Set<String> dynamicKeys) {
 		super();
 		this.keys = keys;
+		this.dynamicKeys = dynamicKeys;
 		this.context = new StyleContext();
 		this.document = new DefaultStyledDocument(context);
 		this.setDocument(document);
@@ -136,6 +142,36 @@ public class XCLTextPane extends JTextPane {
 					char ch_temp_2 = text.charAt(length);
 					if (isExceptionCharacter(ch_temp) && isExceptionCharacter(ch_temp_2)) {
 						setAttributes(startIndex + index, key.length(), keyAttr);
+					}
+				}
+			}
+		}
+		for (String key : dynamicKeys) {
+			int index = text.indexOf(key);
+			if (index < 0) {
+				continue;
+			}
+			int length = index + key.length();
+			if (length == text.length()) {
+				if (index == 0) {
+					setAttributes(startIndex, key.length(), dynamicKeyAttr);
+				} else {
+					char ch_temp = text.charAt(index - 1);
+					if (isExceptionCharacter(ch_temp)) {
+						setAttributes(startIndex + index, key.length(), dynamicKeyAttr);
+					}
+				}
+			} else {
+				if (index == 0) {
+					char ch_temp = text.charAt(key.length());
+					if (isExceptionCharacter(ch_temp)) {
+						setAttributes(startIndex, key.length(), dynamicKeyAttr);
+					}
+				} else {
+					char ch_temp = text.charAt(index - 1);
+					char ch_temp_2 = text.charAt(length);
+					if (isExceptionCharacter(ch_temp) && isExceptionCharacter(ch_temp_2)) {
+						setAttributes(startIndex + index, key.length(), dynamicKeyAttr);
 					}
 				}
 			}

@@ -38,6 +38,6 @@ public interface XCLConsole extends EventSource {
 	public boolean hasAcceptors();
 	public int getPort();
 	public void syncEvent(EventEntity e);
-	public void addKey(String key);
-	public void removeKey(String key);
+	public void addDynamicKey(String key);
+	public void removeDynamicKey(String key);
 }

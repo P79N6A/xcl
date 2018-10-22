@@ -85,8 +85,8 @@ public class XCLTextInputPane extends XCLTextPane {
 	
 	private KeyAssist keyAssist = null;
 
-	public XCLTextInputPane(Set<String> keys) {
-		super(keys);
+	public XCLTextInputPane(Set<String> keys, Set<String> dynamicKeys) {
+		super(keys, dynamicKeys);
 		this.keyAssist = new KeyAssist(this);
 	}
 	

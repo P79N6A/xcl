@@ -132,6 +132,7 @@ public class XCLUI implements EventHandler {
 	private CardLayout cardLayout = new CardLayout();
 	private BufferedWriter logWriter;
 	private Set<String> keys = new HashSet<String>();
+	private Set<String> dynamicKeys = new HashSet<String>();
 	private Map<Integer, Integer> fixedRows = new HashMap<Integer, Integer>();
 	
 	private LinkedBlockingQueue<String> textQueue = new LinkedBlockingQueue<String>();
@@ -258,7 +259,7 @@ public class XCLUI implements EventHandler {
 	private XCLTextInputPane getTextCmd() {
 		if (textCmd == null) {
 //			textCmd = new JTextField();
-			textCmd = new XCLTextInputPane(keys);
+			textCmd = new XCLTextInputPane(keys, dynamicKeys);
 			textCmd.setCaret(new XCLCaret());
 			textCmd.setEditable(true);
 			textCmd.setBorder(null);
@@ -426,7 +427,7 @@ public class XCLUI implements EventHandler {
 	
 	private XCLTextInputPane getTextInput() {
 		if (textInput == null) {
-			textInput = new XCLTextInputPane(keys);
+			textInput = new XCLTextInputPane(keys, dynamicKeys);
 			textInput.setBackground(XCLConstants.backgroundColor);
 			textInput.setForeground(XCLConstants.foregroundColor);
 			textInput.setSelectionColor(XCLConstants.selectionColor);
@@ -452,7 +453,7 @@ public class XCLUI implements EventHandler {
 
 	private XCLTextPane getTextConsole() {
 		if (textConsole == null) {
-			textConsole = new XCLTextPane(keys);
+			textConsole = new XCLTextPane(keys, dynamicKeys);
 			textConsole.setEditable(false);
 			textConsole.setBorder(null);
 			textConsole.setBackground(XCLConstants.backgroundColor);
@@ -599,12 +600,12 @@ public class XCLUI implements EventHandler {
 		this.frame.dispose();
 	}
 	
-	public void addKey(String key) {
-		this.keys.add(key);
+	public void addDynamicKey(String key) {
+		this.dynamicKeys.add(key);
 	}
 	
-	public void removeKey(String key) {
-		this.keys.remove(key);
+	public void removeDynamicKey(String key) {
+		this.dynamicKeys.remove(key);
 	}
 	
 	@Override

@@ -356,13 +356,13 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	}
 	
 	@Override
-	public void addKey(String key) {
-		this.ui.addKey(key);
+	public void addDynamicKey(String key) {
+		this.ui.addDynamicKey(key);
 	}
 
 	@Override
-	public void removeKey(String key) {
-		this.ui.removeKey(key);
+	public void removeDynamicKey(String key) {
+		this.ui.removeDynamicKey(key);
 	}
 
 	@Override
@@ -501,9 +501,9 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 			try {
 				ois = new ObjectInputStream(new FileInputStream(file));
 				this.context = (XCLContext) ois.readObject();
-				this.ui.addKey(XCLConstants.PARAS_DEFAULT);
+				this.ui.addDynamicKey(XCLConstants.PARAS_DEFAULT);
 				for (String key : this.context.getCrafts().keySet()) {
-					this.ui.addKey(key);
+					this.ui.addDynamicKey(key);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

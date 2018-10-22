@@ -37,7 +37,7 @@ public class Remove implements Command {
 				console.output("[" + objectName + "] variable has been removed");
 			} else if (context.containsCraft(objectName)) {
 				context.removeCraft(objectName);
-				console.removeKey(objectName);
+				console.removeDynamicKey(objectName);
 				console.output("[" + objectName + "] craft has been removed");
 			} else {
 				console.error("[" + objectName + "] object does not exist");

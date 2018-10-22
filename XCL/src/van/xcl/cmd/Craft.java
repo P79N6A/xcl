@@ -54,7 +54,7 @@ public class Craft implements Command {
 		}
 		craft = console.getTextInput(craft, name);
 		context.setCraft(name, craft);
-		console.addKey(name);
+		console.addDynamicKey(name);
 		return new XCLVar(name);
 	}
 
