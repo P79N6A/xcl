@@ -29,7 +29,7 @@ public class Version implements Command {
 
 	@Override
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
-		console.info(XCLConstants.VERSION_PROMPT);
+		console.output(XCLConstants.VERSION_PROMPT);
 		return new XCLVar(XCLConstants.VERSION_PROMPT);
 	}
 

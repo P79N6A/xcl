@@ -64,10 +64,10 @@ public class RunCraft implements Command, Resolver {
 			}
 		}
 		long startInMillis = System.currentTimeMillis();
-		console.output("[" + name + "] craft has started");
+		console.output("[" + name + "] craft is started");
 		XCLResult result = console.execute(craft, current);
 		if (result.isSuccess()) {
-			console.output("[" + name + "] craft is done. [Time Used: " + (System.currentTimeMillis() - startInMillis) + "ms]");
+			console.output("[" + name + "] craft is done [Time Used: " + (System.currentTimeMillis() - startInMillis) + "ms]");
 		}
 		if (result.isSuccess()) {
 			List<XCLVar> list = result.getResults();

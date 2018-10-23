@@ -59,10 +59,10 @@ public class RunCraftFile implements Command {
 			}
 			br.close();
 			long startInMillis = System.currentTimeMillis();
-			console.output("[" + file.getName() + "] craft file has started");
+			console.output("[" + file.getName() + "] craft file is started");
 			XCLResult result = console.execute(cmd.toString(), context.clone());
 			if (result.isSuccess()) {
-				console.output("[" + file.getName() + "] craft file is done. [Time Used: " + (System.currentTimeMillis() - startInMillis) + "ms]");
+				console.output("[" + file.getName() + "] craft file is done [Time Used: " + (System.currentTimeMillis() - startInMillis) + "ms]");
 			}
 			if (result.isSuccess()) {
 				List<XCLVar> list = result.getResults();

@@ -11,7 +11,7 @@ public class XCLConstants {
 	public static final String OUT_FILE = "XCL.out";
 	public static final String DEFAULT_CONTEXT_FILE = "XCL.ctx";
 	public static final String SETTING_FILE = ".xcl";
-	public static final String VERSION_PROMPT = "XCL (extended command lines)\n  - Version: " + VERSION + "\n  - Author: Van\n  - Since: 2017/10/18";
+	public static final String VERSION_PROMPT = "XCL(" + VERSION + ") created at 2017/10/18 by Van";
 	public static final String IN_PROMPT = " > ";
 	public static final String OUT_PROMPT = " < ";
 	public static final String INFO_PROMPT = " # ";
