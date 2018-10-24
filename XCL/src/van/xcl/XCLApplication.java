@@ -161,10 +161,14 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	
 	@Override
 	public void cancelCommand() {
-		info("Cancel command requested");
 		List<String> list = eventManager.stopAll(XCLEventGroup.CMD_EVENT);
-		for (String info : list) {
-			info(info + " thread is stopped.");
+		if (list.size() > 0) {
+			info("Command is being canceled");
+			for (String info : list) {
+				info(info + " thread is destroyed");
+			}
+		} else {
+			error("No command is available for cancellation");
 		}
 	}
 

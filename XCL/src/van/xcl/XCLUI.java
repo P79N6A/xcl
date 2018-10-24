@@ -28,10 +28,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.ImageIcon;
@@ -128,12 +128,12 @@ public class XCLUI implements EventHandler {
 	private JTextField textInputPrompt;
 	private XCLTextInputPane textCmd;
 	private JTextField textPrompt;
-	private JPanel cardPanel = new JPanel();
-	private CardLayout cardLayout = new CardLayout();
+	private JPanel cardPanel;
+	private CardLayout cardLayout;
 	private BufferedWriter logWriter;
 	private Set<String> keys = new HashSet<String>();
 	private Set<String> dynamicKeys = new HashSet<String>();
-	private Map<Integer, Integer> fixedRows = new HashMap<Integer, Integer>();
+	private Map<Integer, Integer> fixedRows = new ConcurrentHashMap<Integer, Integer>();
 	
 	private LinkedBlockingQueue<String> textQueue = new LinkedBlockingQueue<String>();
 
@@ -143,6 +143,7 @@ public class XCLUI implements EventHandler {
 
 	protected void init() {
 		try {
+			// inits frame components
 			ImageIcon icon = new ImageIcon(XCLUI.class.getResource(XCLConstants.ICON_IMAGE_PATH));
 			getFrame().setIconImage(icon.getImage());  
 			getFrame().setSize(1000, 600);
@@ -156,15 +157,19 @@ public class XCLUI implements EventHandler {
 					requestFocus(getTextCmd());
 				}
 			});
-			this.cardPanel.setLayout(cardLayout);
-			this.cardPanel.add(PaneType.console.name(), getConsolePanel());
-			this.cardPanel.add(PaneType.input.name(), getInputPanel());
+			getCardPanel().setLayout(getCardLayout());
+			getCardPanel().add(PaneType.console.name(), getConsolePanel());
+			getCardPanel().add(PaneType.input.name(), getInputPanel());
 			getFrame().setLayout(new BorderLayout(0, 0));
 			getFrame().add(getTextPrompt(), BorderLayout.SOUTH);
-			getFrame().add(cardPanel, BorderLayout.CENTER);
+			getFrame().add(getCardPanel(), BorderLayout.CENTER);
 			getFrame().setVisible(true);
+			// prints version prompt
 			console.output(XCLConstants.VERSION_PROMPT);
-			initOutFile();
+			// inits out file
+			File outFile = initOutFile();
+			console(ConsoleType.info, -1, " - " + outFile.getAbsolutePath());
+			// loads command keys
 			for (String cmdKey : console.commands().keySet()) {
 				keys.add(cmdKey);
 			}
@@ -173,7 +178,7 @@ public class XCLUI implements EventHandler {
 		}
 	}
 	
-	private void initOutFile() {
+	private File initOutFile() {
 		File outFile = new File(XCLConstants.OUT_FILE);
 		try {
 			if (logWriter != null) {
@@ -181,10 +186,11 @@ public class XCLUI implements EventHandler {
 				outFile.delete();
 			}
 			logWriter = new BufferedWriter(new FileWriter(outFile));
-			console(ConsoleType.info, -1, " - " + outFile.getAbsolutePath());
+			return outFile;
 		} catch (IOException e) {
 			console(ConsoleType.error, -1, "Failed to init the log file: " + e.getMessage());
 		}
+		return null;
 	}
 	
 	private JFrame getFrame() {
@@ -192,6 +198,20 @@ public class XCLUI implements EventHandler {
 			this.frame = new JFrame();
 		}
 		return this.frame;
+	}
+	
+	private JPanel getCardPanel() {
+		if (this.cardPanel == null) {
+			this.cardPanel = new JPanel();
+		}
+		return this.cardPanel;
+	}
+	
+	private CardLayout getCardLayout() {
+		if (this.cardLayout == null) {
+			this.cardLayout = new CardLayout();
+		}
+		return this.cardLayout;
 	}
 	
 	private JPanel getInputPanel() {
@@ -276,16 +296,12 @@ public class XCLUI implements EventHandler {
 				public void keyPressed(KeyEvent e) {
 					if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
 						e.consume();
+						clearFixedRows(); // fixed position error
 						console.cancelCommand();
 					} else if (e.getKeyChar() == KeyEvent.VK_ENTER) {
 						e.consume();
 						String cmd = CommonUtils.trim(textCmd.getText());
 						if (!CommonUtils.isEmpty(cmd)) {
-							/*
-							if (!cmd.endsWith(XCLConstants.TERMINATE_TAG) && !cmd.endsWith(XCLConstants.PARAS_DEFAULT)) { // add terminate tag by default
-								cmd += " " + XCLConstants.PARAS_DEFAULT;
-							}
-							*/
 							console.input(cmd); // save historic command
 							console.run(cmd);
 							console.present(null);
@@ -416,6 +432,10 @@ public class XCLUI implements EventHandler {
 		}
 	}
 	
+	private void clearFixedRows() {
+		fixedRows.clear();
+	}
+	
 	private synchronized void fixedRow(int traceId, boolean fixRow) {
 		if (fixRow) {
 			int position = getTextConsole().getDocument().getLength();
@@ -486,6 +506,7 @@ public class XCLUI implements EventHandler {
 				@Override
 				public void keyPressed(KeyEvent e) {
 					if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
+						clearFixedRows(); // fixed position error
 						console.cancelCommand();
 					} else if (e.getKeyChar() == KeyEvent.VK_ENTER) {
 						console.prepare();
@@ -590,7 +611,13 @@ public class XCLUI implements EventHandler {
 	}
 	
 	private synchronized void showPane(PaneType panelType) {
-		cardLayout.show(cardPanel, panelType.name());
+		// make the motion smoother
+		try {
+			Thread.sleep(300L);
+		} catch (InterruptedException e) {
+			// do nothing.
+		}
+		getCardLayout().show(getCardPanel(), panelType.name());
 	}
 	
 	// ---
@@ -649,6 +676,7 @@ public class XCLUI implements EventHandler {
 		} else if (XCLEvent.clear.equals(type)) {
 			getTextConsole().setText("");
 			getTextConsole().setCaretPosition(getTextConsole().getDocument().getLength());
+			clearFixedRows(); // fixed the position error
 			initOutFile();
 		} else if (XCLEvent.editable.equals(type)) {
 			requestFocus(getTextCmd());
