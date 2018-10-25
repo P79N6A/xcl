@@ -186,4 +186,11 @@ public class XCLVar implements Serializable {
 		}
 	}
 	
+	public String toString(boolean captureSpace) {
+		if (captureSpace) {
+			return XCLUtils.captureSpace(toString());
+		}
+		return toString();
+	}
+	
 }

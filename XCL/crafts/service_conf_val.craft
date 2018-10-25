@@ -1,3 +1,0 @@
-set conf_val_data {"reqType":"base_conf_val_rel_by_codes","reqData":{"confBusinessCode":"${code}"}};
-set conf_val_data replace conf_val_data ${code} code;
-service -data=conf_val_data;

@@ -276,79 +276,6 @@ public class XCLUI implements EventHandler {
 		return pane;
 	}
 	
-	private XCLTextInputPane getTextCmd() {
-		if (textCmd == null) {
-//			textCmd = new JTextField();
-			textCmd = new XCLTextInputPane(keys, dynamicKeys);
-			textCmd.setCaret(new XCLCaret());
-			textCmd.setEditable(true);
-			textCmd.setBorder(null);
-			textCmd.setBackground(XCLConstants.backgroundColor);
-			textCmd.setForeground(XCLConstants.foregroundColor);
-			textCmd.setCaretColor(XCLConstants.caretColor);
-			textCmd.setFont(getDefaultFont());
-			textCmd.setPreferredSize(new Dimension(0, 25));
-			textCmd.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyTyped(KeyEvent e) {
-				}
-				@Override
-				public void keyPressed(KeyEvent e) {
-					if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
-						e.consume();
-						clearFixedRows(); // fixed position error
-						console.cancelCommand();
-					} else if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-						e.consume();
-						String cmd = CommonUtils.trim(textCmd.getText());
-						if (!CommonUtils.isEmpty(cmd)) {
-							console.input(cmd); // save historic command
-							console.run(cmd);
-							console.present(null);
-						} else {
-							// clear
-							textCmd.setText(null);
-						}
-					} else if (e.getKeyCode() == KeyEvent.VK_F1) {
-						String cmd = CommonUtils.trim(textCmd.getText());
-						if (!CommonUtils.isEmpty(cmd)) {
-							textCmd.setAttribute(KEY_SEARCH_TEXT, cmd);
-							textCmd.setAttribute(KEY_SEARCH_ROW, 0);
-							textCmd.setAttribute(KEY_SEARCH_ROW_OFFSET, 0);
-							console.prompt(cmd);
-							requestFocus(getTextConsole());
-						}
-					}
-				}
-				@Override
-				public void keyReleased(KeyEvent e) {
-					if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
-						if (e.getModifiers() == InputEvent.ALT_MASK) {
-							if (getTextCmd().isEditable()) {
-								int idx = console.getHistoryIndex();
-								if (e.getKeyCode() == KeyEvent.VK_UP) {
-									idx--;
-								} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-									idx++;
-								}
-								if (idx > -1 && idx < console.getHistorySize()) {
-									String cmdStr = console.getHistory(idx);
-									console.present(cmdStr);
-									console.setHistoryIndex(idx);
-								}
-							}
-						} else {
-							if (e.getKeyCode() == KeyEvent.VK_UP) {
-								requestFocus(getTextConsole());
-							}
-						}
-					}
-				}
-			});
-		}
-		return textCmd;
-	}
-	
 	private JTextField getTextPrompt() {
 		if (textPrompt == null) {
 			textPrompt = new JTextField();
@@ -445,9 +372,83 @@ public class XCLUI implements EventHandler {
 		}
 	}
 	
+	private XCLTextInputPane getTextCmd() {
+		if (textCmd == null) {
+//			textCmd = new JTextField();
+			textCmd = new XCLTextInputPane(keys, dynamicKeys);
+			textCmd.setCaret(new XCLCaret());
+			textCmd.setEditable(true);
+			textCmd.setBorder(null);
+			textCmd.setBackground(XCLConstants.backgroundColor);
+			textCmd.setForeground(XCLConstants.foregroundColor);
+			textCmd.setCaretColor(XCLConstants.caretColor);
+			textCmd.setFont(getDefaultFont());
+			textCmd.setPreferredSize(new Dimension(0, 25));
+			textCmd.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+				}
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
+						e.consume();
+						clearFixedRows(); // fixed position error
+						console.cancelCommand();
+					} else if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+						e.consume();
+						String cmd = CommonUtils.trim(textCmd.getText());
+						if (!CommonUtils.isEmpty(cmd)) {
+							console.input(cmd); // save historic command
+							console.run(cmd);
+							console.present(null);
+						} else {
+							// clear
+							textCmd.setText(null);
+						}
+					} else if (e.getKeyCode() == KeyEvent.VK_F1) {
+						String cmd = CommonUtils.trim(textCmd.getText());
+						if (!CommonUtils.isEmpty(cmd)) {
+							textCmd.setAttribute(KEY_SEARCH_TEXT, cmd);
+							textCmd.setAttribute(KEY_SEARCH_ROW, 0);
+							textCmd.setAttribute(KEY_SEARCH_ROW_OFFSET, 0);
+							console.prompt(cmd);
+							requestFocus(getTextConsole());
+						}
+					}
+				}
+				@Override
+				public void keyReleased(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
+						if (e.getModifiers() == InputEvent.ALT_MASK) {
+							if (getTextCmd().isEditable()) {
+								int idx = console.getHistoryIndex();
+								if (e.getKeyCode() == KeyEvent.VK_UP) {
+									idx--;
+								} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+									idx++;
+								}
+								if (idx > -1 && idx < console.getHistorySize()) {
+									String cmdStr = console.getHistory(idx);
+									console.present(cmdStr);
+									console.setHistoryIndex(idx);
+								}
+							}
+						} else {
+							if (e.getKeyCode() == KeyEvent.VK_UP) {
+								requestFocus(getTextConsole());
+							}
+						}
+					}
+				}
+			});
+		}
+		return textCmd;
+	}
+	
 	private XCLTextInputPane getTextInput() {
 		if (textInput == null) {
 			textInput = new XCLTextInputPane(keys, dynamicKeys);
+			textInput.setCaret(new XCLCaret());
 			textInput.setBackground(XCLConstants.backgroundColor);
 			textInput.setForeground(XCLConstants.foregroundColor);
 			textInput.setSelectionColor(XCLConstants.selectionColor);
@@ -474,6 +475,7 @@ public class XCLUI implements EventHandler {
 	private XCLTextPane getTextConsole() {
 		if (textConsole == null) {
 			textConsole = new XCLTextPane(keys, dynamicKeys);
+			textConsole.setCaret(new XCLCaret());
 			textConsole.setEditable(false);
 			textConsole.setBorder(null);
 			textConsole.setBackground(XCLConstants.backgroundColor);

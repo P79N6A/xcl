@@ -8,7 +8,7 @@ cp D:\gitCode.deploy\lms\lms.application\target\lms.application.war C:\Users\FOR
 cp D:\gitCode.deploy\lms\lms.bpm\target\lms.bpm.war C:\Users\FORMSSI\Desktop\deploy\lms.bpm.war;
 
 // cp D:\Workspaces\Workspace2\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\lms.html C:\Users\FORMSSI\Desktop\deploy\lms.html;
-cp D:\Workspaces\Workspace2\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\lms.html C:\Users\FORMSSI\Desktop\deploy\lms.html\lms.html;
+cp D:\Workspaces\Workspace5\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\lms.html C:\Users\FORMSSI\Desktop\deploy\lms.html\lms.html;
 
 zip C:\Users\FORMSSI\Desktop\deploy\lms.html C:\Users\FORMSSI\Desktop\deploy lms.html.zip;
 delete C:\Users\FORMSSI\Desktop\deploy\lms.html "*";

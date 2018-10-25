@@ -1,0 +1,1 @@
+service -user=lms186 -data={"reqType":"ls_case_query_nav_edit","reqCode":"ls_case_query_nav_edit","reqData":{"caseId":"LS201808310001","isShareView":"Y"}}

@@ -1,16 +1,17 @@
 // the following tools will be started one by one.
 // login_portal ~;
-sleep 2000;
-start C:\Users\FORMSSI\AppData\Local\SourceTree\SourceTree.exe;
+start -file="C:\Program Files (x86)\Mozilla Firefox\firefox.exe";
+sleep 45000;
+start -file=C:\Users\FORMSSI\AppData\Local\SourceTree\SourceTree.exe;
 sleep 15000;
-start D:\Tools\sqlyog10\SQLyog10.2\SQLyog.exe;
+start -file=D:\Tools\eclipse\eclipse.exe;
 sleep 15000;
-start D:\Tools\Notepad++\notepad++.exe;
+start -file=D:\Tools\sqlyog10\SQLyog10.2\SQLyog.exe;
 sleep 15000;
-start "C:\Program Files (x86)\Tencent\TIM\Bin\QQScLauncher.exe";
+start -file=D:\Tools\Notepad++\notepad++.exe;
 sleep 15000;
-start "C:\Program Files (x86)\Tencent\WeChat\WeChat.exe";
+start -file="C:\Program Files (x86)\Tencent\TIM\Bin\QQScLauncher.exe";
 sleep 15000;
-start outlook;
+start -file="C:\Program Files (x86)\Tencent\WeChat\WeChat.exe";
 sleep 15000;
-start D:\Tools\eclipse\eclipse.exe;
+start -file=outlook;

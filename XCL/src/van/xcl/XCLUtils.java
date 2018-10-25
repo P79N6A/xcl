@@ -165,6 +165,13 @@ public class XCLUtils {
 		return font;
 	}
 	
+	public static String captureSpace(String str) {
+		if (str != null) {
+			str = str.replace("&nbsp;", " ");
+		}
+		return str;
+	}
+	
 	public static String getPid() {
 		String name = ManagementFactory.getRuntimeMXBean().getName();
 		String pid = name.split("@")[0];

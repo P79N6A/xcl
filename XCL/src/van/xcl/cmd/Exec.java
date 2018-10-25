@@ -7,6 +7,7 @@ import java.util.Map;
 import van.xcl.Command;
 import van.xcl.Parameters;
 import van.xcl.XCLStreamPrinter;
+import van.xcl.XCLStreamPrinter.Type;
 import van.xcl.XCLCmdParser.XCLNode;
 import van.xcl.XCLConsole;
 import van.xcl.XCLContext;
@@ -32,14 +33,14 @@ public class Exec implements Command {
 	}
 
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
-		String input = args.get("script").toString();
+		String input = args.get("script").toString(true);
 		try {
 			console.prompt(input);
 			Process proc = Runtime.getRuntime().exec(input, null, new File(context.getPath()));
 			XCLStreamPrinter outHandler = new XCLStreamPrinter(proc.getInputStream(), "exec-out");
 			XCLStreamPrinter errHandler = new XCLStreamPrinter(proc.getErrorStream(), "exec-err");
-			outHandler.print(console);
-			errHandler.print(console);
+			outHandler.print(console, Type.INF);
+			errHandler.print(console, Type.ERR);
 			int exitVal = proc.waitFor();
 			console.info("[exec-out] exit value: " + exitVal);
 		} catch (IOException e) {

@@ -31,8 +31,8 @@ public class Concat implements Command {
 
 	@Override
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
-		String str1 = args.get("str1").toString();
-		String str2 = args.get("str2").toString();
+		String str1 = args.get("str1").toString(true);
+		String str2 = args.get("str2").toString(true);
 		String str = str1 + str2;
 		return new XCLVar(str);
 	}

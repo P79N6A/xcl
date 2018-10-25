@@ -1,6 +1,6 @@
 // ----------- uat2
 set u appuser;
-set p lMiS2)1^;
+set p kjkSk))1$;
 set h 10.0.62.152;
 ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/logs/lms-uat";
 // upload wars to SIT
