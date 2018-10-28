@@ -124,7 +124,15 @@ public class XCLUtils {
 					if (cmdLine.startsWith(XCLConstants.COMMONT_PREFIX)) {
 						continue;
 					}
-					cmdTrim.append(cmdLine + " ");
+					// cmdTrim.append(cmdLine + " ");
+					String trim = cmdLine.trim();
+					if (!"".equals(trim)) {
+						if (trim.endsWith("\\")) {
+							cmdTrim.append(trim.substring(0, trim.length() - 1));
+						} else {
+							cmdTrim.append(trim + " ");
+						}
+					}
 				}
 				br.close();
 			} catch (IOException e) {
