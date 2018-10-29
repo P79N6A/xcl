@@ -44,6 +44,7 @@ public class XCLStreamPrinter {
 					console.output(message);
 				}
 			}
+			br.close();
 		} catch (IOException e) {
 			console.error("[" + prefix + "] " + "IOException: " + e.getMessage());
 		} finally {

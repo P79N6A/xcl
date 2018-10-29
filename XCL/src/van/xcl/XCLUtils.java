@@ -24,6 +24,8 @@ public class XCLUtils {
 	
 	public static String defaulltFontPath = "font/YaheiConsolasHybrid.ttf";
 	
+	public static String breakLine = "\\\\";
+	
 	public static boolean isVarString(String str) {
 		return (str.startsWith("\"") && str.endsWith("\""))
 				|| (str.startsWith("'") && str.endsWith("'"));
@@ -127,8 +129,8 @@ public class XCLUtils {
 					// cmdTrim.append(cmdLine + " ");
 					String trim = cmdLine.trim();
 					if (!"".equals(trim)) {
-						if (trim.endsWith("\\")) {
-							cmdTrim.append(trim.substring(0, trim.length() - 1));
+						if (trim.endsWith(breakLine)) {
+							cmdTrim.append(trim.substring(0, trim.length() - breakLine.length()));
 						} else {
 							cmdTrim.append(trim + " ");
 						}
