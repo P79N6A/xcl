@@ -28,9 +28,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -131,8 +129,7 @@ public class XCLUI implements EventHandler {
 	private JPanel cardPanel;
 	private CardLayout cardLayout;
 	private BufferedWriter logWriter;
-	private Set<String> keys = new HashSet<String>();
-	private Set<String> dynamicKeys = new HashSet<String>();
+	private XCLTextKeys keys = new XCLTextKeys();
 	private Map<Integer, Integer> fixedRows = new ConcurrentHashMap<Integer, Integer>();
 	
 	private LinkedBlockingQueue<String> textQueue = new LinkedBlockingQueue<String>();
@@ -171,7 +168,7 @@ public class XCLUI implements EventHandler {
 			console(ConsoleType.info, -1, " - " + outFile.getAbsolutePath());
 			// loads command keys
 			for (String cmdKey : console.commands().keySet()) {
-				keys.add(cmdKey);
+				keys.getKeys().add(cmdKey);
 			}
 		} catch (HeadlessException e) {
 			console.output("HeadlessException found");
@@ -375,7 +372,7 @@ public class XCLUI implements EventHandler {
 	private XCLTextInputPane getTextCmd() {
 		if (textCmd == null) {
 //			textCmd = new JTextField();
-			textCmd = new XCLTextInputPane(keys, dynamicKeys);
+			textCmd = new XCLTextInputPane(keys);
 			textCmd.setCaret(new XCLCaret());
 			textCmd.setEditable(true);
 			textCmd.setBorder(null);
@@ -414,11 +411,7 @@ public class XCLUI implements EventHandler {
 							console.prompt(cmd);
 							requestFocus(getTextConsole());
 						}
-					}
-				}
-				@Override
-				public void keyReleased(KeyEvent e) {
-					if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
+					} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
 						if (e.getModifiers() == InputEvent.ALT_MASK) {
 							if (getTextCmd().isEditable()) {
 								int idx = console.getHistoryIndex();
@@ -447,7 +440,7 @@ public class XCLUI implements EventHandler {
 	
 	private XCLTextInputPane getTextInput() {
 		if (textInput == null) {
-			textInput = new XCLTextInputPane(keys, dynamicKeys);
+			textInput = new XCLTextInputPane(keys);
 			textInput.setCaret(new XCLCaret());
 			textInput.setBackground(XCLConstants.backgroundColor);
 			textInput.setForeground(XCLConstants.foregroundColor);
@@ -474,7 +467,7 @@ public class XCLUI implements EventHandler {
 
 	private XCLTextPane getTextConsole() {
 		if (textConsole == null) {
-			textConsole = new XCLTextPane(keys, dynamicKeys);
+			textConsole = new XCLTextPane(keys);
 			textConsole.setCaret(new XCLCaret());
 			textConsole.setEditable(false);
 			textConsole.setBorder(null);
@@ -552,11 +545,7 @@ public class XCLUI implements EventHandler {
 								console.prompt("Search text: " + searchText + " - 0 matches in Console");
 							}
 						}
-					}
-				}
-				@Override
-				public void keyReleased(KeyEvent e) {
-					if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+					} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 						if (textConsole.getDocument().getLength() == textConsole.getCaretPosition()) {
 							console.prepare();
 						}
@@ -613,12 +602,6 @@ public class XCLUI implements EventHandler {
 	}
 	
 	private synchronized void showPane(PaneType panelType) {
-		// make the motion smoother
-		try {
-			Thread.sleep(300L);
-		} catch (InterruptedException e) {
-			// do nothing.
-		}
 		getCardLayout().show(getCardPanel(), panelType.name());
 	}
 	
@@ -630,11 +613,11 @@ public class XCLUI implements EventHandler {
 	}
 	
 	public void addDynamicKey(String key) {
-		this.dynamicKeys.add(key);
+		this.keys.getDynamicKeys().add(key);
 	}
 	
 	public void removeDynamicKey(String key) {
-		this.dynamicKeys.remove(key);
+		this.keys.getDynamicKeys().remove(key);
 	}
 	
 	@Override

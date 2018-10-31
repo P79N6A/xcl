@@ -2,10 +2,8 @@ package van.xcl;
 
 import java.awt.Dimension;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.swing.JTextPane;
@@ -89,14 +87,12 @@ public class XCLTextPane extends JTextPane {
 	protected StyleContext context;
 	protected DefaultStyledDocument document;
 	
-	private Set<String> keys = new HashSet<String>();
-	private Set<String> dynamicKeys = new HashSet<String>();
+	private XCLTextKeys keys;
 	private Map<String, Object> attrs = new HashMap<String, Object>();
 
-	public XCLTextPane(Set<String> keys, Set<String> dynamicKeys) {
+	public XCLTextPane(XCLTextKeys keys) {
 		super();
 		this.keys = keys;
-		this.dynamicKeys = dynamicKeys;
 		this.context = new StyleContext();
 		this.document = new DefaultStyledDocument(context);
 		this.setDocument(document);
@@ -116,7 +112,7 @@ public class XCLTextPane extends JTextPane {
 	}
 
 	private int setKeyColor(String text, int startIndex, int textLength) {
-		for (String key : keys) {
+		for (String key : keys.getKeys()) {
 			int index = text.indexOf(key);
 			if (index < 0) {
 				continue;
@@ -146,7 +142,7 @@ public class XCLTextPane extends JTextPane {
 				}
 			}
 		}
-		for (String key : dynamicKeys) {
+		for (String key : keys.getDynamicKeys()) {
 			int index = text.indexOf(key);
 			if (index < 0) {
 				continue;
@@ -263,7 +259,11 @@ public class XCLTextPane extends JTextPane {
 		d.width += 100;
 		super.setSize(d);
 	}
-
+	
+	public XCLTextKeys getKeys() {
+		return keys;
+	}
+	
 	public static MutableAttributeSet getKeyAttr() {
 		return keyAttr;
 	}

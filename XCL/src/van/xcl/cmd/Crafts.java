@@ -38,14 +38,8 @@ public class Crafts implements Command {
 			crafts.add(entry.getKey());
 		}
 		Collections.sort(crafts);
-		int index = 0;
 		for (String craft : crafts) {
-			index++;
-			sb.append("\t");
-			sb.append(craft);
-			if (index % 3 == 0) {
-				sb.append("\n");
-			}
+			sb.append("\t" + craft + "\n");
 		}
 		console.output(sb.toString());
 		return new XCLVar();

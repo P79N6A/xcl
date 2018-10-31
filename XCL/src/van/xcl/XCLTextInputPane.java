@@ -4,13 +4,15 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.UIManager;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
+
+import van.util.CommonUtils;
 
 public class XCLTextInputPane extends XCLTextPane {
 	
@@ -20,6 +22,8 @@ public class XCLTextInputPane extends XCLTextPane {
 		private UndoManager und;
 		private AtomicBoolean isUndDown = new AtomicBoolean(false);
 		private String styleChangeText = UIManager.getString("AbstractDocument.styleChangeText");
+		private String associateText = null;
+		private int associateIndex = -1;
 		public KeyAssist(JTextComponent t) {
 			this.und = new UndoManager();
 			this.t = t;
@@ -71,10 +75,85 @@ public class XCLTextInputPane extends XCLTextPane {
 				if (isUndDown.get()) {
 					t.setCaretPosition(t.getDocument().getLength());
 				}
-			} 
+			} else {
+				if (e.getKeyCode() == KeyEvent.VK_TAB) {
+					e.consume();
+					try {
+						Element root = t.getDocument().getDefaultRootElement();
+						int rowLine = root.getElementIndex(getCaretPosition());
+						Element rowElement = root.getElement(rowLine);
+						int start = rowElement.getStartOffset();
+						int end = rowElement.getEndOffset() - 1;
+						String rowText = t.getDocument().getText(start, end - start);
+						int idx = rowText.lastIndexOf(" ");
+						String text = idx == -1 ? rowText : rowText.substring(idx + 1);
+						if (getAssociateText() == null) {
+							setAssociateText(text);
+							resetAssociateIndex();
+						}
+						String findText = getAssociateText();
+						String associateText = findAssociateText(findText);
+						if (!CommonUtils.isEmpty(associateText)) {
+							if (!associateText.equals(findText)) {
+								if (idx == -1) {
+									t.getDocument().remove(start, end - start);
+									t.getDocument().insertString(start, associateText, XCLTextPane.getNormalAttr());
+								} else {
+									t.getDocument().remove(start + idx + 1, end - start - idx - 1);
+									t.getDocument().insertString(start + idx + 1, associateText, XCLTextPane.getNormalAttr());
+								}
+							} else {
+								resetAssociateIndex();
+							}
+						} else {
+							resetAssociateIndex();
+						}
+					} catch (Throwable ex) {
+						System.out.println(ex.getMessage());
+					}
+				} else {
+					setAssociateText(null);
+					resetAssociateIndex();
+				}
+			}
 		}
 		public void discardAllEdits() {
 			this.und.discardAllEdits();
+		}
+		
+		public String findAssociateText(String text) {
+			int associateIndex = -1;
+			for (String key : getKeys().getKeys()) {
+				if (key.startsWith(text)) {
+					associateIndex++;
+					if (associateIndex > this.associateIndex) {
+						this.associateIndex = associateIndex;
+						return key;
+					}
+				}
+			}
+			for (String key : getKeys().getDynamicKeys()) {
+				if (key.startsWith(text)) {
+					associateIndex++;
+					if (associateIndex > this.associateIndex) {
+						this.associateIndex = associateIndex;
+						return key;
+					}
+				}
+			}
+			return null;
+		}
+		
+		public void setAssociateText(String associateText) {
+			this.associateText = associateText;
+		}
+		
+		public String getAssociateText() {
+			return this.associateText;
+		}
+		
+		public void resetAssociateIndex() {
+			this.associateIndex = -1;
 		}
 		
 	}
@@ -85,14 +164,14 @@ public class XCLTextInputPane extends XCLTextPane {
 	
 	private KeyAssist keyAssist = null;
 
-	public XCLTextInputPane(Set<String> keys, Set<String> dynamicKeys) {
-		super(keys, dynamicKeys);
+	public XCLTextInputPane(XCLTextKeys keys) {
+		super(keys);
 		this.keyAssist = new KeyAssist(this);
 	}
 	
 	public void discardAllEdits() {
 		this.keyAssist.discardAllEdits();
 	}
-
+	
 }
 
