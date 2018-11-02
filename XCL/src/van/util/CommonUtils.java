@@ -20,11 +20,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import van.xcl.util.json.Json;
-import van.xcl.util.json.JsonObject;
-
 import van.util.Base64.Decoder;
 import van.util.Base64.Encoder;
+import van.xcl.util.json.Json;
+import van.xcl.util.json.JsonObject;
 import van.xcl.util.sf.StringFilter;
 
 public class CommonUtils {
@@ -52,9 +51,55 @@ public class CommonUtils {
 	
 	public static String resolveString(String str, int maxlen) {
 		if (str != null && str.length() > maxlen) {
-			return str.substring(0, maxlen) + " ~ ";
+			return str.substring(0, maxlen) + "...";
 		}
 		return str;
+	}
+	
+	public static String filter(String src, String key) {
+		if (src != null) {
+			char[] srcArr = src.toCharArray();
+			int[] marks = new int[srcArr.length];
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0, j = 0 ; i < srcArr.length ; i++) {
+				char c = srcArr[i];
+				if (c < 0 || c > 32) {
+					sb.append(Character.toLowerCase(c));
+					marks[j] = i;
+					j++;
+				}
+			}
+			String trims = sb.toString();
+			String target = key.toLowerCase(); // converts key to lower case
+			int keyLength = target.length();
+			int pos = 0;
+			int[] skips = new int[marks.length]; // change to use array to improve the performance
+			for (int i = 0 ; i < skips.length ; i++) {
+				skips[i] = -1; // initial -1
+			}
+			int index = -1;
+			int fromIndex = 0;
+			while (-1 < (index = trims.indexOf(target, fromIndex))) { // finding key ...
+				if (index > -1) {
+					for (int i = index ; i < index + keyLength; i++) {
+						skips[pos++] = marks[i];
+					}
+					fromIndex = index + keyLength;
+				}
+			}
+			char[] desArr = new char[srcArr.length]; // use char array directly
+			filter: for (int i = 0 ; i < srcArr.length ; i++) {
+				for (int j = 0 ; j < pos ; j++) {
+					if (skips[j] == i) {
+						desArr[i] = '*';
+						continue filter;
+					}
+				}
+				desArr[i] = srcArr[i];
+			}
+			return new String(desArr);
+		}
+		return src;
 	}
 
 	public static String encodeBase64(String value) {
