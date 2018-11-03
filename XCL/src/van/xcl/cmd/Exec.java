@@ -39,8 +39,8 @@ public class Exec implements Command {
 			Process proc = Runtime.getRuntime().exec(input, null, new File(context.getPath()));
 			XCLStreamPrinter outHandler = new XCLStreamPrinter(proc.getInputStream(), "exec-out");
 			XCLStreamPrinter errHandler = new XCLStreamPrinter(proc.getErrorStream(), "exec-err");
-			outHandler.print(console, Type.INF);
-			errHandler.print(console, Type.ERR);
+			outHandler.print(context, console, Type.INF);
+			errHandler.print(context, console, Type.ERR);
 			int exitVal = proc.waitFor();
 			console.info("[exec-out] exit value: " + exitVal);
 		} catch (IOException e) {

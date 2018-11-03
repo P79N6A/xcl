@@ -21,18 +21,22 @@ public class XCLStreamPrinter {
 		this.prefix = prefix;
 	}
 	
-	public void print(XCLConsole console, Type type) {
+	public void print(XCLContext context, XCLConsole console, Type type) {
 		TaskService.getService().runTask(new Task() {
 			public void run() {
-				print0(console, type);
+				print0(context, console, type);
 			}
 		});
 	}
 	
-	private void print0(XCLConsole console, Type type) {
+	private void print0(XCLContext context, XCLConsole console, Type type) {
 		String line = null;
 		try {
-			InputStreamReader isr = new InputStreamReader(is, "GBK");
+			String charsetName = (String) context.getVar(XCLConstants.CONSTS_VAR_ENCODE_NAME);
+			if (charsetName == null) {
+				charsetName = XCLConstants.DEFAULT_CHARSET_NAME;
+			}
+			InputStreamReader isr = new InputStreamReader(is, charsetName);
 			BufferedReader br = new BufferedReader(isr);
 			while ((line = br.readLine()) != null) {
 				String message = "[" + prefix + "] " + line;
@@ -46,13 +50,14 @@ public class XCLStreamPrinter {
 			}
 			br.close();
 		} catch (IOException e) {
-			console.error("[" + prefix + "] " + "IOException: " + e.getMessage());
+			console.error("[" + prefix + "] IOException: " + e.getMessage());
 		} finally {
 			try {
 				is.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				console.error("[" + prefix + "] IOException: " + e.getMessage());
 			}
 		}
 	}
+	
 }

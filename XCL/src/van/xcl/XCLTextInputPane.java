@@ -77,8 +77,8 @@ public class XCLTextInputPane extends XCLTextPane {
 				}
 			} else {
 				if (e.getKeyCode() == KeyEvent.VK_TAB) {
-					e.consume();
 					try {
+						e.consume();
 						Element root = t.getDocument().getDefaultRootElement();
 						int rowLine = root.getElementIndex(getCaretPosition());
 						Element rowElement = root.getElement(rowLine);
@@ -87,26 +87,28 @@ public class XCLTextInputPane extends XCLTextPane {
 						String rowText = t.getDocument().getText(start, end - start);
 						int idx = rowText.lastIndexOf(" ");
 						String text = idx == -1 ? rowText : rowText.substring(idx + 1);
-						if (getAssociateText() == null) {
-							setAssociateText(text);
-							resetAssociateIndex();
-						}
-						String findText = getAssociateText();
-						String associateText = findAssociateText(findText);
-						if (!CommonUtils.isEmpty(associateText)) {
-							if (!associateText.equals(findText)) {
-								if (idx == -1) {
-									t.getDocument().remove(start, end - start);
-									t.getDocument().insertString(start, associateText, XCLTextPane.getNormalAttr());
+						if (!CommonUtils.isEmpty(text)) {
+							if (getAssociateText() == null) {
+								setAssociateText(text);
+								resetAssociateIndex();
+							}
+							String findText = getAssociateText();
+							String associateText = findAssociateText(findText);
+							if (!CommonUtils.isEmpty(associateText)) {
+								if (!associateText.equals(findText)) {
+									if (idx == -1) {
+										t.getDocument().remove(start, end - start);
+										t.getDocument().insertString(start, associateText, XCLTextPane.getNormalAttr());
+									} else {
+										t.getDocument().remove(start + idx + 1, end - start - idx - 1);
+										t.getDocument().insertString(start + idx + 1, associateText, XCLTextPane.getNormalAttr());
+									}
 								} else {
-									t.getDocument().remove(start + idx + 1, end - start - idx - 1);
-									t.getDocument().insertString(start + idx + 1, associateText, XCLTextPane.getNormalAttr());
+									resetAssociateIndex();
 								}
 							} else {
 								resetAssociateIndex();
 							}
-						} else {
-							resetAssociateIndex();
 						}
 					} catch (Throwable ex) {
 						System.out.println(ex.getMessage());

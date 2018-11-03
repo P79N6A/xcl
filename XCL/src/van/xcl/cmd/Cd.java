@@ -36,7 +36,7 @@ public class Cd implements Command {
 					File relFile = new File(path);
 					File absFile = new File(context.getPath(), path);
 					if (!relFile.exists() && !absFile.exists()) {
-						new ParameterException("Cannot find the specified path: " + path);
+						new ParameterException("The specified path cannot be found: " + path);
 					}
 				}
 			}
@@ -46,7 +46,7 @@ public class Cd implements Command {
 
 	@Override
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
-		String input = args.get("path").toString();
+		String input = args.get("path").toString(true);
 		String path = context.getPath();
 		if ("..".equals(input) && new File(path).getParent() != null) {
 			File absPath = new File(path).getParentFile();
@@ -62,7 +62,7 @@ public class Cd implements Command {
 				context.setPath(relPath.getAbsolutePath());
 				console.output(relPath.getAbsolutePath());
 			} else {
-				console.output("cannot find the specified path");
+				console.error("The specified path cannot be found");
 			}
 		}
 		console.title(context.getPath());

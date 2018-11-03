@@ -36,6 +36,8 @@ public class XCLConstants {
 	public static final String CRAFT_FILE_EXT = ".craft";
 	public static final Font DEFAULT_FONT = XCLUtils.getDefaultFont(Font.PLAIN, 15);
 	public static final long HEALTH_CHECK_PERIOD = 5000L;
+	public static final String CONSTS_VAR_ENCODE_NAME = "@encoding";
+	public static final String DEFAULT_CHARSET_NAME = "GBK";
 	
 	public static final Color backgroundColor = new Color(39, 40, 34);
 	public static final Color foregroundColor = new Color(248, 248, 242);
