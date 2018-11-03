@@ -12,7 +12,7 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
-public class XCLCraftStorage {
+public class XCLCraftStore {
 	
 	private File getCraftPath() {
 		return new File(XCLConstants.CRAFT_FILE_PATH);
@@ -92,6 +92,15 @@ public class XCLCraftStorage {
 	
 	public boolean containsCraft(String name) {
 		return getCraftFile(name).exists();
+	}
+	
+	public boolean renameCraft(String name, String newname) {
+		if (containsCraft(name) && !containsCraft(newname)) {
+			String craft = getCraft(name);
+			setCraft(newname, craft);
+			return removeCraft(name);
+		}
+		return true;
 	}
 	
 	private void ensureFile(File file, boolean isFolder) throws IOException {

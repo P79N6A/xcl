@@ -14,7 +14,7 @@ public class XCLContext implements Serializable {
 	private String path;
 	private JsonObject object = null;
 	private transient XCLHandler handler = null;
-	private transient XCLCraftStorage craftStorage = null;
+	private transient XCLCraftStore craftStore = null;
 	public XCLContext() {
 	}
 	private Object getVar(String key, JsonObject par) {
@@ -59,6 +59,20 @@ public class XCLContext implements Serializable {
 		}
 		return false;
 	}
+	public boolean renameVar(String key, String newKey) {
+		if (containsVar(key) && !containsVar(newKey)) {
+			Object var = getVar(key);
+			setVar(newKey, var);
+			return removeVar(key);
+		}
+		return false;
+	}
+	public boolean renameCraft(String name, String newname) {
+		return getCraftStore().renameCraft(name, newname);
+	}
+	public boolean containsName(String name) {
+		return containsVar(name) || containsCraft(name);
+	}
 	public Map<String, Object> getDataMap() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (Map.Entry<String, Object> entry : getObject().entrySet()) {
@@ -89,26 +103,26 @@ public class XCLContext implements Serializable {
 		}
 		return "";
 	}
-	public XCLCraftStorage getCraftStorage() {
-		if (craftStorage == null) {
-			craftStorage = new XCLCraftStorage();
+	public XCLCraftStore getCraftStore() {
+		if (craftStore == null) {
+			craftStore = new XCLCraftStore();
 		}
-		return craftStorage;
+		return craftStore;
 	}
 	public Map<String, String> getCrafts() {
-		return getCraftStorage().getCrafts();
+		return getCraftStore().getCrafts();
 	}
 	public void setCraft(String name, String craft) {
-		getCraftStorage().setCraft(name, craft);
+		getCraftStore().setCraft(name, craft);
 	}
 	public String getCraft(String name) {
-		return getCraftStorage().getCraft(name);
+		return getCraftStore().getCraft(name);
 	}
 	public boolean removeCraft(String name) {
-		return getCraftStorage().removeCraft(name);
+		return getCraftStore().removeCraft(name);
 	}
 	public boolean containsCraft(String name) {
-		return getCraftStorage().containsCraft(name);
+		return getCraftStore().containsCraft(name);
 	}
 	public XCLHandler getHandler() {
 		return handler;
