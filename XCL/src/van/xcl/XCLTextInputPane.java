@@ -48,7 +48,7 @@ public class XCLTextInputPane extends XCLTextPane {
 				}
 			}
 			if (!isUndDown.compareAndSet(true, false)) {
-				handleCurrentRow();
+				handleCaretRow();
 			}
 		}
 		@Override
@@ -89,6 +89,7 @@ public class XCLTextInputPane extends XCLTextPane {
 								}
 							}
 						}
+						handleAllRows();
 					} catch (BadLocationException ex) {
 						System.out.println(ex.getMessage());
 					}

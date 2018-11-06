@@ -330,16 +330,21 @@ public class XCLUI implements EventHandler {
 		try {
 			SimpleAttributeSet attr = getConsoleAttr(color, getDefaultFont());
 			Document document = getTextConsole().getDocument();
+			int offset = -1;
+			int textLength = str.length();
 			if (fixedRows.containsKey(traceId)) {
-				int position = fixedRows.get(traceId);
-				int length = document.getLength() - position;
-				document.remove(position, length);
-				document.insertString(position, str, attr);
+				offset = fixedRows.get(traceId);
+				document.remove(offset, document.getLength() - offset);
+				document.insertString(offset, str, attr);
 			} else {
-				document.insertString(document.getLength(), str, attr);
+				offset = document.getLength();
+				document.insertString(offset, str, attr);
 			}
 			int length = document.getLength();
 			getTextConsole().setCaretPosition(length);
+			if (ConsoleType.input.equals(type)) {
+				getTextConsole().handleRow(offset, textLength);
+			}
 		} catch (Throwable e) {
 			JOptionPane.showMessageDialog(null, CommonUtils.getStackTrace(e));
 		}
@@ -350,9 +355,6 @@ public class XCLUI implements EventHandler {
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(null, CommonUtils.getStackTrace(e));
 			}
-		}
-		if (ConsoleType.input.equals(type)) {
-			getTextConsole().handlePerviousRow();
 		}
 	}
 	

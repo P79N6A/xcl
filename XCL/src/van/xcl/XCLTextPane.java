@@ -175,9 +175,9 @@ public class XCLTextPane extends JTextPane {
 		return textLength + 1;
 	}
 
-	private void handleRowText(int startIndex, int endIndex) {
+	public void handleRow(int startIndex, int textLength) {
 		try {
-			String text = document.getText(startIndex, endIndex - startIndex);
+			String text = document.getText(startIndex, textLength);
 			if (text != null && !"".equals(text)) {
 				if (text.trim().startsWith(XCLConstants.COMMONT_PREFIX)) {
 					setAttributes(startIndex, text.length(), commentAttr);
@@ -199,26 +199,15 @@ public class XCLTextPane extends JTextPane {
 		}
 	}
 
-	public void handleCurrentRow() {
+	public void handleCaretRow() {
 		Element root = document.getDefaultRootElement();
 		int rowLine = root.getElementIndex(getCaretPosition());
 		Element rowElement = root.getElement(rowLine);
 		int start = rowElement.getStartOffset();
 		int end = rowElement.getEndOffset() - 1;
-		handleRowText(start, end);
+		handleRow(start, end - start);
 	}
 	
-	public void handlePerviousRow() {
-		Element root = document.getDefaultRootElement();
-		int rowLine = root.getElementIndex(getCaretPosition());
-		if (rowLine >= 1) {
-			Element rowElement = root.getElement(rowLine - 1);
-			int start = rowElement.getStartOffset();
-			int end = rowElement.getEndOffset() - 1;
-			handleRowText(start, end);
-		}
-	}
-
 	public void handleAllRows() {
 		int position = this.getCaretPosition();
 		Element root = document.getDefaultRootElement();
@@ -227,7 +216,7 @@ public class XCLTextPane extends JTextPane {
 			Element para = root.getElement(i);
 			int start = para.getStartOffset();
 			int end = para.getEndOffset() - 1;
-			handleRowText(start, end);
+			handleRow(start, end - start);
 		}
 		this.setCaretPosition(position);
 	}
