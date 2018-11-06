@@ -71,6 +71,27 @@ public class XCLTextInputPane extends XCLTextPane {
 						}	
 						und.undo();
 					}
+				} else if (e.getKeyCode() == KeyEvent.VK_SLASH) {
+					try {
+						Element root = t.getDocument().getDefaultRootElement();
+						int startRow = root.getElementIndex(t.getSelectionStart());
+						int endRow = root.getElementIndex(t.getSelectionEnd());
+						for (int i = startRow ; i <= endRow ; i++) {
+							Element rowElement = root.getElement(i);
+							int start = rowElement.getStartOffset();
+							int end = rowElement.getEndOffset() - 1;
+							String rowText = t.getText(start, end - start);
+							if (!CommonUtils.isEmpty(CommonUtils.trim(rowText))) {
+								if (rowText.startsWith(XCLConstants.COMMONT_PREFIX)) {
+									t.getDocument().remove(start, XCLConstants.COMMONT_PREFIX.length());
+								} else {
+									t.getDocument().insertString(start, XCLConstants.COMMONT_PREFIX, XCLTextPane.getNormalAttr());
+								}
+							}
+						}
+					} catch (BadLocationException ex) {
+						System.out.println(ex.getMessage());
+					}
 				}
 				if (isUndDown.get()) {
 					t.setCaretPosition(t.getDocument().getLength());
