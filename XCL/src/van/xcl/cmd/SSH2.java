@@ -54,7 +54,15 @@ public class SSH2 implements Command {
 					XCLDynamicParameter.validate(value, "localDir", "remoteFile");
 				}
 			}
-		});
+		})
+		.addPara("-hostname=127.0.0.1")
+		.addPara("-username=usr")
+		.addPara("-password=pwd")
+		.addPara("-action=cmd/get/put")
+		.addPara("-localFile=local_file")
+		.addPara("-remoteDir=remote_directory")
+		.addPara("-localDir=local_directory")
+		.addPara("-remoteFile=remote_file");
 		parameters.add("command");
 		return parameters;
 	}

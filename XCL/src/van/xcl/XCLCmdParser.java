@@ -96,7 +96,7 @@ public class XCLCmdParser {
 					usage.append("    usage:\n");
 					usage.append("        " + command.name());
 					for (Parameter para : command.parameters().list()) {
-						usage.append(" [" + para.getName() + "]");
+						usage.append(" [" + para.getParaForm() + "]");
 					}
 					throw new ParameterException(usage.toString());
 				}
