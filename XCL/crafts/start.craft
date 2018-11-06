@@ -1,1 +1,2 @@
+errif not ifvar file "syntax error: usage: start -file=xxx";
 exec concat "cmd /c start&nbsp;" file;

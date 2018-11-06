@@ -17,5 +17,5 @@ ssh2 -action=get -username=u -hostname=h -password=p
 	-remoteFile=/home/appuser/logs/lms-uat/lms.log
 	"pwd";
 // open files
-start D:\Temp\uat2\lms.log;
-start D:\Temp\uat1\lms.log;
+start -file=D:\Temp\uat2\lms.log;
+start -file=D:\Temp\uat1\lms.log;

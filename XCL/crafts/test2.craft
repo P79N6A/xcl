@@ -1,0 +1,11 @@
+// setdir "C:\Program Files (x86)\Mozilla Firefox";
+// start -file=firefox.exe;
+
+// setdir "D:/gitCode/lmsnew";
+// exec "cmd /c mvn compile -f D:/gitCode/lmsnew";
+
+
+set r postf "http://localhost:8080/lms.application/lmsLsCaseClose/getClaimList.json"
+ "caseId=LS201810310003&closeStatus=20347&token=6c262218c729412397b99c598df6da4b1540983625194";
+
+echo r;

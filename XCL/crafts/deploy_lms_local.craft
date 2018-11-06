@@ -14,7 +14,7 @@ cp D:\Workspaces\Workspace5\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\
 zip C:\Users\FORMSSI\Desktop\deploy\lms.html C:\Users\FORMSSI\Desktop\deploy lms.html.zip;
 delete C:\Users\FORMSSI\Desktop\deploy\lms.html "*";
 // checking ...
-start C:\Users\FORMSSI\Desktop\deploy;
+start -file=C:\Users\FORMSSI\Desktop\deploy;
 
 // prepare ssh parameters
 set u appuser;

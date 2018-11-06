@@ -10,4 +10,4 @@ ssh2 -action=get -username=u -hostname=h -password=p
 	-remoteFile=/home/appuser/logs/lms-sit/lms.log
 	"pwd";
 
-start D:\Temp\lms.log;
+start -file=D:\Temp\lms.log;

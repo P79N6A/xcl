@@ -1,0 +1,50 @@
+service -user=lms186 
+// -data={"reqType":"common_upload_affix","reqCode":"common_upload_affix",\\
+
+// "reqData":{"filename":"abc.txt","filedata":"dGVzdHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0"}}
+// -data={"reqType":"common_query_person","reqCode":"common_query_person",\\
+
+// "reqData":{\\
+// "queryparam":"法务",\\
+// "pageindex":"1",\\
+// "pagesize":"20",\\
+// }}
+
+//-data={"reqType":"common_query_org","reqCode":"common_query_org",\\
+//"reqData":{\\
+//"queryparam":"法务",\\
+//"filterparam":"orgType=,SBU,",\\
+//"pageindex":"1",\\
+//"pagesize":"20",\\
+//}}
+
+//-data={"reqType":"ls_case_query_cause","reqCode":"ls_case_query_cause",\\
+//"reqData":{\\
+//"queryparam":"担保物",\\
+//"filterparam":"CR0031000001",\\
+//"pageindex":"1",\\
+//"pagesize":"20",\\
+//}}
+
+//-data={"reqType":"ls_case_query_location","reqCode":"ls_case_query_location",\\
+//"reqData":{\\
+//"queryparam":"南",\\
+//"filterparam":"",\\
+//"pageindex":"1",\\
+//"pagesize":"20",\\
+//}}
+
+-data={"reqType":"ls_case_query_party","reqCode":"ls_case_query_party",\\
+"reqData":{\\
+"queryparam":"",\\
+"filterparam":"创",\\
+"pageindex":"1",\\
+"pagesize":"20",\\
+}}
+
+//-data={"reqType":"common_query_options","reqCode":"common_query_options",\\
+//"reqData":{\\
+//"queryparam":"",\\
+//"filterparam":"confItemId=4;orgCode=CR0111000001",\\
+//"filterparam":"parConfValCode=20391",\\
+//}}
