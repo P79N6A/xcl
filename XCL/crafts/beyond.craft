@@ -1,0 +1,5 @@
+delete "C:\Users\FORMSSI\AppData\Roaming\BeyondCompare" "*" "*";
+set dir workdir;
+setdir "D:\Program Files\Beyond Compare 4";
+start -file=BCompare.exe;
+setdir dir;

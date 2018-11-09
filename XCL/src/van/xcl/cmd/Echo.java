@@ -38,16 +38,16 @@ public class Echo implements Command {
 		String input = args.get("object_name").toString();
 		if (context.containsCraft(input)) {
 			String content = context.getCraft(input);
-			console.output(content);
+			console.input(content);
 			console.prompt("[craft]");
 			return new XCLVar(content);
 		} else {
 			XCLVar var = new XCLVar(input);
 			if (var.isString() || var.isBoolean() || var.isNumeric()) {
-				console.output(CommonUtils.resolveJSONString(var.toString()));
+				console.input(CommonUtils.resolveJSONString(var.toString()));
 			} else if (var.isJsonObject()) {
 				JsonObject obj = var.getJsonObject();
-				console.output("\n" + CommonUtils.resolveJSONString(JsonObject.toJSONString(obj, true)));
+				console.input("\n" + CommonUtils.resolveJSONString(JsonObject.toJSONString(obj, true)));
 			} else if (var.isJsonArray()) {
 				JsonArray obj = var.getJsonArray();
 				if (obj.size() > 0) {
@@ -57,9 +57,9 @@ public class Echo implements Command {
 						for (int i = 0 ; i < obj.size() ; i++) {
 							sb.append("\n" + (String) obj.get(i));
 						}
-						console.output(sb.toString());
+						console.input(sb.toString());
 					} else {
-						console.output("\n" + CommonUtils.resolveJSONString(JsonObject.toJSONString(obj, true)));
+						console.input("\n" + CommonUtils.resolveJSONString(JsonObject.toJSONString(obj, true)));
 					}
 				}
 			}

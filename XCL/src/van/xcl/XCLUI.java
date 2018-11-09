@@ -343,7 +343,7 @@ public class XCLUI implements EventHandler {
 			int length = document.getLength();
 			getTextConsole().setCaretPosition(length);
 			if (ConsoleType.input.equals(type)) {
-				getTextConsole().handleRow(offset, textLength);
+				getTextConsole().handleText(offset, textLength);
 			}
 		} catch (Throwable e) {
 			JOptionPane.showMessageDialog(null, CommonUtils.getStackTrace(e));

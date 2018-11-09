@@ -31,6 +31,9 @@ public class Craft implements Command {
 		parameters.add("craft_name", new ParameterValidator() {
 			@Override
 			public void validate(XCLContext context, XCLVar value) throws ParameterException {
+				if (!context.isValidObjectName(value.toString())) {
+					throw new ParameterException("Syntax error: invalid craft name: " + value.toString());
+				}
 				if (context.containsVar(value.toString())) {
 					throw new ParameterException("Syntax error: duplicate variable: " + value.toString());
 				}

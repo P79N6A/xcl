@@ -36,6 +36,9 @@ public class Var implements Command {
 				if (value.toString().length() > 50) {
 					throw new ParameterException("Syntax error: variable name is too long: " + value.toString().length());
 				}
+				if (!context.isValidObjectName(value.toString())) {
+					throw new ParameterException("Syntax error: invalid variable name: " + value.toString());
+				}
 				if (context.containsVar(value.toString())) {
 					throw new ParameterException("Syntax error: duplicate variable: " + value.toString());
 				}

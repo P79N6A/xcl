@@ -1,0 +1,7 @@
+service -user=lms202 
+-data={"reqType":"ls_case_step_submit","reqCode":"ls_case_step_save",\\
+"reqData":{"caseId":"","caseSolveMtd":"20035","caseStep":"register","caseStepName":"µÇ¼Ç",\\
+"formData":"lmsLsCasePartyDTO.baseCasePartyList[0].casePartyRelList=LMS088,LMS090&\\
+invlOrg=CR0121000002\\
+"\\
+}}

@@ -15,6 +15,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
+import van.util.CommonUtils;
+
 public class XCLTextPane extends JTextPane {
 	
 	class XCLStringTokenizer extends StringTokenizer {
@@ -175,23 +177,35 @@ public class XCLTextPane extends JTextPane {
 		return textLength + 1;
 	}
 
-	public void handleRow(int startIndex, int textLength) {
+	public void handleText(int startOffset, int length) {
 		try {
-			String text = document.getText(startIndex, textLength);
-			if (text != null && !"".equals(text)) {
-				if (text.trim().startsWith(XCLConstants.COMMONT_PREFIX)) {
-					setAttributes(startIndex, text.length(), commentAttr);
-				} else {
-					int lastPosition = 0;
-					setAttributes(startIndex, text.length(), normalAttr);
-					XCLStringTokenizer st = new XCLStringTokenizer(text);
-					while (st.hasMoreTokens()) {
-						String s = st.nextToken();
-						if (s != null) {
-							lastPosition = st.getCurrPosition();
-							setKeyColor(s, startIndex + lastPosition, s.length());
+			Element root = document.getDefaultRootElement();
+			int rowStart = root.getElementIndex(startOffset);
+			int rowEnd = root.getElementIndex(startOffset + length);
+			if (rowStart == rowEnd) { // same row
+				String text = document.getText(startOffset, length);
+				if (!CommonUtils.isEmpty(text)) {
+					if (text.trim().startsWith(XCLConstants.COMMONT_PREFIX)) {
+						setAttributes(startOffset, text.length(), commentAttr);
+					} else {
+						int lastPosition = 0;
+						setAttributes(startOffset, text.length(), normalAttr);
+						XCLStringTokenizer st = new XCLStringTokenizer(text);
+						while (st.hasMoreTokens()) {
+							String s = st.nextToken();
+							if (s != null) {
+								lastPosition = st.getCurrPosition();
+								setKeyColor(s, startOffset + lastPosition, s.length());
+							}
 						}
 					}
+				}
+			} else { // handle rows one by one
+				for (int i = rowStart; i <= rowEnd; i++) {
+					Element para = root.getElement(i);
+					int start = para.getStartOffset();
+					int end = para.getEndOffset() - 1;
+					handleText(start, end - start);
 				}
 			}
 		} catch (BadLocationException e) {
@@ -205,7 +219,7 @@ public class XCLTextPane extends JTextPane {
 		Element rowElement = root.getElement(rowLine);
 		int start = rowElement.getStartOffset();
 		int end = rowElement.getEndOffset() - 1;
-		handleRow(start, end - start);
+		handleText(start, end - start);
 	}
 	
 	public void handleAllRows() {
@@ -216,7 +230,7 @@ public class XCLTextPane extends JTextPane {
 			Element para = root.getElement(i);
 			int start = para.getStartOffset();
 			int end = para.getEndOffset() - 1;
-			handleRow(start, end - start);
+			handleText(start, end - start);
 		}
 		this.setCaretPosition(position);
 	}

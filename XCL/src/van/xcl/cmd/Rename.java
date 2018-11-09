@@ -6,6 +6,7 @@ import van.xcl.Command;
 import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.XCLConsole;
+import van.xcl.XCLConstants;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
 import van.xcl.XCLCmdParser.XCLNode;
@@ -26,12 +27,21 @@ public class Rename implements Command {
 	@Override
 	public Parameters parameters() {
 		Parameters parameters = new Parameters();
-		parameters.add("<object_name>-><new_object_name>", new ParameterValidator() {
+		parameters.add("&<source_name>", new ParameterValidator() {
 			@Override
 			public void validate(XCLContext context, XCLVar value) throws ParameterException {
 				String str = value.toString();
-				if (!str.contains("->") || str.length() < 4) {
-					throw new ParameterException("Please enter new and old names and separate them with a \"->\"");
+				if (!str.startsWith(XCLConstants.BUILTIN_VAL_PERFIX)) {
+					throw new ParameterException("object name should be start with: " + XCLConstants.BUILTIN_VAL_PERFIX);
+				}
+			}
+		}).setAutoResolve(false);
+		parameters.add("&<target_name>", new ParameterValidator() {
+			@Override
+			public void validate(XCLContext context, XCLVar value) throws ParameterException {
+				String str = value.toString();
+				if (!str.startsWith(XCLConstants.BUILTIN_VAL_PERFIX)) {
+					throw new ParameterException("object name should be start with: " + XCLConstants.BUILTIN_VAL_PERFIX);
 				}
 			}
 		}).setAutoResolve(false);
@@ -40,27 +50,26 @@ public class Rename implements Command {
 
 	@Override
 	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
-		String name = args.get("<object_name>-><new_object_name>").toString();
-		String objectName = name.split("->")[0];
-		String objectNewName = name.split("->")[1];
-		if (context.containsName(objectName)) {
-			if (!context.containsName(objectNewName)) {
-				if (context.containsVar(objectName)) {
-					context.renameVar(objectName, objectNewName);
-					console.output("[" + objectName + "] --> [" + objectNewName + "] variable has been renamed");
-				} else if (context.containsCraft(objectName)) {
-					context.renameCraft(objectName, objectNewName);
-					console.removeDynamicKey(objectName);
-					console.addDynamicKey(objectNewName);
-					console.output("[" + objectName + "] --> [" + objectNewName + "] craft has been renamed");
+		String sourceName = args.get("&<source_name>").toString().replaceFirst(XCLConstants.BUILTIN_VAL_PERFIX, "");
+		String targetName = args.get("&<target_name>").toString().replaceFirst(XCLConstants.BUILTIN_VAL_PERFIX, "");
+		if (context.containsName(sourceName)) {
+			if (!context.containsName(targetName)) {
+				if (context.containsVar(sourceName)) {
+					context.renameVar(sourceName, targetName);
+					console.output("[" + sourceName + "] --> [" + targetName + "] variable has been renamed");
+				} else if (context.containsCraft(sourceName)) {
+					context.renameCraft(sourceName, targetName);
+					console.removeDynamicKey(sourceName);
+					console.addDynamicKey(targetName);
+					console.output("[" + sourceName + "] --> [" + targetName + "] craft has been renamed");
 				}
 			} else {
-				console.error("[" + objectName + "] object already exists");
+				console.error("[" + sourceName + "] object already exists");
 			}
 		} else {
-			console.error("[" + objectName + "] object does not exist");
+			console.error("[" + sourceName + "] object does not exist");
 		}
-		return new XCLVar(objectName);
+		return new XCLVar(targetName);
 	}
 
 }

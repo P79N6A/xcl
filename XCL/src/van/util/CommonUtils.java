@@ -1,6 +1,7 @@
 package van.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,7 +52,23 @@ public class CommonUtils {
 	
 	public static String resolveString(String str, int maxlen) {
 		if (str != null && str.length() > maxlen) {
-			return str.substring(0, maxlen) + "...";
+			try {
+				StringBuilder s = new StringBuilder();
+				ByteArrayInputStream bos = new ByteArrayInputStream(str.getBytes("utf-8"));
+				BufferedReader br = new BufferedReader(new InputStreamReader(bos));
+				String line = null;
+				while (null != (line = br.readLine())) {
+					if (line.length() > maxlen) {
+						line = line.substring(0, maxlen) + "...";
+					}
+					s.append(line + "\n");
+				}
+				br.close();
+				bos.close();
+				return s.toString().trim();
+			} catch (Throwable e) {
+				// do nothing
+			}
 		}
 		return str;
 	}

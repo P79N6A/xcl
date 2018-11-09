@@ -41,7 +41,7 @@ public class Cmds implements Command {
 		for (String cmd : cmdList) {
 			cmds.append(cmd);
 		}
-		console.output(cmds.toString());
+		console.input(cmds.toString());
 		return new XCLVar();
 	}
 

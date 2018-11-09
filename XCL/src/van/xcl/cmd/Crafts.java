@@ -41,7 +41,7 @@ public class Crafts implements Command {
 		for (String craft : crafts) {
 			sb.append("\t" + craft + "\n");
 		}
-		console.output(sb.toString());
+		console.input(sb.toString());
 		return new XCLVar();
 	}
 	

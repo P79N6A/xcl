@@ -2,7 +2,7 @@ service -user=lms186
 // -data={"reqType":"common_upload_affix","reqCode":"common_upload_affix",\\
 
 // "reqData":{"filename":"abc.txt","filedata":"dGVzdHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0"}}
-// -data={"reqType":"common_query_person","reqCode":"common_query_person",\\
+// -data={"reqType":"ls_common_query_person","reqCode":"common_query_person",\\
 
 // "reqData":{\\
 // "queryparam":"法务",\\
@@ -10,7 +10,7 @@ service -user=lms186
 // "pagesize":"20",\\
 // }}
 
-//-data={"reqType":"common_query_org","reqCode":"common_query_org",\\
+//-data={"reqType":"ls_common_query_org","reqCode":"common_query_org",\\
 //"reqData":{\\
 //"queryparam":"法务",\\
 //"filterparam":"orgType=,SBU,",\\
@@ -34,17 +34,18 @@ service -user=lms186
 //"pagesize":"20",\\
 //}}
 
--data={"reqType":"ls_case_query_party","reqCode":"ls_case_query_party",\\
-"reqData":{\\
-"queryparam":"",\\
-"filterparam":"创",\\
-"pageindex":"1",\\
-"pagesize":"20",\\
-}}
-
-//-data={"reqType":"common_query_options","reqCode":"common_query_options",\\
+//-data={"reqType":"ls_case_query_party","reqCode":"ls_case_query_party",\\
 //"reqData":{\\
 //"queryparam":"",\\
-//"filterparam":"confItemId=4;orgCode=CR0111000001",\\
-//"filterparam":"parConfValCode=20391",\\
+//"filterparam":"创",\\
+//"pageindex":"1",\\
+//"pagesize":"20",\\
 //}}
+
+-data={"reqType":"ls_common_query_options","reqCode":"common_query_options",\\
+"reqData":{\\
+"queryparam":"",\\
+"filterparam":"confItemId=20046;orgCode=CR0071000000",\\
+//"filterparam":"parConfValCode=20391",\\
+//"filterparam":"customOptions=party_role;customParas=process_code=register,apply_procedure=20393"\\
+}}
