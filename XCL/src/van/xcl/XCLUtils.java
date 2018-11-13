@@ -123,7 +123,7 @@ public class XCLUtils {
 				BufferedReader br = new BufferedReader(new StringReader(cmdString));
 				String cmdLine = null;
 				while (null != (cmdLine = br.readLine())) {
-					if (cmdLine.startsWith(XCLConstants.COMMONT_PREFIX)) {
+					if (cmdLine.trim().startsWith(XCLConstants.COMMONT_PREFIX)) {
 						continue;
 					}
 					// cmdTrim.append(cmdLine + " ");

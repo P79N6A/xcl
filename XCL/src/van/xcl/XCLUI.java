@@ -401,8 +401,18 @@ public class XCLUI implements EventHandler {
 							console.run(cmd);
 							console.present(null);
 						} else {
-							// clear
-							textCmd.setText(null);
+							try {
+								Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+								Transferable text = clip.getContents(null);
+								if (text != null) {
+									Object value = text.getTransferData(DataFlavor.stringFlavor);
+									if (value != null) {
+										textCmd.setText(String.valueOf(value));
+									}
+								}
+							} catch (Throwable ex) {
+								// do nothing.
+							}
 						}
 					} else if (e.getKeyCode() == KeyEvent.VK_F1) {
 						String cmd = CommonUtils.trim(textCmd.getText());
