@@ -1,7 +1,20 @@
 service -user=lms202 
 -data={"reqType":"ls_case_step_submit","reqCode":"ls_case_step_save",\\
-"reqData":{"caseId":"","caseSolveMtd":"20035","caseStep":"register","caseStepName":"µ«º«",\\
-"formData":"lmsLsCasePartyDTO.baseCasePartyList[0].casePartyRelList=LMS088,LMS090&\\
-invlOrg=CR0121000002\\
+"reqData":{"caseId":"LS201811120002","caseSolveMtd":"20035","caseStep":"register","caseStepName":"µ«º«",\\
+"formData":"\\
+lmsLsCasePartyDTO.baseCasePartyList[0].casePartyRelList=LMS088,LMS090\\
+&lmsLsCasePartyDTO.baseCasePartyList[0].orgCode=CR0121000002\\
+&lmsLsCasePartyDTO.baseCasePartyList[0].partyRole=20402\\
+&lmsLsCasePartyDTO.baseCasePartyNotList[0].orgName=MOBILE_PHONE_COMPANY\\
+&lmsLsCasePartyDTO.baseCasePartyNotList[0].partyRole=20403\\
+&lmsLsCasePartyDTO.baseCasePartyNotList[0].proxyNames=ΩØ÷æ∏’,¡˙» ø≠\\
+&invlOrg=CR0061000001\\
+&registerRelatedFile=1173\\
+&registerApprovalFile=1172\\
+//&caseType=20287\\
+//&cause=%E5%90%88%E5%90%8C%E7%BA%A0%E7%BA%B7\\
+&caseType=20288\\
+&cause=XXXXZZZ\\
+&disputeAreaCode=10090%2F10204%2F10508%2C10090%2F10205%2F10311%2C10131%2C10173%2C10183\\
 "\\
 }}

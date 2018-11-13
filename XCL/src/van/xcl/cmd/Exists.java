@@ -9,16 +9,16 @@ import van.xcl.XCLContext;
 import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
-public class IfVar implements Command {
+public class Exists implements Command {
 
 	@Override
 	public String name() {
-		return "ifvar";
+		return "exists";
 	}
 	
 	@Override
 	public String description() {
-		return "if var is defined or not";
+		return "if var is exist or not";
 	}
 
 	@Override

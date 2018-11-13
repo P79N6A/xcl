@@ -1,5 +1,5 @@
 // set input
-errif not ifvar command "syntax error: e.g: sit_cmd -command=pwd";
+errif not exists command "syntax error: e.g: sit_cmd -command=pwd";
 // prepare ssh parameters
 set u appuser;
 set p lMiS2)1^;
