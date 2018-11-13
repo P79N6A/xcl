@@ -7,7 +7,7 @@ import van.xcl.CommandException;
 import van.xcl.XCLConsole;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class Return implements Command {
@@ -30,7 +30,7 @@ public class Return implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		return args.get("var");
 	}
 

@@ -29,7 +29,7 @@ import van.xcl.util.sf.StringFilter;
 
 public class CommonUtils {
 	
-	public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	public static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public static String getCurrentTimeString() {

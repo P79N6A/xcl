@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import van.xcl.Command;
 import van.xcl.Parameters;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLConsole;
 import van.xcl.XCLContext;
 import van.xcl.XCLVar;
@@ -31,7 +31,7 @@ public class Cmds implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		List<String> cmdList = new ArrayList<String>();
 		for (Entry<String, Command> entry : console.commands().entrySet()) {
 			cmdList.add("\n    " + entry.getKey() + " : \t" + entry.getValue().description());

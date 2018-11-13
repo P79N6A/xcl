@@ -17,7 +17,7 @@ import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.util.sf.StringFilter;
 import van.xcl.XCLVar;
 
@@ -65,7 +65,7 @@ public class FindStr implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		String path = args.get("path").toString();
 		StringFilter fileFilter = new StringFilter(args.get("file_filter").toString());
 		StringFilter contFilter = new StringFilter(args.get("content_filter").toString());

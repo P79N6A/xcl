@@ -15,7 +15,7 @@ import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.util.sf.StringFilter;
 import van.xcl.XCLVar;
 
@@ -58,7 +58,7 @@ public class XCopy implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		try {
 			String src = args.get("src_path").toString();
 			String des = args.get("dest_path").toString();

@@ -10,7 +10,7 @@ import van.xcl.CommandException;
 import van.xcl.XCLConsole;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class Zip implements Command {
@@ -35,7 +35,7 @@ public class Zip implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		String srcPath = args.get("srcPath").toString();
 		String zipPath = args.get("zipPath").toString();
 		String zipFileName = args.get("zipFileName").toString();

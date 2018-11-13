@@ -9,7 +9,7 @@ import van.xcl.ParameterValidator;
 import van.xcl.XCLConsole;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class SetDir implements Command {
@@ -40,7 +40,7 @@ public class SetDir implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		File dir = new File(args.get("dir").toString(true));
 		String path = dir.getAbsolutePath();
 		context.setPath(path);

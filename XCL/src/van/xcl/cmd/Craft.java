@@ -10,7 +10,7 @@ import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class Craft implements Command {
@@ -49,7 +49,7 @@ public class Craft implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		String name = args.get("craft_name").toString();
 		String craft = null;
 		if (context.containsCraft(name)) {

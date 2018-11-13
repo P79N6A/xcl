@@ -11,7 +11,7 @@ import van.xcl.XCLConstants;
 import van.xcl.XCLConsole;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class Echo implements Command {
@@ -34,7 +34,7 @@ public class Echo implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		String input = args.get("object_name").toString();
 		if (context.containsCraft(input)) {
 			String content = context.getCraft(input);

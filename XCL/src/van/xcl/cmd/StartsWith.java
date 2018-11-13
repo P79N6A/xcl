@@ -7,7 +7,7 @@ import van.xcl.CommandException;
 import van.xcl.XCLConsole;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class StartsWith implements Command {
@@ -31,7 +31,7 @@ public class StartsWith implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		String text = args.get("text").toString();
 		String prefix = args.get("prefix").toString();
 		return new XCLVar(text.startsWith(prefix));

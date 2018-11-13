@@ -8,7 +8,7 @@ import van.xcl.Command;
 import van.xcl.XCLConsole;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class Calc implements Command {
@@ -31,7 +31,7 @@ public class Calc implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		XCLVar calcStr = args.get("expression");
 		DecEvalParser p = new DecEvalParser(CalcBasic.class);
 		DecEval eval = p.parse(calcStr.toString());

@@ -12,7 +12,7 @@ import van.xcl.Parameters;
 import van.xcl.Resolver;
 import van.xcl.XCLContext;
 import van.xcl.XCLDynamicParameter;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class Paras implements Command, Resolver {
@@ -48,7 +48,7 @@ public class Paras implements Command, Resolver {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		XCLDynamicParameter initial = XCLDynamicParameter.resolveDynamicParameter(args.get("initial").toString());
 		initial.addDynamicParameterKeyValue(args.get("append").toString(), context);
 		return new XCLVar(initial.toString());

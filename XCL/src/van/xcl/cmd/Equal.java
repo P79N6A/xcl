@@ -6,7 +6,7 @@ import van.xcl.Command;
 import van.xcl.XCLConsole;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class Equal implements Command {
@@ -30,7 +30,7 @@ public class Equal implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		String str1 = args.get("str1").toString();
 		String str2 = args.get("str2").toString();
 		return new XCLVar(str1.equals(str2));

@@ -18,7 +18,7 @@ import van.xcl.CommandException;
 import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLConsole;
 import van.xcl.XCLContext;
 import van.xcl.XCLDynamicParameter;
@@ -68,7 +68,7 @@ public class SSH2 implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		XCLDynamicParameter map = XCLDynamicParameter.resolveDynamicParameter(args.get("parameter").toString());
 		String hostname = map.getValue("hostname");
 		String username = map.getValue("username");

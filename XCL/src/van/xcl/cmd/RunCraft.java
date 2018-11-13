@@ -13,7 +13,7 @@ import van.xcl.Parameters;
 import van.xcl.Resolver;
 import van.xcl.XCLContext;
 import van.xcl.XCLDynamicParameter;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLResult;
 import van.xcl.XCLVar;
 
@@ -53,7 +53,7 @@ public class RunCraft implements Command, Resolver {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		String name = args.get("craft_name").toString();
 		String craft = context.getCraft(name);
 		XCLDynamicParameter map = XCLDynamicParameter.resolveDynamicParameter(args.get("paras").toString());
@@ -64,10 +64,10 @@ public class RunCraft implements Command, Resolver {
 			}
 		}
 		long startInMillis = System.currentTimeMillis();
-		console.output("[" + name + "] craft is started");
+		console.info("[" + name + "] craft is started");
 		XCLResult result = console.execute(craft, current);
 		if (result.isSuccess()) {
-			console.output("[" + name + "] craft is done [Time Used: " + (System.currentTimeMillis() - startInMillis) + "ms]");
+			console.info("[" + name + "] craft is done [Time Used: " + (System.currentTimeMillis() - startInMillis) + "ms]");
 		}
 		if (result.isSuccess()) {
 			List<XCLVar> list = result.getResults();

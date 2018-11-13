@@ -14,7 +14,7 @@ import van.xcl.XCLConstants;
 import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLConsole;
 import van.xcl.XCLContext;
 import van.xcl.XCLResult;
@@ -48,7 +48,7 @@ public class RunCraftFile implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		File file = new File(args.get("file").toString());
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
@@ -59,10 +59,10 @@ public class RunCraftFile implements Command {
 			}
 			br.close();
 			long startInMillis = System.currentTimeMillis();
-			console.output("[" + file.getName() + "] craft file is started");
+			console.info("[" + file.getName() + "] craft file is started");
 			XCLResult result = console.execute(cmd.toString(), context.clone());
 			if (result.isSuccess()) {
-				console.output("[" + file.getName() + "] craft file is done [Time Used: " + (System.currentTimeMillis() - startInMillis) + "ms]");
+				console.info("[" + file.getName() + "] craft file is done [Time Used: " + (System.currentTimeMillis() - startInMillis) + "ms]");
 			}
 			if (result.isSuccess()) {
 				List<XCLVar> list = result.getResults();

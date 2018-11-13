@@ -4,7 +4,7 @@ import java.util.Map;
 
 import van.xcl.Command;
 import van.xcl.Parameters;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLConsole;
 import van.xcl.XCLConstants;
 import van.xcl.XCLContext;
@@ -28,7 +28,7 @@ public class Disconnect implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		console.disconnect();
 		return new XCLVar();
 	}

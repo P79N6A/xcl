@@ -18,7 +18,7 @@ import van.xcl.CommandException;
 import van.xcl.ParameterException;
 import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLConsole;
 import van.xcl.XCLContext;
 import van.xcl.XCLVar;
@@ -157,7 +157,7 @@ public class FolderDiff implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		String prev = args.get("previous_folder").toString();
 		String curr = args.get("current_folder").toString();
 		String file = args.get("result_file").toString();

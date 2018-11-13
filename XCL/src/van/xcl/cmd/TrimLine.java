@@ -10,7 +10,7 @@ import van.xcl.CommandException;
 import van.xcl.XCLConsole;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class TrimLine implements Command {
@@ -33,7 +33,7 @@ public class TrimLine implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		String text = args.get("text").toString();
 		try {
 			BufferedReader br = new BufferedReader(new StringReader(text));

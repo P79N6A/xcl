@@ -25,7 +25,6 @@ import van.util.evt.EventEntity;
 import van.util.evt.EventHandler;
 import van.util.evt.EventManager;
 import van.util.task.TaskService;
-import van.xcl.XCLCmdParser.XCLNode;
 import van.xcl.XCLHealthChecker.XCLHealthEntity;
 
 public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCLHealthEntity {
@@ -39,8 +38,8 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 
 	private XCLUI ui = null;
 	private XCLContext context = null;
-	private XCLCmdParser parser = null;
-	private XCLCmdHolder holder = null;
+	private XCLCommandParser parser = null;
+	private XCLCommandHolder holder = null;
 	private String contextFile;
 	private EventManager eventManager = null;
 	private XCLEventSyncer eventSyncer = null;
@@ -63,8 +62,8 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 		this.eventSyncer = new XCLEventSyncer(this, eventManager);
 		int port = this.eventSyncer.startup();
 		createLockFile(port);
-		this.parser = new XCLCmdParser();
-		this.holder = new XCLCmdHolder();
+		this.parser = new XCLCommandParser();
+		this.holder = new XCLCommandHolder();
 		this.contextFile = getContextFile(paras.getPara("context"));
 		loadContext(this.contextFile);
 		loadCommands();
@@ -97,12 +96,13 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 	
 	@Override
 	public XCLVar command(List<String> command, XCLConsole console, XCLContext context) {
+		XCLCommandNode node = null;
 		try {
-			XCLNode node = this.parser.parseCommand(command, context, this.holder);
+			node = this.parser.parseCommand(command, context, this.holder);
 			if (node != null) {
 				if (node.isExecutable()) {
 					try {
-						if (node.hasChilds()) {
+						if (node.hasChildren()) {
 							console.info(CommonUtils.getCurrentTimeString() + "\n " + delimeter() + "\n " + node.getFormatString().trim() + "\n " + delimeter());
 						}
 						return node.execute(console, context, this.holder, this);
@@ -113,17 +113,19 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 					console.error("\"" + node.getName() + "\" command not found.");
 				}
 			} else {
-				console.error("unknown command");
+				console.error("Unknown command");
 			}
 		} catch (Throwable e) {
 			if (e instanceof CommandException) {
 				console.error(e.getMessage());
-			} else if (e instanceof ParameterException) {
-				console.error(e.getMessage());
 			} else if (e instanceof ThreadDeath) {
 				throw new ThreadDeath();
 			} else {
-				console.error(CommonUtils.getStackTrace(e));
+				if (node != null) {
+					console.error("Failed to execute the command \"" + node.getName() + "\":\n\t" + CommonUtils.getStackTrace(e));
+				} else {
+					console.error("Unexpected error occurred:\n\t" + CommonUtils.getStackTrace(e));
+				}
 			}
 		}
 		return null;

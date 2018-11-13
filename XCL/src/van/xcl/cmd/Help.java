@@ -4,7 +4,7 @@ import java.util.Map;
 
 import van.xcl.Command;
 import van.xcl.Parameters;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLConsole;
 import van.xcl.XCLContext;
 import van.xcl.XCLVar;
@@ -28,7 +28,7 @@ public class Help implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		StringBuilder help = new StringBuilder("\n");
 		help.append("\t1, Enter the \"cmds\" command to show all available commands.\n");
 		help.append("\t2, Enter the \"crafts\" command to show all available crafts.\n");

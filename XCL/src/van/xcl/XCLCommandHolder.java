@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class XCLCmdHolder {
+public class XCLCommandHolder {
 
 	private Map<String, Command> commands = new HashMap<String, Command>();
 	private List<Resolver> resolvers = new ArrayList<Resolver>();

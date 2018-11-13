@@ -9,7 +9,7 @@ import van.xcl.XCLConsole;
 import van.xcl.XCLConstants;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
-import van.xcl.XCLCmdParser.XCLNode;
+import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
 
 public class Rename implements Command {
@@ -49,7 +49,7 @@ public class Rename implements Command {
 	}
 
 	@Override
-	public XCLVar execute(XCLNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
+	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) {
 		String sourceName = args.get("&<source_name>").toString().replaceFirst(XCLConstants.BUILTIN_VAL_PERFIX, "");
 		String targetName = args.get("&<target_name>").toString().replaceFirst(XCLConstants.BUILTIN_VAL_PERFIX, "");
 		if (context.containsName(sourceName)) {
