@@ -17,7 +17,7 @@ public class Craft implements Command {
 
 	@Override
 	public String name() {
-		return XCLConstants.CRAFT_COMMAND;
+		return XCLConstants.COMMAND_CRAFT;
 	}
 
 	@Override

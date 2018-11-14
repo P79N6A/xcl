@@ -13,10 +13,12 @@ public class XCLCommandNode {
 	private XCLCommandNode parent;
 	private int depth;
 	private boolean executable;
+	private boolean lineWrap;
 	private List<XCLCommandNode> children = new ArrayList<XCLCommandNode>();
 	public XCLCommandNode(String name, XCLCommandNode parent) {
 		this.name = name;
 		this.parent = parent;
+		this.lineWrap = true;
 		if (parent != null) {
 			this.depth = parent.depth + 1;
 		} else {
@@ -46,6 +48,12 @@ public class XCLCommandNode {
 	}
 	public void setParaName(String paraName) {
 		this.paraName = paraName;
+	}
+	public boolean isLineWrap() {
+		return lineWrap;
+	}
+	public void setLineWrap(boolean lineWrap) {
+		this.lineWrap = lineWrap;
 	}
 	public String toString() {
 		if (children.size() > 0) {
@@ -84,8 +92,8 @@ public class XCLCommandNode {
 				if (args.size() > 0) {
 					argstr = args.toString();
 				}
-				if (!name.equals(XCLConstants.PARAS_COMMAND)) {
-					String execInfo = getGap(getDepth(), "-") + " " + name + " " + argstr;
+				if (!lineWrap) {
+					String execInfo = getPadSpecific(getDepth(), "-") + " " + name + " " + argstr;
 					console.info(execInfo);
 				}
 				return command.execute(this, args, console, context);
@@ -103,16 +111,29 @@ public class XCLCommandNode {
 		}
 	}
 	public String getFormatString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(getGap(getDepth(), "  ") + name + "\n");
-		if (hasChildren()) {
-			for (XCLCommandNode child : children) {
-				sb.append("  " + child.getFormatString());
+		String pad = "  ";
+		if (lineWrap) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(getPadSpecific(getDepth(), pad) + name);
+			sb.append("\n");
+			if (hasChildren()) {
+				for (XCLCommandNode child : children) {
+					sb.append(pad + child.getFormatString());
+				}
 			}
+			return sb.toString();
+		} else {
+			StringBuilder sb = new StringBuilder();
+			sb.append(getPadSpecific(getDepth(), pad) + name);
+			if (hasChildren()) {
+				for (XCLCommandNode child : children) {
+					sb.append(pad + child.getFormatString().trim());
+				}
+			}
+			return sb.toString();
 		}
-		return sb.toString();
 	}
-	private String getGap(int depth, String flag) {
+	private String getPadSpecific(int depth, String flag) {
 		StringBuilder gap = new StringBuilder();
 		for (int i = 0 ; i < depth ; i++) {
 			gap.append(flag);

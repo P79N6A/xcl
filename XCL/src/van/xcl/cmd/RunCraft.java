@@ -21,7 +21,7 @@ public class RunCraft implements Command, Resolver {
 
 	@Override
 	public String name() {
-		return XCLConstants.RUNCRAFT_COMMAND;
+		return XCLConstants.COMMAND_RUN_CRAFT;
 	}
 
 	@Override
@@ -82,13 +82,13 @@ public class RunCraft implements Command, Resolver {
 			String command = commands.get(i);
 			if (context.containsCraft(command)) {
 				String previousCommand =  i > 0 ? commands.get(i - 1) : null;
-				if (!XCLConstants.RUNCRAFT_COMMAND.equals(previousCommand)
-						&& !XCLConstants.CRAFT_COMMAND.equals(previousCommand)
-						&& !XCLConstants.REMOVE_COMMAND.equals(previousCommand)
-						&& !XCLConstants.EDIT_COMMAND.equals(previousCommand)
-						&& !XCLConstants.ECHO_COMMAND.equals(previousCommand)
+				if (!XCLConstants.COMMAND_RUN_CRAFT.equals(previousCommand)
+						&& !XCLConstants.COMMAND_CRAFT.equals(previousCommand)
+						&& !XCLConstants.COMMAND_REMOVE.equals(previousCommand)
+						&& !XCLConstants.COMMAND_EDIT.equals(previousCommand)
+						&& !XCLConstants.COMMAND_ECHO.equals(previousCommand)
 						) {
-					commands.add(i, XCLConstants.RUNCRAFT_COMMAND);
+					commands.add(i, XCLConstants.COMMAND_RUN_CRAFT);
 				}
 			}
 		}

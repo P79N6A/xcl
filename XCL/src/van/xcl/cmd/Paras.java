@@ -19,7 +19,7 @@ public class Paras implements Command, Resolver {
 
 	@Override
 	public String name() {
-		return XCLConstants.PARAS_COMMAND;
+		return XCLConstants.COMMAND_PARAS;
 	}
 	
 	@Override
@@ -66,14 +66,14 @@ public class Paras implements Command, Resolver {
 				}
 				paraCount++;
 			} else if (isDefaultFlag(command)) {
-				commands.set(i, XCLConstants.PARAS_COMMAND);
-				commands.add(++i, defaultKeyValue());
-				commands.add(++i, defaultKeyValue());
+				commands.set(i, XCLConstants.COMMAND_PARAS);
+				commands.add(++i, defaultKeyValue(command));
+				commands.add(++i, defaultKeyValue(command));
 			} else {
 				if (paraIndex != -1) {
-					commands.add(paraIndex, defaultKeyValue());
+					commands.add(paraIndex, defaultKeyValue(command));
 					for (int j = 0 ; j < paraCount ; j++) {
-						commands.add(paraIndex, XCLConstants.PARAS_COMMAND);
+						commands.add(paraIndex, XCLConstants.COMMAND_PARAS);
 					}
 					i += paraCount + 1;
 					paraIndex = -1;
@@ -82,17 +82,17 @@ public class Paras implements Command, Resolver {
 			}
 		}
 		if (paraIndex != -1) {
-			commands.add(paraIndex, defaultKeyValue());
+			commands.add(paraIndex, defaultKeyValue(commands.get(paraIndex)));
 			for (int j = 0 ; j < paraCount ; j++) {
-				commands.add(paraIndex, XCLConstants.PARAS_COMMAND);
+				commands.add(paraIndex, XCLConstants.COMMAND_PARAS);
 			}
 			paraIndex = -1;
 			paraCount = 0;
 		}
 	}
 	
-	public String defaultKeyValue() {
-		return XCLConstants.PARAS_PREFIX + "" + XCLConstants.PARAS_SPLITER + "";
+	public String defaultKeyValue(String cmd) {
+		return XCLConstants.PARAS_PREFIX + XCLConstants.BUILTIN_VAL_PERFIX + XCLConstants.PARAS_SPLITER + cmd;
 	}
 	
 	public boolean isDefaultFlag(String string) {

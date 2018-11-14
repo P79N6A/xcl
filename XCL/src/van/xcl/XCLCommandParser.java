@@ -12,10 +12,14 @@ public class XCLCommandParser {
 				node.setParaName(parameter.getName());
 			}
 			if (holder.isCommand(value)) {
+				node.setExecutable(true);
+				// no need to have line wrap for COMMAND_PARAS
+				if (XCLConstants.COMMAND_PARAS.equals(value)) {
+					node.setLineWrap(false);
+				}
 				for (Parameter para : holder.getCommand(value).parameters().list()) {
 					parseNode(node, paras, para, context, holder);
 				}
-				node.setExecutable(true);
 			} else {
 				node.setExecutable(false);
 			}
@@ -43,10 +47,5 @@ public class XCLCommandParser {
 		XCLCommandNode node = parseNode(null, command, null, context, holder);
 		return node;
 	}
-	
-	public void clear() {
-		
-	}
-	
 	
 }

@@ -6,7 +6,6 @@ import van.xcl.Command;
 import van.xcl.Parameters;
 import van.xcl.XCLCommandNode;
 import van.xcl.XCLConsole;
-import van.xcl.XCLConstants;
 import van.xcl.XCLContext;
 import van.xcl.XCLVar;
 
@@ -14,12 +13,12 @@ public class Disconnect implements Command {
 
 	@Override
 	public String name() {
-		return XCLConstants.DISCONNECT_COMMAND;
+		return "disconnect";
 	}
 	
 	@Override
 	public String description() {
-		return XCLConstants.DISCONNECT_COMMAND;
+		return "disconnect";
 	}
 
 	@Override

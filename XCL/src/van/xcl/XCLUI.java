@@ -578,7 +578,7 @@ public class XCLUI implements EventHandler {
 						if (filepath.endsWith("]")) {
 							filepath = filepath.substring(0, filepath.length() - 1);
 						}
-						String runfile = XCLConstants.RUNFILE_COMMAND + " " + filepath;
+						String runfile = XCLConstants.COMMAND_RUN_CRAFT_FILE + " " + filepath;
 						console.input(runfile);
 						console.run(runfile);
 						console.present(null);
@@ -697,6 +697,7 @@ public class XCLUI implements EventHandler {
 				if (!XCLConstants.ESC.equals(inputText)) {
 					return inputText;
 				}
+				console(ConsoleType.info, traceId, source + "Edit operation canceled");
 				return message;
 			} catch (InterruptedException e) {
 				console.error(CommonUtils.getStackTrace(e));

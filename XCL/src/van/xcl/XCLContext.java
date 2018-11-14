@@ -131,6 +131,9 @@ public class XCLContext implements Serializable {
 		if (name.startsWith(XCLConstants.BUILTIN_VAL_PERFIX)) {
 			return false;
 		}
+		if (name.startsWith(XCLConstants.BUILTIN_DEF_PERFIX)) {
+			return false;
+		}
 		return true;
 	}
 	public XCLHandler getHandler() {

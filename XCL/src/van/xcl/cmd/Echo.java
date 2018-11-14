@@ -18,7 +18,7 @@ public class Echo implements Command {
 	
 	@Override
 	public String name() {
-		return XCLConstants.ECHO_COMMAND;
+		return XCLConstants.COMMAND_ECHO;
 	}
 	
 	@Override

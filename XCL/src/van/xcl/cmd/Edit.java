@@ -20,7 +20,7 @@ public class Edit implements Command {
 	
 	@Override
 	public String name() {
-		return XCLConstants.EDIT_COMMAND;
+		return XCLConstants.COMMAND_EDIT;
 	}
 	
 	@Override

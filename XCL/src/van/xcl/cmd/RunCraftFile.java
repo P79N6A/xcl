@@ -24,7 +24,7 @@ public class RunCraftFile implements Command {
 
 	@Override
 	public String name() {
-		return XCLConstants.RUNFILE_COMMAND;
+		return XCLConstants.COMMAND_RUN_CRAFT_FILE;
 	}
 
 	@Override
