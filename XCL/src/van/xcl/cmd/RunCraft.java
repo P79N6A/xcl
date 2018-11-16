@@ -66,13 +66,13 @@ public class RunCraft implements Command, Resolver {
 		long startInMillis = System.currentTimeMillis();
 		console.info("[" + name + "] craft is started");
 		XCLResult result = console.execute(craft, current);
+		long timeUsed = System.currentTimeMillis() - startInMillis;
 		if (result.isSuccess()) {
-			console.info("[" + name + "] craft is done [Time Used: " + (System.currentTimeMillis() - startInMillis) + "ms]");
-		}
-		if (result.isSuccess()) {
+			console.info("[" + name + "] craft is done [Time Used: " + timeUsed + "ms]");
 			List<XCLVar> list = result.getResults();
 			return list.get(list.size() - 1);
 		}
+		console.error("[" + name + "] craft is done [Time Used: " + timeUsed + "ms]");
 		return new XCLVar();
 	}
 	

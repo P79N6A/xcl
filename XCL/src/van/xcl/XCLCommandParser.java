@@ -13,10 +13,6 @@ public class XCLCommandParser {
 			}
 			if (holder.isCommand(value)) {
 				node.setExecutable(true);
-				// no need to have line wrap for COMMAND_PARAS
-				if (XCLConstants.COMMAND_PARAS.equals(value)) {
-					node.setLineWrap(false);
-				}
 				for (Parameter para : holder.getCommand(value).parameters().list()) {
 					parseNode(node, paras, para, context, holder);
 				}

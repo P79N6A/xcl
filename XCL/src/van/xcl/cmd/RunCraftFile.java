@@ -63,8 +63,6 @@ public class RunCraftFile implements Command {
 			XCLResult result = console.execute(cmd.toString(), context.clone());
 			if (result.isSuccess()) {
 				console.info("[" + file.getName() + "] craft file is done [Time Used: " + (System.currentTimeMillis() - startInMillis) + "ms]");
-			}
-			if (result.isSuccess()) {
 				List<XCLVar> list = result.getResults();
 				return list.get(list.size() - 1);
 			}

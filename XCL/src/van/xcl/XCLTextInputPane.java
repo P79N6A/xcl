@@ -13,6 +13,8 @@ import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
 import van.util.CommonUtils;
+import van.util.StringJoiner;
+import van.xcl.util.sf.StringFilter;
 
 public class XCLTextInputPane extends XCLTextPane {
 	
@@ -147,8 +149,17 @@ public class XCLTextInputPane extends XCLTextPane {
 		
 		public String findAssociateText(String text) {
 			int associateIndex = -1;
+			String[] arr = text.replace("*", "~").split("~");
+			StringJoiner sfs = new StringJoiner("&");
+			for (int i = 0 ; i < arr.length ; i++) {
+				String s = arr[i];
+				if (!"".equals(s)) {
+					sfs.join("*" + s + "*");
+				}
+			}
+			StringFilter sf = new StringFilter(sfs.toString());
 			for (String key : getKeys().getKeys()) {
-				if (key.startsWith(text)) {
+				if (sf.accept(key)) {
 					associateIndex++;
 					if (associateIndex > this.associateIndex) {
 						this.associateIndex = associateIndex;
@@ -157,7 +168,7 @@ public class XCLTextInputPane extends XCLTextPane {
 				}
 			}
 			for (String key : getKeys().getDynamicKeys()) {
-				if (key.startsWith(text)) {
+				if (sf.accept(key)) {
 					associateIndex++;
 					if (associateIndex > this.associateIndex) {
 						this.associateIndex = associateIndex;

@@ -237,16 +237,12 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 				List<String> commands = commandList.get(i);
 				if (commands.size() > 0) {
 					XCLVar var = command(commands, getInstance(), context);
-					if (var == null) 
+					if (var == null) {
 						break;
+					}
 					result.addResult(var);
 				}
 			}
-			/*
-			if (commandList.size() == 1) {
-				saveHistory(input);
-			}
-			*/
 			int resultSize = result.getResults().size();
 			if (resultSize == commandList.size()) {
 				if (resultSize > 0) {
@@ -254,7 +250,8 @@ public class XCLApplication implements XCLConsole, XCLHandler, EventHandler, XCL
 				}
 			} else {
 				if (resultSize > 0 && resultSize < commandList.size()) {
-					error("Command execution is interrupted.");
+					// error("Command execution is interrupted.");
+					error("All commands were not fully executed.");
 				}
 			}
 		} catch (Throwable e) {
