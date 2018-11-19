@@ -32,7 +32,7 @@ public class XCLConstants {
 	public static final String PARAS_SPLITER = "=";
 	public static final String PARAS_DELIMETER = ";" + BUILTIN_PARA_SIGN;
 	public static final String PARAS_DEFAULT = "~";
-	public static final String COMMAND_PARAS = ">" + BUILTIN_PARA_SIGN;
+	public static final String COMMAND_PARAS = "@set_paras";
 	public static final String COMMAND_RUN_CRAFT = "@run_craft";
 	public static final String COMMAND_RUN_CRAFT_FILE = "@run_craft_file";
 	public static final String COMMAND_REMOVE = "remove";

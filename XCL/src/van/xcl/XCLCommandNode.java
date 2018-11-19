@@ -102,26 +102,15 @@ public class XCLCommandNode {
 	}
 	public String getFormatString() {
 		String pad = "  ";
-		if (!name.contains(XCLConstants.BUILTIN_PARA_SIGN)) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(getPadSpecific(getDepth(), pad) + name);
-			sb.append("\n");
-			if (hasChildren()) {
-				for (XCLCommandNode child : children) {
-					sb.append(pad + child.getFormatString());
-				}
+		StringBuilder sb = new StringBuilder();
+		sb.append(getPadSpecific(getDepth(), pad) + name);
+		sb.append("\n");
+		if (hasChildren()) {
+			for (XCLCommandNode child : children) {
+				sb.append(pad + child.getFormatString());
 			}
-			return sb.toString();
-		} else {
-			StringBuilder sb = new StringBuilder();
-			sb.append(getPadSpecific(getDepth(), pad) + name);
-			if (hasChildren()) {
-				for (XCLCommandNode child : children) {
-					sb.append(pad + child.getFormatString().trim());
-				}
-			}
-			return sb.toString();
 		}
+		return sb.toString();
 	}
 	private String getPadSpecific(int depth, String flag) {
 		StringBuilder gap = new StringBuilder();
