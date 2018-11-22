@@ -230,7 +230,7 @@ public class XCLUI implements EventHandler {
 		label.setBackground(XCLConstants.backgroundColor);
 		label.setForeground(XCLConstants.foregroundColor);
 		label.setFont(getDefaultFont());
-		label.setText(" > ");
+		label.setText(XCLConstants.IN_PROMPT);
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.add(getScrollCmd(), BorderLayout.CENTER);
@@ -373,7 +373,6 @@ public class XCLUI implements EventHandler {
 	
 	private XCLTextInputPane getTextCmd() {
 		if (textCmd == null) {
-//			textCmd = new JTextField();
 			textCmd = new XCLTextInputPane(keys);
 			textCmd.setCaret(new XCLCaret());
 			textCmd.setEditable(true);

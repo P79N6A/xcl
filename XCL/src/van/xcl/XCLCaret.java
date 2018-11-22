@@ -23,10 +23,9 @@ public class XCLCaret extends DefaultCaret {
 			return;
 		// give values to x,y,width,height (inherited from java.awt.Rectangle)
 		x = r.x;
-//		y = r.y + (r.height * 4 / 5 - 3);
 		y = r.y + (r.height - 2);
-		width = 5;
-		height = 5;
+		width = 10;
+		height = 10;
 		repaint(); // calls getComponent().repaint(x, y, width, height)
 	}
 
@@ -43,8 +42,8 @@ public class XCLCaret extends DefaultCaret {
 		}
 		if (r == null)
 			return;
-//		int dist = r.height * 4 / 5 - 3; // will be distance from r.y to top
-		int dist = r.height - 2;// * 4 / 5 - 3; // will be distance from r.y to top
+		int dist = r.height - 2;// * 4 / 5 - 3; // will be distance from r.y to
+								// top
 		if ((x != r.x) || (y != r.y + dist)) {
 			// paint() has been called directly, without a previous call to
 			// damage(), so do some cleanup. (This happens, for example, when
@@ -53,20 +52,15 @@ public class XCLCaret extends DefaultCaret {
 			repaint(); // erase previous location of caret
 			x = r.x; // set new values for x,y,width,height
 			y = r.y + dist;
-			width = 5;
-			height = 5;
+			width = 10;
+			height = 10;
 		}
 		if (isVisible()) {
 			g.setColor(comp.getCaretColor());
-//			g.drawLine(r.x, r.y + dist, r.x, r.y + dist + 4); // 5 vertical
-//			// pixels
-//			g.drawLine(r.x, r.y + dist + 4, r.x + 4, r.y + dist + 4); // 5 horiz
-//			// px
-//			g.drawLine(r.x, r.y + dist, r.x + 4, r.y + dist + 4);
-			int[] xPoints = {r.x + 2, r.x, r.x + 4};
-			int[] yPoints = {r.y + dist, r.y + dist + 4, r.y + dist + 4};
-			g.fillPolygon(xPoints, yPoints, 3);
-			g.drawPolygon(xPoints, yPoints, 3);
+			int[] xPoints = { r.x, r.x + 8, r.x + 8, r.x };
+			int[] yPoints = { r.y + dist, r.y + dist, r.y + dist + 4, r.y + dist + 4 };
+			g.fillPolygon(xPoints, yPoints, 4);
+			g.drawPolygon(xPoints, yPoints, 4);
 		}
 	}
 }
