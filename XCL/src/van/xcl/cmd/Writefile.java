@@ -2,8 +2,9 @@ package van.xcl.cmd;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Map;
 
 import van.util.CommonUtils;
@@ -42,6 +43,7 @@ public class Writefile implements Command {
 			}
 		});
 		parameters.add("content");
+		parameters.add("charset");
 		return parameters;
 	}
 
@@ -50,12 +52,14 @@ public class Writefile implements Command {
 		try {
 			String filepath = args.get("file").toString();
 			String content = args.get("content").toString();
+			String charset = args.get("charset").toString();
 			File file = new File(filepath);
 			if (!file.exists()) {
 				file.getParentFile().mkdirs();
 				file.createNewFile();
 			}
-			FileWriter fw = new FileWriter(file);
+			FileOutputStream fos = new FileOutputStream(file);
+			OutputStreamWriter fw = new OutputStreamWriter(fos, charset);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(formatContent(content));
 			bw.close();

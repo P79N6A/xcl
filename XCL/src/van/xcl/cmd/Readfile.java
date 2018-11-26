@@ -32,7 +32,6 @@ public class Readfile implements Command {
 	@Override
 	public Parameters parameters() {
 		Parameters parameters = new Parameters();
-		parameters.add("var_name");
 		parameters.add("file", new ParameterValidator() {
 			@Override
 			public void validate(XCLContext context, XCLVar value) throws ParameterException {
@@ -42,16 +41,19 @@ public class Readfile implements Command {
 				}
 			}
 		});
+		parameters.add("var");
+		parameters.add("charset");
 		return parameters;
 	}
 
 	@Override
 	public XCLVar execute(XCLCommandNode node, Map<String, XCLVar> args, XCLConsole console, XCLContext context) throws CommandException {
 		try {
-			String varName = args.get("var_name").toString();
 			String filepath = args.get("file").toString();
+			String charset = args.get("charset").toString();
+			String varName = args.get("var").toString();
 			FileInputStream file = new FileInputStream(filepath);
-			InputStreamReader fr = new InputStreamReader(file, "UTF-8");
+			InputStreamReader fr = new InputStreamReader(file, charset);
 			BufferedReader br = new BufferedReader(fr);
 			StringBuilder content = new StringBuilder();
 			String line = null;
