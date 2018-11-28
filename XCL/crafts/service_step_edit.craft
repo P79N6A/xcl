@@ -1,6 +1,11 @@
 service -user=lms202 
 -data={"reqType":"ls_case_step_edit","reqCode":"ls_case_step_edit",\\
-//"reqData":{"caseId":"LS201810100002","caseSolveMtd":"20035","caseStep":"register","caseStepName":"登记"}}
+"reqData":{"caseId":"LS201811030002","caseSolveMtd":"20035","caseStep":"exec","caseStepName":"登记","action":"new"}}
 //"reqData":{"caseId":"LS201811020003","caseSolveMtd":"20036","caseStep":"register","caseStepName":"登记"}}
 //"reqData":{"caseId":"LS201810100002","caseSolveMtd":"20035","caseStep":"register","caseStepName":"登记"}}
-"reqData":{"caseId":"LS201811120002","caseSolveMtd":"20035","caseStep":"first_inst","caseStepName":"一审"}}
+//"reqData":{"caseId":"LS201811120002","caseSolveMtd":"20035","caseStep":"first_inst","caseStepName":"一审","action":"new"}}
+//"reqData":{"caseId":"LS201810100002","caseSolveMtd":"20035","caseStep":"second_inst","caseStepName":"二审"}}
+//"reqData":{"caseId":"LS201810100002","caseSolveMtd":"20035","caseStep":"exec","caseStepName":"执行"}}
+;
+//echo a.form;
+echo a.form;

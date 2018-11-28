@@ -6,7 +6,10 @@
 clear;
 set local_url http://localhost:8080/lms.application/lmsMobileRest/service.do;
 set sit_url http://lmssit.crc.com.cn/lms.application/lmsMobileRest/service.do;
-set url if equal env sit sit_url local_url;
+set url 
+        if equal env sit 
+               sit_url 
+               local_url;
 
 remove result;
 var result 
@@ -32,9 +35,9 @@ var post_result
 		false;
 // check result, if result = false, throw error at here to interrupt the command execution
 errif not post_result 
-	concat "返回信息:" result.returnDesc 
-	-error=请求失败 
-	-success=请求成功;
+	concat "resp_message:&nbsp;" result.returnDesc 
+	-error=request_fail 
+	-success=request_succeed;
 
 // decode result if result is ok
 remove a;
@@ -42,3 +45,5 @@ var a b64 -d result.returnData;
 // show result
 echo '-----------------------result------------------';
 echo jsonf a;
+set f writefile D:\Temp\result.json a UTF-8;
+start -file=f;

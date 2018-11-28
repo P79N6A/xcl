@@ -1,3 +1,3 @@
 service -user=lms186 -data={"reqType":"ls_case_step_view","reqCode":"ls_case_step_view",\\
 //"reqData":{"caseId":"LS201811050001","caseStep":"first_inst","caseStepName":"되션","isShareView":"N"}}
-"reqData":{"caseId":"LS201811080007","caseStep":"register","caseStepName":"되션","isShareView":"N"}}
+"reqData":{"caseId":"LS201810110001","caseStep":"register","caseStepName":"되션","isShareView":"N"}}
