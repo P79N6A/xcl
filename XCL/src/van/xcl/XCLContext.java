@@ -59,6 +59,10 @@ public class XCLContext implements Serializable {
 		}
 		return false;
 	}
+	public boolean clearVars() {
+		getObject().clear();
+		return true;
+	}
 	public boolean renameVar(String key, String newKey) {
 		if (containsVar(key) && !containsVar(newKey)) {
 			Object var = getVar(key);
@@ -132,6 +136,9 @@ public class XCLContext implements Serializable {
 			return false;
 		}
 		if (name.startsWith(XCLConstants.BUILTIN_DEF_PERFIX)) {
+			return false;
+		}
+		if (!name.matches("^[^ ]+$")) {
 			return false;
 		}
 		return true;
