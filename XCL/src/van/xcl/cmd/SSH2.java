@@ -53,17 +53,20 @@ public class SSH2 implements Command {
 				if ("get".equals(action)){
 					XCLDynamicParameter.validate(value, "localDir", "remoteFile");
 				}
+				if ("cmd".equals(action)){
+					XCLDynamicParameter.validate(value, "command");
+				}
 			}
 		})
 		.addPara("-hostname=127.0.0.1")
 		.addPara("-username=usr")
 		.addPara("-password=pwd")
 		.addPara("-action=cmd/get/put")
+		.addPara("-command=command_line")
 		.addPara("-localFile=local_file")
 		.addPara("-remoteDir=remote_directory")
 		.addPara("-localDir=local_directory")
 		.addPara("-remoteFile=remote_file");
-		parameters.add("command");
 		return parameters;
 	}
 
@@ -74,7 +77,7 @@ public class SSH2 implements Command {
 		String username = map.getValue("username");
 		String password = map.getValue("password");
 		String action = map.getValue("action");
-		String command = args.get("command").toString();
+		String command = map.getValue("command");
 		SSH2Client client = new SSH2Client(hostname, username, password);
 		try {
 			client.connect();

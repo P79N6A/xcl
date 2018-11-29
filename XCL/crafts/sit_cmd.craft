@@ -11,4 +11,4 @@ set bin concat sit_tomcat "bin";
 
 // 
 
-ssh2 -action=cmd -username=u -hostname=h -password=p command;
+ssh2 -action=cmd -username=u -hostname=h -password=p -command=command;

@@ -24,8 +24,6 @@ public class XCLUtils {
 	
 	public static String defaulltFontPath = "font/YaheiConsolasHybrid.ttf";
 	
-	public static String breakLine = "\\\\";
-	
 	public static boolean isVarString(String str) {
 		return (str.startsWith("\"") && str.endsWith("\""))
 				|| (str.startsWith("'") && str.endsWith("'"));
@@ -43,8 +41,7 @@ public class XCLUtils {
 	}
 
 	public static List<String> resolveParameters(String str) {
-		str = captureQuota(str.trim());
-		str = str.replace("\\\"", "{#}");
+		str = captureInnerQuota(str);
 		StringBuilder newStr = new StringBuilder();
 		int length = str.length();
 		Map<String, String> map = new HashMap<String, String>();
@@ -58,7 +55,7 @@ public class XCLUtils {
 				newStr.append(str.substring(0, sIdx));
 				idx += sIdx;
 				String value = str.substring(sIdx, eIdx + 1);
-				String key = "{" + (para++) + "}";
+				String key = "{#para" + (para++) + "}";
 				map.put(key, value);
 				newStr.append(key);
 				idx += (eIdx - sIdx + 1);
@@ -73,7 +70,7 @@ public class XCLUtils {
 				for (Entry<String, String> entry : map.entrySet()) {
 					next = next.replace(entry.getKey(), entry.getValue());
 				}
-				list.add(trimVar(escapeQuota(next)));
+				list.add(trimVar(escapeInnerQuota(next)));
 			}
 		}
 		sc.close();
@@ -82,7 +79,7 @@ public class XCLUtils {
 	
 	public static List<List<String>> resolveCommands(String str) {
 		str = trimCommand(str);
-		str = captureQuota(str.trim());
+		str = captureInnerQuota(str);
 		StringBuilder newStr = new StringBuilder();
 		int length = str.length();
 		Map<String, String> map = new HashMap<String, String>();
@@ -96,7 +93,7 @@ public class XCLUtils {
 				newStr.append(str.substring(0, sIdx));
 				idx += sIdx;
 				String value = str.substring(sIdx, eIdx + 1);
-				String key = "{" + (para++) + "}";
+				String key = "{#para" + (para++) + "}";
 				map.put(key, value);
 				newStr.append(key);
 				idx += (eIdx - sIdx + 1);
@@ -111,7 +108,7 @@ public class XCLUtils {
 			for (Entry<String, String> entry : map.entrySet()) {
 				s = s.replace(entry.getKey(), entry.getValue());
 			}
-			cmdList.add(resolveParameters(escapeQuota(s)));
+			cmdList.add(resolveParameters(escapeInnerQuota(s)));
 		}
 		return cmdList;
 	}
@@ -129,8 +126,8 @@ public class XCLUtils {
 					// cmdTrim.append(cmdLine + " ");
 					String trim = cmdLine.trim();
 					if (!"".equals(trim)) {
-						if (trim.endsWith(breakLine)) {
-							cmdTrim.append(trim.substring(0, trim.length() - breakLine.length()));
+						if (trim.endsWith(XCLConstants.BREAK_LINE)) {
+							cmdTrim.append(trim.substring(0, trim.length() - XCLConstants.BREAK_LINE.length()));
 						} else {
 							cmdTrim.append(trim + " ");
 						}
@@ -144,13 +141,13 @@ public class XCLUtils {
 		return cmdTrim.toString();
 	}
 	
-	private static String captureQuota(String s) {
-		s = s.replace("\\\"", "{#}");
+	private static String captureInnerQuota(String s) {
+		s = s.replace("\\\"", "{#quota}");
 		return s;
 	}
 	
-	private static String escapeQuota(String s) {
-		s = s.replace("{#}", "\"");
+	private static String escapeInnerQuota(String s) {
+		s = s.replace("{#quota}", "\"");
 		return s;
 	}
 	
@@ -189,7 +186,7 @@ public class XCLUtils {
 	}
 	
 	public static void main(String[] args) {
-		String s = "cmd asdfas \"{\\\"sadfsad\\\": \\\"asdfsad\\\"}\" asdfasd;\n asadfsadf asdfasd";
+		String s = "   cmd para1 \"{\\\"p1\\\": \\\"v1\\\"}\"; -dynamic_para=\"v1\" end;\n cmd2 para3   ";
 		logger.info(resolveCommands(s));
 	}
 	

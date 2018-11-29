@@ -2,20 +2,20 @@
 set u appuser;
 set p kjkSk))1$;
 set h 10.0.62.152;
-ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/logs/lms-uat";
+ssh2 -action=cmd -username=u -hostname=h -password=p -command="cd /home/appuser/logs/lms-uat";
 // upload wars to SIT
 ssh2 -action=get -username=u -hostname=h -password=p 
 	-localDir=D:\Temp\uat2\
 	-remoteFile=/home/appuser/logs/lms-uat/lms.log
-	"pwd";
+	-command="pwd";
 // ----------- uat1
 set h 10.0.62.153;
-ssh2 -action=cmd -username=u -hostname=h -password=p "cd /home/appuser/logs/lms-uat";
+ssh2 -action=cmd -username=u -hostname=h -password=p -command="cd /home/appuser/logs/lms-uat";
 // upload wars to SIT
 ssh2 -action=get -username=u -hostname=h -password=p 
 	-localDir=D:\Temp\uat1\
 	-remoteFile=/home/appuser/logs/lms-uat/lms.log
-	"pwd";
+	-command="pwd";
 // open files
 start -file=D:\Temp\uat2\lms.log;
 start -file=D:\Temp\uat1\lms.log;

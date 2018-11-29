@@ -8,7 +8,27 @@
 //set r postf "http://localhost:8080/lms.application/lmsLsCaseClose/getClaimList.json"
 // "caseId=LS201810310003&closeStatus=20347&token=6c262218c729412397b99c598df6da4b1540983625194";
             //                abc;
-set t if exists t t 1000;
-sleep t;
-clear;
-run test -t=1000;
+
+
+//set t if exists t t 1000;
+//sleep t;
+//clear;
+//run test -t=1000;
+
+//set a 11;
+//echo a;
+
+//ssh2 -action=get -username=FORMSSI-37 -password=password@1 -hostname=127.0.0.1 -localDir=D:\Temp\ -remoteFile=D:\share\result.txt "PWD";
+
+//set t service_step_edit -env=sit;
+//echo t;
+
+echo 'abc';
+echo 'abc';
+echo 'abc';
+echo 'abc';
+errif true "break;";
+echo 'abc';
+echo 'abc';
+echo 'abc';
+echo 'abc';

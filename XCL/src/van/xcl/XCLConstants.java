@@ -28,6 +28,7 @@ public class XCLConstants {
 	public static final String BUILTIN_DEF_PERFIX = ":";
 	public static final String BUILTIN_PARA_SIGN = String.valueOf((char)127);
 	public static final String COMMONT_PREFIX = "//";
+	public static String BREAK_LINE = "\\\\";
 	public static final String PARAS_PREFIX = "-";
 	public static final String PARAS_SPLITER = "=";
 	public static final String PARAS_DELIMETER = ";" + BUILTIN_PARA_SIGN;
