@@ -1,4 +1,4 @@
-package van.xcl.util.sf;
+package van.util.sf;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,8 @@
 package van.xcl.cmd;
 import java.util.Map;
 
-import van.xcl.util.json.Json;
-import van.xcl.util.json.JsonObject;
-
+import van.util.json.Json;
+import van.util.json.JsonObject;
 import van.xcl.Command;
 import van.xcl.XCLConsole;
 import van.xcl.Parameters;

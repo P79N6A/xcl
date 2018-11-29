@@ -1,6 +1,6 @@
 package test;
 
-import van.xcl.util.json.JsonObject;
+import van.util.json.JsonObject;
 
 public class FastJsonTester {
 

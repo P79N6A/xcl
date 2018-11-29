@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import van.util.sf.StringFilter;
 import van.xcl.Command;
 import van.xcl.XCLConsole;
 import van.xcl.ParameterException;
@@ -11,7 +12,6 @@ import van.xcl.ParameterValidator;
 import van.xcl.Parameters;
 import van.xcl.XCLContext;
 import van.xcl.XCLCommandNode;
-import van.xcl.util.sf.StringFilter;
 import van.xcl.XCLVar;
 
 public class Delete implements Command {

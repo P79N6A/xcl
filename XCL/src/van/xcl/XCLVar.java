@@ -3,9 +3,9 @@ package van.xcl;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import van.xcl.util.json.Json;
-import van.xcl.util.json.JsonArray;
-import van.xcl.util.json.JsonObject;
+import van.util.json.Json;
+import van.util.json.JsonArray;
+import van.util.json.JsonObject;
 
 public class XCLVar implements Serializable {
 	

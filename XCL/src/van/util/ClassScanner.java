@@ -1,15 +1,64 @@
 package van.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import org.apache.log4j.Logger;
+
+import van.util.sf.StringFilter;
+
 
 public class ClassScanner {
 
 	private static final String CLASS_FILE_EXTENSION = ".class";
 	private static final String JAR_FILE_EXTENSION = ".jar";
+	private static final String CONFIG_FILE = "class-scanner.properties";
+	
+	private static Logger logger = Logger.getLogger(ClassScanner.class);
+	private static StringFilter ignoreFilter = new StringFilter("#");
+	
+	static {
+		try {
+			if (loadConfiguration(new File(System.getProperty("user.dir")))) {
+				logger.info("ClassScanner configuration is loaded.");
+			}
+		} catch (Throwable e) {
+			logger.error("ClassScanner configuration file load failed: " + e.getMessage(), e);
+		}
+	}
+	
+	public static boolean loadConfiguration(File file) throws FileNotFoundException, IOException {
+		if (file.isDirectory()) {
+			for (File f : file.listFiles()) {
+				if (loadConfiguration(f)) {
+					return true;
+				}
+			}
+		} else {
+			if (file.getName().equals(CONFIG_FILE)) {
+				Properties properties = new Properties();
+				properties.load(new FileInputStream(file));
+				String ignoredPacakges = (String) properties.get("ignored-pacakges");
+				if (ignoredPacakges != null) {
+					String[] packages = ignoredPacakges.split(";");
+					StringJoiner sj = new StringJoiner("|");
+					for (String p : packages) {
+						sj.join(p);
+					}
+					ignoreFilter = new StringFilter(sj.toString());
+				}
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public void scanClasses(List<Class<?>> classes) {
 		long startInMillis = System.currentTimeMillis();
@@ -29,8 +78,10 @@ public class ClassScanner {
 			if (jarEntryName.contains(CLASS_FILE_EXTENSION)) {
 				try {
 					String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replace("/", ".");
-					Class<?> clazz = Class.forName(className);
-					classes.add(clazz);
+					if (!ignoreFilter.accept(className)) {
+						Class<?> clazz = Class.forName(className);
+						classes.add(clazz);
+					}
 				} catch (Throwable e) {
 					System.out.println("scan jar class error: " + e.getMessage());
 				}
@@ -50,8 +101,11 @@ public class ClassScanner {
 				filename = filename.replaceFirst(".", "");
 			}
 			filename = filename.replace(CLASS_FILE_EXTENSION, "");
-			Class<?> clazz = Class.forName(filename);
-			classes.add(clazz);
+			String className = filename;
+			if (!ignoreFilter.accept(className)) {
+				Class<?> clazz = Class.forName(className);
+				classes.add(clazz);
+			}
 		} catch (Throwable e) {
 			System.out.println("scan file class error: " + e.getMessage());
 		}

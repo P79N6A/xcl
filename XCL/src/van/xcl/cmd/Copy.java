@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import van.util.CommonUtils;
+import van.util.sf.StringFilter;
 import van.xcl.Command;
 import van.xcl.XCLConsole;
 import van.xcl.ParameterException;
@@ -18,7 +19,6 @@ import van.xcl.Parameters;
 import van.xcl.XCLContext;
 import van.xcl.XCLCommandNode;
 import van.xcl.XCLVar;
-import van.xcl.util.sf.StringFilter;
 
 public class Copy implements Command {
 

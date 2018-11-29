@@ -14,7 +14,7 @@ import javax.swing.undo.UndoManager;
 
 import van.util.CommonUtils;
 import van.util.StringJoiner;
-import van.xcl.util.sf.StringFilter;
+import van.util.sf.StringFilter;
 
 public class XCLTextInputPane extends XCLTextPane {
 	

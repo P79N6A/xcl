@@ -1,4 +1,4 @@
-package van.xcl.util.json;
+package van.util.json;
 
 import java.io.Serializable;
 

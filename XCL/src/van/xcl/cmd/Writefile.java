@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.util.Map;
 
 import van.util.CommonUtils;
+import van.util.json.JsonArray;
+import van.util.json.JsonObject;
 import van.xcl.Command;
 import van.xcl.CommandException;
 import van.xcl.ParameterException;
@@ -17,8 +19,6 @@ import van.xcl.XCLCommandNode;
 import van.xcl.XCLConsole;
 import van.xcl.XCLContext;
 import van.xcl.XCLVar;
-import van.xcl.util.json.JsonArray;
-import van.xcl.util.json.JsonObject;
 
 public class Writefile implements Command {
 
